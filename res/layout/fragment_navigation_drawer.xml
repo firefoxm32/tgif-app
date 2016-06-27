@@ -1,0 +1,33 @@
+<com.app.tgif_app.view.ScrimInsetsFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                   xmlns:tools="http://schemas.android.com/tools"
+                                                   android:layout_width="match_parent"
+                                                   android:layout_height="match_parent"
+                                                   app:insetForeground="#4000">
+		
+    	<LinearLayout 
+    	    android:layout_width="match_parent"
+    	    android:layout_height="match_parent"
+    	    android:orientation="vertical"
+    	    android:background="#ADD6EA" >
+    	    
+	   	    <ImageView android:id="@+id/imgview"
+		        android:layout_width="match_parent"
+		        android:layout_height="140dp"
+		        android:background="@drawable/logo"
+		        android:keepScreenOn="true"
+		        android:layout_margin="10dp"
+		        android:paddingBottom="@dimen/feed_item_margin"
+		        />
+	        <ListView 
+	        android:id="@+id/listView"
+	        android:layout_width="match_parent"
+	        android:layout_height="fill_parent"
+	        android:choiceMode="singleChoice"
+	        android:divider="@null"
+	        android:background="#FFF"
+	        />
+		</LinearLayout>
+        
+</com.app.tgif_app.view.ScrimInsetsFrameLayout>
+ <!-- android:background="#ccc" -->

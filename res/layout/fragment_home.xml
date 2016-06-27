@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/feed_bg"
+    android:paddingBottom="@dimen/feed_item_margin" >
+    
+	
+     <TextView
+        android:id="@+id/allTimeFavorite"
+        android:layout_width="fill_parent"
+        android:layout_height="30dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginTop="10dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:text="ALL TIME FAVORITES" />
+    
+    
+    <ListView
+        android:id="@+id/allTimeFavoriteList"
+        android:layout_width="fill_parent"
+        android:layout_height="200dp"
+        android:divider="@null" />
+    
+    <TextView
+        android:id="@+id/promo"
+        android:layout_width="fill_parent"
+        android:layout_height="30dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginTop="10dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:text="PROMOS" />
+    
+   <ListView
+        android:id="@+id/promoList"
+        android:layout_width="fill_parent"
+        android:layout_height="200dp"
+        android:divider="@null" />
+</LinearLayout>

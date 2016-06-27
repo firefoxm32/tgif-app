@@ -1,0 +1,7 @@
+*.log
+.classpath
+.project
+/bin
+/gen
+/libs
+*.txt

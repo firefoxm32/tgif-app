@@ -1,0 +1,150 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.app.tgif_app.OrderFragment"
+    android:background="#FFF" >
+	
+    
+    
+    <ImageView
+        android:id="@+id/imageViewFoodImg"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:background="#ddd"
+         />
+	
+    <Button
+        android:id="@+id/buttonViewOrders"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
+        android:layout_alignRight="@+id/imageViewFoodImg"
+        android:layout_below="@+id/imageViewFoodImg"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        android:text="View Orders"
+        android:textAllCaps="false"
+        android:background="#C10012"
+        android:textColor="#FFF" />
+	
+    <Button
+        android:id="@+id/buttonAddOrder"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
+        android:layout_alignLeft="@+id/imageViewFoodImg"
+        android:layout_below="@+id/imageViewFoodImg"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:text="Add Order"
+        android:textAllCaps="false"
+        android:background="#C10012"
+        android:textColor="#FFF" />
+    
+    <!-- <TextView
+        android:id="@+id/textViewFoodName"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_below="@+id/buttonViewOrders"
+        android:textSize="20sp"
+         />
+    
+    <TextView 
+        android:id="@+id/textViewDescription"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@+id/textViewFoodName"
+        android:text="Traditional upstate New York-style chicken wings deep fried and tossed in your choice of sauce."
+		android:layout_margin="10dp"
+		android:textSize="14sp" /> -->
+   <WebView 
+       android:id="@+id/webViewLayout"
+       android:layout_below="@+id/buttonAddOrder"
+       android:layout_height="fill_parent"
+       android:layout_width="fill_parent"
+       android:layout_marginTop="5dp" />
+</RelativeLayout>
+
+<!-- <TextView
+	   	android:id="@+id/textViewPrice"
+	   	android:layout_height="50dp"
+	   	android:layout_width="150dp"
+	   	android:text="Php 50,000.00"
+	   	android:textSize="18sp"
+	   	android:layout_below="@+id/imageViewFoodImg"
+	   	android:layout_alignRight="@+id/imageViewFoodImg"
+	   	android:layout_marginTop="14dp"
+	    /> -->
+	    
+ <!-- Serving
+    <TextView 
+        android:id="@+id/textViewServing"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@+id/textViewDescription"
+        android:text="Serving:"
+        android:textSize="14sp"
+        android:layout_margin="10dp" />
+    <TextView
+        android:id="@+id/textViewServingType1"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@+id/textViewServing"
+        android:text="Half pound Php 325.00"
+        android:textSize="14sp"
+        android:layout_margin="10dp" />
+    <TextView
+        android:id="@+id/textViewServingType2"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@+id/textViewServingType1"
+        android:text="One pound Php 575.00"
+        android:textSize="14sp"
+        android:layout_margin="10dp" />
+    <TextView
+        android:id="@+id/textViewServingType3"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@+id/textViewServingType2"
+        android:text="One pound Php 575.00"
+        android:textSize="14sp"
+        android:layout_margin="10dp" />
+	End Serving
+	
+	Sauce
+    <TextView 
+        android:id="@+id/textViewSauce"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@+id/textViewDescription"
+        android:text="Sauce:"
+        android:textSize="14sp"
+        android:layout_margin="10dp" />
+    <TextView
+        android:id="@+id/textViewSauceType1"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@+id/textViewSauce"
+        android:text="Original Buffalo"
+        android:textSize="14sp"
+        android:layout_margin="10dp" />
+    <TextView
+        android:id="@+id/textViewSauceType2"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@+id/textViewSauceType1"
+        android:text="Honey Barbecue"
+        android:textSize="14sp"
+        android:layout_margin="10dp" />
+    <TextView
+        android:id="@+id/textViewSauceType3"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@+id/textViewSauceType2"
+        android:text="Cajun Spice"
+        android:textSize="14sp"
+        android:layout_margin="10dp" />
+	End Serving -->

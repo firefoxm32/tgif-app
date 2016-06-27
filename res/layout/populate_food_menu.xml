@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+	
+	<LinearLayout 
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal"
+	    
+	    android:layout_marginLeft="@dimen/feed_item_margin"
+	    android:layout_marginRight="@dimen/feed_item_margin"
+	    android:layout_marginTop="@dimen/feed_item_margin"
+	    android:background="@drawable/bg_parent_rounded_corner"
+	    android:paddingBottom="@dimen/feed_item_padding_top_bottom"
+	    android:paddingTop="@dimen/feed_item_padding_top_bottom"
+	    android:paddingRight="@dimen/feed_item_padding_left_right"
+	    android:paddingLeft="@dimen/feed_item_padding_left_right" >
+    
+	<ImageView
+	    android:id="@+id/foodMenuImage"
+	    android:layout_width="75dp"
+	    android:layout_height="70dp"
+	    android:scaleType="fitCenter"
+		android:layout_marginRight="10dp"
+    	android:orientation="vertical" />
+
+	<LinearLayout
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:orientation="vertical"
+	     >
+	 	
+	    <TextView
+	        android:id="@+id/menuName"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:textSize="@dimen/item_name_size"
+	        android:textStyle="bold" />
+	    <TextView
+	        android:id="@+id/qty"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:textSize="@dimen/qty_price_size" />
+	    
+	</LinearLayout>
+	
+   </LinearLayout>
+	
+</LinearLayout>

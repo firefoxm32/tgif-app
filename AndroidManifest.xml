@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.app.tgif_app"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-sdk
+        android:minSdkVersion="19"
+        android:targetSdkVersion="23" />
+<!-- android:name="com.tgif.http.TGIFRequest" -->
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.AppCompat" >
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" >
+            <intent-filter>
+
+                <!-- Theme.AppCompat.DayNight.NoActionBar -->
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ContentActivity"
+            android:label="@string/title_activity_content" >
+        </activity>
+        <activity
+            android:name=".FoodMenuFragment"
+            android:label="@string/title_activity_food_menu" >
+        </activity>
+        <activity
+            android:name=".SubFoodMenuFragment"
+            android:label="@string/title_activity_sub_food_menu_fragment" >
+        </activity>
+        <activity
+            android:name=".OrderFragment"
+            android:label="@string/title_activity_order_fragment" >
+        </activity>
+        <activity
+            android:name=".AlertDFragment"
+            android:label="@string/title_activity_alert_dfragment" >
+        </activity>
+    </application>
+
+</manifest>
