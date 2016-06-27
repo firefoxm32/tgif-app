@@ -4,8 +4,8 @@ Order App For TGIF
 
 # libs
 
-androidasync-2.1.3.jar
-devsmartlib.jar
-gson-2.3.jar
-ion-2.1.6.jar
-app-compat-v7
+androidasync-2.1.3.jar <br />
+devsmartlib.jar <br />
+gson-2.3.jar <br />
+ion-2.1.6.jar <br />
+app-compat-v7 <br />
