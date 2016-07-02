@@ -5,7 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.app.tgif_app.adapter.FoodMenuAdapter;
+import com.google.gson.JsonObject;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.ProgressCallback;
 import com.tgif.dao.FoodMenuDAO;
+import com.tgif.http.EndPoints;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -35,9 +40,39 @@ public class FoodMenuFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState){
 		//return inflater.inflate(R.layout.food_menu_fragment, null, false);
 		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.food_menu_fragment, null);
-	
-		FoodMenuDAO fmd = new FoodMenuDAO();
-		list = fmd.getFoodMenus();
+		
+		FoodMenuList = (ListView) rootView.findViewById(R.id.listMenu);
+		
+		Ion.with(MainActivity.getContext())
+		.load(EndPoints.FOOD_MENUS)
+		.progress(new ProgressCallback() {
+			@Override
+			public void onProgress(long arg0, long arg1) {
+				// TODO Auto-generated method stub
+				System.out.println("On Que");
+			}
+		})
+		.asJsonObject()
+		.setCallback(new FutureCallback<JsonObject>() {
+			@Override
+			public void onCompleted(Exception e, JsonObject json) {
+				// TODO Auto-generated method stub
+				FoodMenuDAO fmd = new FoodMenuDAO();
+				list = fmd.getFoodMenus(json);
+				menuName = new ArrayList<>();
+				for(FoodMenu fm : list) {
+					menuName.add(fm.getLabel());
+				}
+				System.out.println("Menu Name: "+menuName);
+			
+				foodMenuAdapter = new FoodMenuAdapter(getActivity(), list);
+
+				FoodMenuList.setAdapter(foodMenuAdapter);
+			}
+		});
+		
+		/*FoodMenuDAO fmd = new FoodMenuDAO();
+		list = fmd.getFoodMenus(json);
 		menuName = new ArrayList<>();
 		for(FoodMenu fm : list) {
 			menuName.add(fm.getLabel());
@@ -48,7 +83,7 @@ public class FoodMenuFragment extends Fragment {
 		
 		foodMenuAdapter = new FoodMenuAdapter(getActivity(), list);
 
-		FoodMenuList.setAdapter(foodMenuAdapter);
+		FoodMenuList.setAdapter(foodMenuAdapter);*/
 		
 		FoodMenuList.setOnItemClickListener(new OnItemClickListener() {
 				public void onItemClick(AdapterView<?> parent, View view,

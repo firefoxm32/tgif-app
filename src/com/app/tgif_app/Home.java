@@ -1,10 +1,14 @@
 package com.app.tgif_app;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.app.tgif_app.adapter.AllTimeFavoriteAdapter;
+import com.google.gson.JsonObject;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.ProgressCallback;
 import com.tgif.dao.FoodMenuDAO;
+import com.tgif.http.EndPoints;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -31,13 +35,29 @@ public class Home extends Fragment {
 		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_home, null);
 		allTimeFavoriteList = (ListView) rootView.findViewById(R.id.allTimeFavoriteList);
 		promoList = (ListView) rootView.findViewById(R.id.promoList);
-		FoodMenuDAO fmd = new FoodMenuDAO();
 		
-		foodMenuItems = fmd.getAllTimeFavorites();
-		allTimeFavoriteAdapter = new AllTimeFavoriteAdapter(getActivity(), foodMenuItems);
-		
-		allTimeFavoriteList.setAdapter(allTimeFavoriteAdapter);
-		
+		Ion.with(MainActivity
+		.getContext())
+		.load(EndPoints.ALL_TIME_FAVORITES)
+		.progress(new ProgressCallback() {
+			@Override
+			public void onProgress(long arg0, long arg1) {
+				System.out.println("On Que.");
+			}
+		})
+		.asJsonObject()
+		.setCallback(new FutureCallback<JsonObject>() {
+			@Override
+			public void onCompleted(Exception e, JsonObject json) {
+				// TODO Auto-generated method stub
+				FoodMenuDAO fmd = new FoodMenuDAO();
+				
+				foodMenuItems = fmd.getAllTimeFavorites(json);
+				allTimeFavoriteAdapter = new AllTimeFavoriteAdapter(getActivity(), foodMenuItems);
+				
+				allTimeFavoriteList.setAdapter(allTimeFavoriteAdapter);
+			}
+		});
 		promoList.setAdapter(allTimeFavoriteAdapter);
 		return rootView;
 	}

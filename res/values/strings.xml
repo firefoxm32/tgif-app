@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">TGIF_APP</string>
+    <string name="app_name">TGIF</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <!-- <string name="action_example">Example action</string> -->
@@ -21,4 +21,7 @@
     
     <string name="peso_sign">&#8369;</string>
     
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+	<string name="table_number">9</string>
 </resources>

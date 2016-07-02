@@ -1,10 +1,18 @@
 package com.app.tgif_app;
 
-import com.tgif.dao.FoodMenuDAO;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.ProgressCallback;
+import com.tgif.http.EndPoints;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -13,6 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class EditOrderFragment extends Fragment {
 	
@@ -24,12 +33,12 @@ public class EditOrderFragment extends Fragment {
 	private EditText qty;
 	private Button btnEdit;
 	private Button btnDelete;
-	
+	private Boolean bool=false;
+	public String message;
 	public static Fragment newInstance(Context context){
 		EditOrderFragment editOrderFragment = new EditOrderFragment();
 		return editOrderFragment;
 	}
-	
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState){
 		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_edit_order, null);
 		MainActivity.mToolbar.setTitle("Edit Order");
@@ -67,11 +76,84 @@ public class EditOrderFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				FoodMenuDAO fmd = new FoodMenuDAO();
-				fmd.editOrder(qty.getText().toString(), String.valueOf(getArguments().getInt("id")));
+				if (Integer.valueOf(qty.getText().toString()) > 0) {
+					editOrder();
+				} else {
+					Toast.makeText(getActivity(), "Quantity is 0 or less than 0", Toast.LENGTH_SHORT).show();
+				}
+			}
+		});
+		
+		btnDelete.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				msgBox();
 			}
 		});
 		
 		return rootView;
+	}
+	
+	private void editOrder() {
+		Ion
+		.with(MainActivity
+				.getContext())
+        .load(EndPoints.EDIT_ORDER)
+        .progress(new ProgressCallback() {
+			@Override
+			public void onProgress(long arg0, long arg1) {
+				// TODO Auto-generated method stub
+				System.out.println("On Que");
+			}
+		})
+        .setBodyParameter("id", String.valueOf(getArguments().getInt("id")))
+        .setBodyParameter("qty", qty.getText().toString())
+        .asString()
+        .setCallback(new FutureCallback<String>() {
+			@Override
+			public void onCompleted(Exception e, String result) {
+				// TODO Auto-generated method stub
+				JsonParser parser = new JsonParser();
+				System.out.println("Complete");
+				JsonObject json = parser.parse(result).getAsJsonObject();
+				System.out.println("message: "+json.get("message").getAsString());
+				System.out.println("sql: "+json.get("sql").getAsString());
+				System.out.println("status: "+json.get("status").getAsString());
+				if (!json.get("status").getAsString().equalsIgnoreCase("error")) {
+					Toast.makeText(MainActivity.getContext(), json.get("message").getAsString(), Toast.LENGTH_SHORT).show();
+					Fragment myOrder = new MyOrderFragment();
+					
+					FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+					fragmentTransaction.replace(R.id.container, myOrder);
+					fragmentTransaction.addToBackStack(null);
+					fragmentTransaction.commit();
+				} else {
+					Toast.makeText(MainActivity.getContext(), json.get("message").getAsString(), Toast.LENGTH_SHORT).show();
+				}
+			}
+		});
+	}
+	
+	private void msgBox() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setTitle("Delete Order");
+		builder.setMessage("Are you sure?");
+		builder.setIcon(null);
+		builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				Toast.makeText(getContext(), "Yes", Toast.LENGTH_SHORT).show();
+			}
+		});
+		builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				Toast.makeText(getContext(), "No", Toast.LENGTH_SHORT).show();
+				dialog.cancel();
+			}
+		});
+		AlertDialog dialog = builder.create();
+		dialog.show();
 	}
 }

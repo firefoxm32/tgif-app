@@ -4,7 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.ProgressCallback;
 import com.tgif.dao.FoodMenuDAO;
+import com.tgif.http.EndPoints;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -41,12 +47,18 @@ public class OrderDetails extends Fragment {
 	private List<Sauce> sauces;
 	private List<SideDish> sideDishes;
 	
+	private TextView textViewServing;
+	private TextView textViewSauce;
+	private TextView textViewSideDish;
+	
 	private List<Integer> servingId;
 	private List<Integer> sauceId;
 	private List<Integer> sideDishId;
 	
-	private FoodItem fmItem;
-	private FoodMenuDAO fmd;
+	private Button btnAdd;
+	private int itemId;
+	/*private FoodItem fmItem;
+	private FoodMenuDAO fmd;*/
 	
 	public static Fragment newInstance(Context context){
 		OrderDetails orderDetails = new OrderDetails();
@@ -56,69 +68,90 @@ public class OrderDetails extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState){
 		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_order_details, null);
 		
+		btnAdd = (Button) rootView.findViewById(R.id.btnAdd);
+		
 		rg = (RadioGroup) rootView.findViewById(R.id.rdbGroup);
 		qty = (EditText) rootView.findViewById(R.id.qty);
 		lSauce = (LinearLayout) rootView.findViewById(R.id.lSauce);
 		rgSD = (RadioGroup) rootView.findViewById(R.id.rdbGroupSD);
 		
-		TextView textViewServing = (TextView) rootView.findViewById(R.id.servings);
-		TextView textViewSauce = (TextView) rootView.findViewById(R.id.sauce);
-		TextView textViewSideDish = (TextView) rootView.findViewById(R.id.sideDish);
+		textViewServing = (TextView) rootView.findViewById(R.id.servings);
+		textViewSauce = (TextView) rootView.findViewById(R.id.sauce);
+		textViewSideDish = (TextView) rootView.findViewById(R.id.sideDish);
 		
 		textViewServing.setVisibility(View.GONE);
 		textViewSauce.setVisibility(View.GONE);
 		textViewSideDish.setVisibility(View.GONE);
 		
-		fmd = new FoodMenuDAO();
+		/*fmd = new FoodMenuDAO()*/;
         String menuName = getArguments().getString("menu_name");
         MainActivity.mToolbar.setTitle(menuName);
-        fmItem = fmd.getOrderDetails(menuName.replace(" ", "%20"));
-        
-        servings = fmItem.getServings();
-       
-        if (servings.size() > 0) {
-        	rdb = new RadioButton[servings.size()];
-        	servingId = new ArrayList<>();
-        	for(int i = 0; i < servings.size(); i++) {
-            	Serving serving = servings.get(i);	
-            	rdb[i] = new RadioButton(getActivity());
-    			rg.addView(rdb[i]);
-    			rdb[i].setText(serving.getServingName() + " Php " + serving.getServingPrice().getPrice());
-    			servingId.add(serving.getServingId());
-            }
-        	rdb[0].setChecked(true);
-		}
-        
-        sauces = fmItem.getSauces();
-		if (sauces.size() > 0) {
-			textViewSauce.setVisibility(View.VISIBLE);
-			sauceId = new ArrayList<>();
-			cb = new CheckBox[sauces.size()];
-			for (int i = 0; i < sauces.size(); i++) {
-				Sauce sauce = sauces.get(i);
-				cb[i] = new CheckBox(getActivity());
-				cb[i].setText(sauce.getSauceName());
-				sauceId.add(sauce.getSauceId());
-				lSauce.addView(cb[i]);
+
+        Ion.with(MainActivity
+		.getContext())
+		.load(EndPoints.ORDER_DETAILS+"?param="+menuName.replace(" ", "%20"))
+		.progress(new ProgressCallback() {
+			@Override
+			public void onProgress(long arg0, long arg1) {
+				// TODO Auto-generated method stub
+				System.out.println("On Que");
 			}
-		}
-		
-		sideDishes = fmItem.getSideDishes();
-		if (sideDishes.size() > 0) {
-			textViewSideDish.setVisibility(View.VISIBLE);
-			sideDishId = new ArrayList<>();
-			rdbSD = new RadioButton[sideDishes.size()];
-			for (int i = 0; i < sideDishes.size(); i++) {
-				SideDish sideDish = sideDishes.get(i);
-				sideDish.displayData();
-				rdbSD[i] = new RadioButton(getActivity());
-				rdbSD[i].setText(sideDish.getSideDishName());
-				sideDishId.add(sideDish.getSideDishId());
-				rgSD.addView(rdbSD[i]);
+		})
+		.asJsonObject()
+		.setCallback(new FutureCallback<JsonObject>() {
+			@Override
+			public void onCompleted(Exception e, JsonObject json) {
+				// TODO Auto-generated method stub
+				FoodMenuDAO fmd = new FoodMenuDAO();
+				FoodItem foodItem = fmd.getOrderDetails(json);
+				itemId = foodItem.getItemId();
+				servings = foodItem.getServings();
+			       
+		        if (servings.size() > 0) {
+		        	rdb = new RadioButton[servings.size()];
+		        	servingId = new ArrayList<>();
+		        	for(int i = 0; i < servings.size(); i++) {
+		            	Serving serving = servings.get(i);	
+		            	rdb[i] = new RadioButton(getActivity());
+		    			rg.addView(rdb[i]);
+		    			rdb[i].setText(serving.getServingName() + " Php " + serving.getServingPrice().getPrice());
+		    			servingId.add(serving.getServingId());
+		            }
+		        	rdb[0].setChecked(true);
+				}
+		        
+		        sauces = foodItem.getSauces();
+				if (sauces.size() > 0) {
+					textViewSauce.setVisibility(View.VISIBLE);
+					sauceId = new ArrayList<>();
+					cb = new CheckBox[sauces.size()];
+					for (int i = 0; i < sauces.size(); i++) {
+						Sauce sauce = sauces.get(i);
+						cb[i] = new CheckBox(getActivity());
+						cb[i].setText(sauce.getSauceName());
+						sauceId.add(sauce.getSauceId());
+						lSauce.addView(cb[i]);
+					}
+				}
+				
+				sideDishes = foodItem.getSideDishes();
+				if (sideDishes.size() > 0) {
+					textViewSideDish.setVisibility(View.VISIBLE);
+					sideDishId = new ArrayList<>();
+					rdbSD = new RadioButton[sideDishes.size()];
+					for (int i = 0; i < sideDishes.size(); i++) {
+						SideDish sideDish = sideDishes.get(i);
+						sideDish.displayData();
+						rdbSD[i] = new RadioButton(getActivity());
+						rdbSD[i].setText(sideDish.getSideDishName());
+						sideDishId.add(sideDish.getSideDishId());
+						rgSD.addView(rdbSD[i]);
+					}
+				}
 			}
-		}
+		});
+        
 		
-		Button btnAdd = (Button) rootView.findViewById(R.id.btnAdd);
 		
 		btnAdd.setOnClickListener(new OnClickListener() {
 			
@@ -132,6 +165,7 @@ public class OrderDetails extends Fragment {
 				int servingCtr = 0;
 				int sauceCtr = 0;
 				int sideDishCtr = 0;
+				
 				for (int i = 0; i < servings.size(); i++) {
 					
 					if (rdb[i].isChecked() == false) {
@@ -156,6 +190,7 @@ public class OrderDetails extends Fragment {
 				
 				Random rand = new Random();
 				int x = rand.nextInt(10);
+				order.setTableNumber(x);
 				for (int i = 0; i < sideDishes.size(); i++) {
 					if (rdbSD[i].isChecked()) {
 						sideDishCtr++;
@@ -174,12 +209,51 @@ public class OrderDetails extends Fragment {
 					Toast.makeText(getActivity(), "Input quantity.",Toast.LENGTH_SHORT).show();
 					qty.setFocusable(true);
 				} else {
-						order.setQty(Integer.valueOf(qty.getText().toString()));
-						order.setTableNumber(x);
-						order.setItemId(fmItem.getItemId());
-						fmd.addOrder(order);
-						clearData();
+					/*editOrder(String.valueOf(x), itemId, strServingId, 
+							strSauce.substring(0, strSauce.length() - 1), 
+							strSideDishId, qty.getText().toString());*/
+					order.setQty(Integer.valueOf(qty.getText().toString()));
+					order.setItemId(itemId);
+					editOrder(order);
 				}
+			}
+			
+			private void editOrder(Order order) {
+				Ion
+				.with(MainActivity
+						.getContext())
+		        .load(EndPoints.ADD_ORDER)
+		        .progress(new ProgressCallback() {
+					@Override
+					public void onProgress(long arg0, long arg1) {
+						// TODO Auto-generated method stub
+						System.out.println("On Que");
+					}
+				})
+		        .setBodyParameter("table_number",String.valueOf(order.getTableNumber()))
+		        .setBodyParameter("item_id", String.valueOf(order.getItemId()))
+		        .setBodyParameter("serving_id",String.valueOf(order.getServingId()))
+		        .setBodyParameter("sauces", order.getSauce())
+		        .setBodyParameter("side_dish_id", String.valueOf(order.getSideDishId()))
+		        .setBodyParameter("qty", String.valueOf(order.getQty()))
+		        .asString()
+		        .setCallback(new FutureCallback<String>() {
+					@Override
+					public void onCompleted(Exception e, String result) {
+						// TODO Auto-generated method stub
+						if (e != null) {
+							Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
+							e.printStackTrace();
+							return;
+						}
+						JsonParser parser = new JsonParser();
+						JsonObject json = parser.parse(result).getAsJsonObject();
+						
+						System.out.println("sql: "+json.get("sql").getAsString());
+						clearData();
+						System.out.println("Complete");
+					}
+				});
 			}
 			
 			private void clearData() {
@@ -199,10 +273,8 @@ public class OrderDetails extends Fragment {
 				qty.setText("");
 			}
 		});
-		
-		
-		
-		return rootView;
-				
+		return rootView;			
 	}
+	
+	
 }
