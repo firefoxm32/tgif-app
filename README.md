@@ -9,3 +9,4 @@ devsmartlib.jar <br />
 gson-2.3.jar <br />
 ion-2.1.6.jar <br />
 app-compat-v7 <br />
+picasso-2.5.2.jar
