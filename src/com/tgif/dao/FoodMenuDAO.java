@@ -2,17 +2,10 @@ package com.tgif.dao;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
-import com.app.tgif_app.FoodMenuFragment;
-import com.app.tgif_app.MainActivity;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.koushikdutta.ion.Ion;
-import com.tgif.http.EndPoints;
 
-import android.widget.Toast;
 import model.FoodItem;
 import model.FoodMenu;
 import model.Order;
@@ -41,83 +34,29 @@ public class FoodMenuDAO {
 		return list;
 	}
 	
-	public List<FoodItem> getFoodMenuItems(int id) {
+	public List<FoodItem> getFoodMenuItems(JsonObject json) {
 		List<FoodItem> list = new ArrayList<>();
-		Future<JsonObject> json = Ion.with(MainActivity
-				.getContext())
-				.load(EndPoints.FOOD_MENU_ITEMS+"?params="+id)
-				.asJsonObject();
-		try {
-			JsonArray menuItems = json.get().get("items").getAsJsonArray();
-			for(int i = 0; i < menuItems.size(); i++) {
-				JsonObject jsonObject = menuItems.get(i).getAsJsonObject();
-				
-				int itemId = jsonObject.get("item_id").getAsInt();
-				int menuId = jsonObject.get("menu_id").getAsInt();
-				String menuName = jsonObject.get("menu_name").getAsString();
-				String image = jsonObject.get("image").getAsString();
-				int orderCtr = jsonObject.get("order_ctr").getAsInt();
-				
-				FoodItem fmi = new FoodItem();
-				fmi.setMenuId(menuId);
-				fmi.setItemId(itemId);
-				fmi.setMenuName(menuName);
-				fmi.setImage(image);
-				fmi.setOrderCtr(orderCtr);
-				list.add(fmi);
-			}
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			Toast.makeText(MainActivity.getContext(), "Error Connection", Toast.LENGTH_SHORT).show();
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			Toast.makeText(MainActivity.getContext(), "Error Connection", Toast.LENGTH_SHORT).show();
-			e.printStackTrace();
-		}
+
+		JsonArray menuItems = json.get("items").getAsJsonArray();
+		for(int i = 0; i < menuItems.size(); i++) {
+			JsonObject jsonObject = menuItems.get(i).getAsJsonObject();
 			
+			int itemId = jsonObject.get("item_id").getAsInt();
+			int menuId = jsonObject.get("menu_id").getAsInt();
+			String menuName = jsonObject.get("menu_name").getAsString();
+			String image = jsonObject.get("image").getAsString();
+			int orderCtr = jsonObject.get("order_ctr").getAsInt();
+			
+			FoodItem fmi = new FoodItem();
+			fmi.setMenuId(menuId);
+			fmi.setItemId(itemId);
+			fmi.setMenuName(menuName);
+			fmi.setImage(image);
+			fmi.setOrderCtr(orderCtr);
+			list.add(fmi);
+		}
 		return list;
 	}
-	
-	/*public List<FoodItem> getAllTimeFavorites() {
-		List<FoodItem> list = new ArrayList<>();
-		Future<JsonObject> json = Ion.with(MainActivity
-				.getContext())
-				.load(EndPoints.ALL_TIME_FAVORITES)
-				.asJsonObject();
-		
-		try {
-			JsonArray menuItems = json.get().get("items").getAsJsonArray();
-
-			for(int i = 0; i < menuItems.size(); i++) {
-				JsonObject jsonObject = menuItems.get(i).getAsJsonObject();
-				
-				int itemId = jsonObject.get("item_id").getAsInt();
-				int menuId = jsonObject.get("menu_id").getAsInt();
-				String menuName = jsonObject.get("menu_name").getAsString();
-				String image = jsonObject.get("image").getAsString();
-				int orderCtr = jsonObject.get("order_ctr").getAsInt();
-				
-				FoodItem fmi = new FoodItem();
-				fmi.setMenuId(menuId);
-				fmi.setItemId(itemId);
-				fmi.setMenuName(menuName);
-				fmi.setImage(image);
-				fmi.setOrderCtr(orderCtr);
-				list.add(fmi);
-			}
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			Toast.makeText(MainActivity.getContext(), "Error Connection", Toast.LENGTH_SHORT).show();
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			Toast.makeText(MainActivity.getContext(), "Error Connection", Toast.LENGTH_SHORT).show();
-			e.printStackTrace();
-		}
-		
-		return list;
-	}*/
 	
 	public List<FoodItem> getAllTimeFavorites(JsonObject json) {
 		List<FoodItem> list = new ArrayList<>();
@@ -202,8 +141,7 @@ public class FoodMenuDAO {
 	
 	public List<Order> getMyOrders(JsonObject json) {
 		List<Order> orders = new ArrayList<>();
-
-		System.out.println("2nd time");
+		
 		String status = json.get("statuss").getAsString();
 		System.out.println("status: "+status);
 		JsonArray items = json.get("items").getAsJsonArray();

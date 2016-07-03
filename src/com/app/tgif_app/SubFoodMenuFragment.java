@@ -4,8 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.app.tgif_app.adapter.SubFoodMenuAdapter;
+import com.google.gson.JsonObject;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.ProgressCallback;
 import com.tgif.dao.FoodMenuDAO;
+import com.tgif.http.EndPoints;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -24,6 +30,7 @@ public class SubFoodMenuFragment extends Fragment {
 	private SubFoodMenuAdapter subFoodMenuAdapter;
 	private List<FoodItem> foodMenuItems;
 	private List<String> itemName;
+	private ProgressDialog pDialog;
 	public static Fragment newInstance(Context context){
 		SubFoodMenuFragment subFoodMenuFragment = new SubFoodMenuFragment();
 		return subFoodMenuFragment;
@@ -32,21 +39,9 @@ public class SubFoodMenuFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState){
 		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.sub_food_menu_fragment, null);
 		subFoodMenuList = (ListView) rootView.findViewById(R.id.ListSubFoodMenu);
-		FoodMenuDAO fmd = new FoodMenuDAO();
-		itemName = new ArrayList<>();
-		int menuId = getArguments().getInt("menuId");
+//		int menuId = getArguments().getInt("menuId");
 		
-		foodMenuItems = fmd.getFoodMenuItems(menuId);
-		
-		for(FoodItem fmi : foodMenuItems) {
-			itemName.add(fmi.getMenuName());
-		}
-		for (int i = 0; i < itemName.size(); i++) {
-			System.out.println("item_name1: "+itemName.get(i));
-		}
-		
-		subFoodMenuAdapter = new SubFoodMenuAdapter(getActivity(), foodMenuItems);
-		subFoodMenuList.setAdapter(subFoodMenuAdapter);
+		getFoodItems(getArguments().getInt("menuId"));
 		
 	
 		subFoodMenuList.setOnItemClickListener(new OnItemClickListener() {
@@ -71,6 +66,47 @@ public class SubFoodMenuFragment extends Fragment {
 				
 	}
 	
+	private void getFoodItems(int itemId) {
+		pDialog = new ProgressDialog(getActivity());
+		pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		pDialog.setMessage("Loading.... Please wait...");
+		pDialog.setIndeterminate(true);
+		pDialog.setCanceledOnTouchOutside(false);
+		pDialog.show();
+		Ion.with(MainActivity
+		.getContext())
+		.load(EndPoints.FOOD_MENU_ITEMS+"?params="+itemId)
+		.progress(new ProgressCallback() {
+			@Override
+			public void onProgress(long arg0, long arg1) {
+				// TODO Auto-generated method stub
+				System.out.println("On Que");
+			}
+		})
+		.asJsonObject()
+		.setCallback(new FutureCallback<JsonObject>() {
+			
+			@Override
+			public void onCompleted(Exception arg0, JsonObject json) {
+				// TODO Auto-generated method stub
+				FoodMenuDAO fmd = new FoodMenuDAO();
+				itemName = new ArrayList<>();
+		
+				foodMenuItems = fmd.getFoodMenuItems(json);
+				
+				for(FoodItem fmi : foodMenuItems) {
+					itemName.add(fmi.getMenuName());
+				}
+				for (int i = 0; i < itemName.size(); i++) {
+					System.out.println("item_name1: "+itemName.get(i));
+				}
+				
+				subFoodMenuAdapter = new SubFoodMenuAdapter(getActivity(), foodMenuItems);
+				subFoodMenuList.setAdapter(subFoodMenuAdapter);
+				pDialog.dismiss();
+			}
+		});
+	}
 	
 	@Override
 	public void onResume() {

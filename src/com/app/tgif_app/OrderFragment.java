@@ -54,11 +54,7 @@ public class OrderFragment extends Fragment {
 		
 		webViewLayout = (WebView) rootView.findViewById(R.id.webViewLayout);
 		
-//		Dispatcher dispatcher = new Dispatcher();
 		String imageUrl = "http://192.168.1.101/tgif/images/traditional_wings.jpg";
-//		loadImage(imageUrl);
-		//Bitmap imageBitmap = dispatcher.getBitmap(imageUrl);
-		//imageViewFoodImg.setImageBitmap(imageBitmap);
 		
 		webViewLayout.setWebViewClient(new WebViewClient());
 		webViewLayout.loadUrl("http://192.168.1.100/tgif/views/menu-item-info.php");
@@ -91,63 +87,4 @@ public class OrderFragment extends Fragment {
 		});
 		return rootView;
 	}
-	@Override
-	public void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
-	}
-	@Override
-	public void onPause() {
-		// TODO Auto-generated method stub
-		
-		super.onPause();
-	}
-	
-	/*private void loadImage(String imageUrl) {
-		TGIFRequest tgifRequest = TGIFRequest.getInstance();
-		ImageRequest request = new ImageRequest(imageUrl,
-	            new Response.Listener<Bitmap>() {
-	                @Override
-	                public void onResponse(Bitmap bitmap) {
-	                	//imgView.setImageBitmap(bitmap);
-	                	imageViewFoodImg.setImageBitmap(bitmap);
-	                }
-	            }, 0, 0, ImageView.ScaleType.CENTER_CROP, Bitmap.Config.ARGB_8888,
-	            new Response.ErrorListener() {
-	                public void onErrorResponse(VolleyError error) {
-	                }
-	            });
-	 
-	    // we don't need to set the priority here;
-	    // ImageRequest already comes in with
-	    // priority set to LOW, that is exactly what we need.
-	    tgifRequest.add(request);
-	}
-	public void callAPI() {
-		String url = "http://httpbin.org/html";
-		 
-		// Request a string response
-		StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-		            new Response.Listener<String>() {
-		    @Override
-		    public void onResponse(String response) {
-		 
-		        // Result handling 
-		        System.out.println(response.substring(0,100));
-		 
-		    }
-		}, new Response.ErrorListener() {
-		    @Override
-		    public void onErrorResponse(VolleyError error) {
-		         
-		        // Error handling
-		        System.out.println("Something went wrong!");
-		        error.printStackTrace();
-		 
-		    }
-		});
-		 
-		// Add the request to the queue
-		Volley.newRequestQueue(getActivity()).add(stringRequest);
-	}*/
 }

@@ -52,66 +52,59 @@ public class MyOrderAdapter extends BaseAdapter {
 		TextView qty = (TextView) convertView.findViewById(R.id.myOrderQty);
 //		TextView servedCount = (TextView) convertView.findViewById(R.id.myOrderServedCount);
 		itemImage.setImageResource(R.drawable.traditional_wings);
-		if (orders.size() != 0) {
-			for (int i = 0; i < orders.size(); i++) {
-				Order order = orders.get(position);
-				if(order.getFoodItem().getMenuName().equals("")){
-					itemName.setVisibility(View.GONE);					
-				} else {
-					itemName.setVisibility(View.VISIBLE);
-					itemName.setText("Food Name: "+order.getFoodItem().getMenuName());
-				}
 
-				if (order.getFoodItem().getServings().size() > 0) {
-					for (int j = 0; j < order.getFoodItem().getServings().size(); j++) {
-						if (!order.getFoodItem().getServings().get(j).getServingName().equals("")) {
-							serving.setVisibility(View.VISIBLE);
-							serving.setText("Serving: "+order.getFoodItem().getServings().get(j).getServingName());
-						} else {
-							serving.setVisibility(View.GONE);
-						}
-						
-					}
+		Order order = orders.get(position);
+		if(order.getFoodItem().getMenuName().equals("")){
+			itemName.setVisibility(View.GONE);					
+		} else {
+			itemName.setVisibility(View.VISIBLE);
+			itemName.setText("Food Name: "+order.getFoodItem().getMenuName());
+		}
+
+		if (order.getFoodItem().getServings().size() > 0) {
+			for (int j = 0; j < order.getFoodItem().getServings().size(); j++) {
+				if (!order.getFoodItem().getServings().get(j).getServingName().equals("")) {
+					serving.setVisibility(View.VISIBLE);
+					serving.setText("Serving: "+order.getFoodItem().getServings().get(j).getServingName());
 				} else {
 					serving.setVisibility(View.GONE);
 				}
-				String strSauce="";
-				if (order.getFoodItem().getSauces().size() > 0) {
-					for (int j = 0; j < order.getFoodItem().getSauces().size(); j++) {
-						strSauce += order.getFoodItem().getSauces().get(j).getSauceName() + ", ";
-					}
-					if (!strSauce.equals("")) {
-						String subStrSauce = strSauce.substring(0, strSauce.length() - 2);
-						sauce.setVisibility(View.VISIBLE);
-						sauce.setText("Sauce/s: "+subStrSauce);
-					} else {
-						sauce.setVisibility(View.GONE);
-					}
-				} else {
-					sauce.setVisibility(View.GONE);
-				}
-				if (order.getFoodItem().getSideDishes().size() > 0) {
-					
-					for (int j = 0; j < order.getFoodItem().getSideDishes().size(); j++) {
-						if (!order.getFoodItem().getSideDishes().get(j).getSideDishName().equals("")) {
-							sideDish.setVisibility(View.VISIBLE);
-							sideDish.setText("Side Dish: "+order.getFoodItem().getSideDishes().get(j).getSideDishName());
-						} else {
-							sideDish.setVisibility(View.GONE);
-						}
-						
-					}
+				
+			}
+		} else {
+			serving.setVisibility(View.GONE);
+		}
+		String strSauce="";
+		if (order.getFoodItem().getSauces().size() > 0) {
+			for (int j = 0; j < order.getFoodItem().getSauces().size(); j++) {
+				strSauce += order.getFoodItem().getSauces().get(j).getSauceName() + ", ";
+			}
+			if (!strSauce.equals("")) {
+				String subStrSauce = strSauce.substring(0, strSauce.length() - 2);
+				sauce.setVisibility(View.VISIBLE);
+				sauce.setText("Sauce/s: "+subStrSauce);
+			} else {
+				sauce.setVisibility(View.GONE);
+			}
+		} else {
+			sauce.setVisibility(View.GONE);
+		}
+		if (order.getFoodItem().getSideDishes().size() > 0) {
+			
+			for (int j = 0; j < order.getFoodItem().getSideDishes().size(); j++) {
+				if (!order.getFoodItem().getSideDishes().get(j).getSideDishName().equals("")) {
+					sideDish.setVisibility(View.VISIBLE);
+					sideDish.setText("Side Dish: "+order.getFoodItem().getSideDishes().get(j).getSideDishName());
 				} else {
 					sideDish.setVisibility(View.GONE);
 				}
-				qty.setText("Quantity: " + order.getQty());
+				
 			}
 		} else {
-			System.out.println("null");
+			sideDish.setVisibility(View.GONE);
 		}
-		
-		
-		 	
+		qty.setText("Quantity: " + order.getQty());
+	
 		return convertView;
 	}
 }

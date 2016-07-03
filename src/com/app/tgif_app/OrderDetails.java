@@ -12,6 +12,7 @@ import com.koushikdutta.ion.ProgressCallback;
 import com.tgif.dao.FoodMenuDAO;
 import com.tgif.http.EndPoints;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -57,6 +58,7 @@ public class OrderDetails extends Fragment {
 	
 	private Button btnAdd;
 	private int itemId;
+	private ProgressDialog pDialog;
 	/*private FoodItem fmItem;
 	private FoodMenuDAO fmd;*/
 	
@@ -86,7 +88,13 @@ public class OrderDetails extends Fragment {
 		/*fmd = new FoodMenuDAO()*/;
         String menuName = getArguments().getString("menu_name");
         MainActivity.mToolbar.setTitle(menuName);
-
+        
+        pDialog = new ProgressDialog(getActivity());
+		pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		pDialog.setMessage("Loading.... Please wait...");
+		pDialog.setIndeterminate(true);
+		pDialog.setCanceledOnTouchOutside(false);
+		pDialog.show();
         Ion.with(MainActivity
 		.getContext())
 		.load(EndPoints.ORDER_DETAILS+"?param="+menuName.replace(" ", "%20"))
@@ -148,6 +156,7 @@ public class OrderDetails extends Fragment {
 						rgSD.addView(rdbSD[i]);
 					}
 				}
+				pDialog.dismiss();
 			}
 		});
         
@@ -188,8 +197,7 @@ public class OrderDetails extends Fragment {
 
 				order.setSauce(strSauce.substring(0, strSauce.length() - 1));
 				
-				Random rand = new Random();
-				int x = rand.nextInt(10);
+				int x = Integer.valueOf(getString(R.string.table_number));
 				order.setTableNumber(x);
 				for (int i = 0; i < sideDishes.size(); i++) {
 					if (rdbSD[i].isChecked()) {
@@ -219,6 +227,12 @@ public class OrderDetails extends Fragment {
 			}
 			
 			private void editOrder(Order order) {
+				pDialog = new ProgressDialog(getActivity());
+				pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+				pDialog.setMessage("Loading.... Please wait...");
+				pDialog.setIndeterminate(true);
+				pDialog.setCanceledOnTouchOutside(false);
+				pDialog.show();
 				Ion
 				.with(MainActivity
 						.getContext())
@@ -241,17 +255,19 @@ public class OrderDetails extends Fragment {
 					@Override
 					public void onCompleted(Exception e, String result) {
 						// TODO Auto-generated method stub
-						if (e != null) {
-							Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
+						JsonParser parser = new JsonParser();
+						JsonObject json = parser.parse(result).getAsJsonObject();
+						if (json.get("status").getAsString().equalsIgnoreCase("error")) {
+							Toast.makeText(getActivity(), json.get("message").getAsString(), Toast.LENGTH_SHORT).show();
 							e.printStackTrace();
 							return;
 						}
-						JsonParser parser = new JsonParser();
-						JsonObject json = parser.parse(result).getAsJsonObject();
 						
+						Toast.makeText(getActivity(), json.get("message").getAsString(), Toast.LENGTH_SHORT).show();
 						System.out.println("sql: "+json.get("sql").getAsString());
 						clearData();
 						System.out.println("Complete");
+						pDialog.dismiss();
 					}
 				});
 			}

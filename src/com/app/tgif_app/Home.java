@@ -10,6 +10,7 @@ import com.koushikdutta.ion.ProgressCallback;
 import com.tgif.dao.FoodMenuDAO;
 import com.tgif.http.EndPoints;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -25,6 +26,7 @@ public class Home extends Fragment {
 	private ListView promoList;
 	private AllTimeFavoriteAdapter allTimeFavoriteAdapter;
 	private List<FoodItem> foodMenuItems;
+	private ProgressDialog pDialog;
 	public static Fragment newIntance(Context context) {
 		Home home = new Home();
 		return home;
@@ -35,6 +37,13 @@ public class Home extends Fragment {
 		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_home, null);
 		allTimeFavoriteList = (ListView) rootView.findViewById(R.id.allTimeFavoriteList);
 		promoList = (ListView) rootView.findViewById(R.id.promoList);
+		
+		pDialog = new ProgressDialog(getActivity());
+		pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		pDialog.setMessage("Loading.... Please wait...");
+		pDialog.setIndeterminate(true);
+		pDialog.setCanceledOnTouchOutside(false);
+		pDialog.show();
 		
 		Ion.with(MainActivity
 		.getContext())
@@ -56,6 +65,7 @@ public class Home extends Fragment {
 				allTimeFavoriteAdapter = new AllTimeFavoriteAdapter(getActivity(), foodMenuItems);
 				
 				allTimeFavoriteList.setAdapter(allTimeFavoriteAdapter);
+				pDialog.dismiss();
 			}
 		});
 		promoList.setAdapter(allTimeFavoriteAdapter);

@@ -3,7 +3,9 @@ package com.app.tgif_app.adapter;
 import java.text.DecimalFormat;
 import java.util.List;
 
+import com.app.tgif_app.MainActivity;
 import com.app.tgif_app.R;
+import com.squareup.picasso.Picasso;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -58,15 +60,20 @@ public class AllTimeFavoriteAdapter extends BaseAdapter {
 		TextView timesOrdered = (TextView) convertView.findViewById(R.id.timesOrdered);
 		//Button btnAdd = (Button) convertView.findViewById(R.id.btnAdd);
 		price.setVisibility(convertView.GONE);
-		/*itemName.setVisibility(convertView.GONE);
-		itemImage.setVisibility(convertView.GONE);*/
 		timesOrdered.setVisibility(convertView.GONE);
+		
 		itemImage.setImageResource(R.drawable.traditional_wings);
-		for (int i = 0; i < foodMenuItems.size(); i++) {
-			FoodItem fmi = foodMenuItems.get(position);
-			itemName.setText(fmi.getMenuName());
-			timesOrdered.setText("Ordered "+String.valueOf(fmi.getOrderCtr()) + " times");
-		}
+		FoodItem fmi = foodMenuItems.get(position);
+		// fmi.getImages().get(0); todo
+		itemName.setText(fmi.getMenuName());
+		timesOrdered.setText("Ordered "+String.valueOf(fmi.getOrderCtr()) + " times");
+		System.out.println("picasso: "+"http://192.168.1.101/tgif/images/"+fmi.getMenuName().replace(" ", "%20").toLowerCase()+"/tgif.jpg");
+		Picasso
+		.with(MainActivity.getContext())
+		.load("http://192.168.1.101/tgif/images/"+fmi.getMenuName().replace(" ", "%20").toLowerCase()+"/tgif.png")
+//		.placeholder(placeholderResId)
+//		.error(errorResId)
+		.into(itemImage);
 		
 		return convertView;
 	}

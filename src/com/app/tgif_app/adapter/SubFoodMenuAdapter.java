@@ -54,14 +54,11 @@ public class SubFoodMenuAdapter extends BaseAdapter {
 		/*itemImage.setVisibility(View.GONE);*/
 		timesOrdered.setVisibility(View.GONE);
 		price.setVisibility(View.GONE);
-		itemImage.setImageResource(R.drawable.traditional_wings);
-		DecimalFormat formatter = new DecimalFormat("#,##0.00");
-		for (int i = 0; i < foodMenuItems.size(); i++) {
-			FoodItem fmi = foodMenuItems.get(position);
-			itemName.setText(fmi.getMenuName());
-//			price.setText("Php " +formatter.format(fmi.getPrice()));
-			timesOrdered.setText("Ordered "+String.valueOf(fmi.getOrderCtr()) + " times");
-		}
+//		itemImage.setImageResource(R.drawable.traditional_wings);
+
+		FoodItem fmi = foodMenuItems.get(position);
+		itemName.setText(fmi.getMenuName());
+		timesOrdered.setText("Ordered "+String.valueOf(fmi.getOrderCtr()) + " times");
 		
 		return convertView;
 	}

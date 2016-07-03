@@ -8,6 +8,7 @@ import com.koushikdutta.ion.ProgressCallback;
 import com.tgif.http.EndPoints;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -33,8 +34,8 @@ public class EditOrderFragment extends Fragment {
 	private EditText qty;
 	private Button btnEdit;
 	private Button btnDelete;
-	private Boolean bool=false;
-	public String message;
+	private ProgressDialog pDialog;
+	private Fragment myOrder;
 	public static Fragment newInstance(Context context){
 		EditOrderFragment editOrderFragment = new EditOrderFragment();
 		return editOrderFragment;
@@ -96,6 +97,12 @@ public class EditOrderFragment extends Fragment {
 	}
 	
 	private void editOrder() {
+		pDialog = new ProgressDialog(getActivity());
+		pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		pDialog.setMessage("Loading.... Please wait...");
+		pDialog.setIndeterminate(true);
+		pDialog.setCanceledOnTouchOutside(false);
+		pDialog.show();
 		Ion
 		.with(MainActivity
 				.getContext())
@@ -122,7 +129,7 @@ public class EditOrderFragment extends Fragment {
 				System.out.println("status: "+json.get("status").getAsString());
 				if (!json.get("status").getAsString().equalsIgnoreCase("error")) {
 					Toast.makeText(MainActivity.getContext(), json.get("message").getAsString(), Toast.LENGTH_SHORT).show();
-					Fragment myOrder = new MyOrderFragment();
+					myOrder = new MyOrderFragment();
 					
 					FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
 					fragmentTransaction.replace(R.id.container, myOrder);
@@ -131,6 +138,7 @@ public class EditOrderFragment extends Fragment {
 				} else {
 					Toast.makeText(MainActivity.getContext(), json.get("message").getAsString(), Toast.LENGTH_SHORT).show();
 				}
+				pDialog.dismiss();
 			}
 		});
 	}
@@ -143,13 +151,53 @@ public class EditOrderFragment extends Fragment {
 		builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				// TODO Auto-generated method stub
-				Toast.makeText(getContext(), "Yes", Toast.LENGTH_SHORT).show();
+				pDialog = new ProgressDialog(getActivity());
+				pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+				pDialog.setMessage("Loading.... Please wait...");
+				pDialog.setIndeterminate(true);
+				pDialog.setCanceledOnTouchOutside(false);
+				pDialog.show();
+				Ion
+				.with(getContext())
+				.load(EndPoints.DELETE_ORDER)
+				.progress(new ProgressCallback() {
+					@Override
+					public void onProgress(long arg0, long arg1) {
+						// TODO Auto-generated method stub
+						System.out.println("On Que");
+					}
+				})
+				.setBodyParameter("id", String.valueOf(getArguments().getInt("id")))
+				.asString()
+				.setCallback(new FutureCallback<String>() {
+					@Override
+					public void onCompleted(Exception e, String result) {
+						// TODO Auto-generated method stub
+						JsonParser parser = new JsonParser();
+						JsonObject json = parser.parse(result).getAsJsonObject();
+						System.out.println("sql: "+json.get("sql").getAsString());
+						System.out.println("param: "+json.get("param").getAsString());
+						if (json.get("status").getAsString().equalsIgnoreCase("error")) {
+							Toast.makeText(getContext(), "Network Error", Toast.LENGTH_SHORT).show();
+							e.printStackTrace();
+							pDialog.dismiss();
+							return;
+						}
+						pDialog.dismiss();
+						myOrder = new MyOrderFragment();
+						
+						FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+						fragmentTransaction.replace(R.id.container, myOrder);
+						fragmentTransaction.addToBackStack(null);
+						fragmentTransaction.commit();
+						Toast.makeText(getContext(), "Order deleted", Toast.LENGTH_SHORT).show();
+					}
+				});
 			}
 		});
 		builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				// TODO Auto-generated method stub
-				Toast.makeText(getContext(), "No", Toast.LENGTH_SHORT).show();
 				dialog.cancel();
 			}
 		});

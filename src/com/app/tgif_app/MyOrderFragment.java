@@ -15,6 +15,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +39,7 @@ public class MyOrderFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState){
 		//return inflater.inflate(R.layout.food_menu_fragment, null, false);
 		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_my_order, null);
-	
+		MainActivity.mToolbar.setTitle("My Orders");
 		myOrderListView = (ListView) rootView.findViewById(R.id.myOrderListView);
 		btnSend = (Button) rootView.findViewById(R.id.btnSendOrders);
 		btnSend.setVisibility(View.INVISIBLE);

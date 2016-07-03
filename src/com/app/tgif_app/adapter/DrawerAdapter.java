@@ -50,11 +50,11 @@ public class DrawerAdapter extends BaseAdapter {
 		TextView menuName = (TextView) convertView.findViewById(R.id.drawerMenu);
 		
 		menuImage.setImageResource(R.drawable.traditional_wings);
-		for (int i = 0; i < drawerItems.size(); i++) {
-			DrawerItem DI = drawerItems.get(position)
+		
+		DrawerItem DI = drawerItems.get(position)
 					;
-			menuName.setText(DI.getDrawerMenus());
-		}
+		menuName.setText(DI.getDrawerMenus());
+		
 		
 		return convertView;
 	}

@@ -55,13 +55,10 @@ public class FoodMenuAdapter extends BaseAdapter {
 		TextView qty = (TextView) convertView.findViewById(R.id.qty);
 		
 		menuImage.setImageResource(R.drawable.traditional_wings);
-		for (int i = 0; i < foodMenus.size(); i++) {
-			FoodMenu fm = foodMenus.get(position);
-			menuName.setText(fm.getLabel());
-			qty.setText(fm.getQty() + " Choices");
-		
-		}
-		
+
+		FoodMenu fm = foodMenus.get(position);
+		menuName.setText(fm.getLabel());
+		qty.setText(fm.getQty() + " Choices");
 		return convertView;
 	}
 }

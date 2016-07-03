@@ -53,16 +53,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setContext(this);
-       
-        /*FoodMenuDAO fmd = new FoodMenuDAO();
-        List<Order> orders = fmd.getMyOrders(6);
-        System.out.println("orders: "+orders.size());
-        for(Order order : orders) {
-        	order.getFoodItem().displayData();
-        }*/
-        
-        
-        
         
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -79,13 +69,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
-
-    	/*if(pos ==  -1 OR ){
-    		onSectionAttached(position);
-    		pos = 0;
-    	}else {
-			onSectionAttached(position + 1);
-		}*/
     	onSectionAttached(position);
     }
 
@@ -105,10 +88,7 @@ public class MainActivity extends AppCompatActivity
                 ft.commit();
                 break;
             case 2:
-                mTitle = MainActivity.menus[2];//getString(R.string.My_Order);
-                /*FoodMenuDAO fmd = new FoodMenuDAO();
-                List<Order> orders = fmd.getMyOrders(6);
-                System.out.println("orders: "+orders.size());*/
+                mTitle = MainActivity.menus[2] + "s";//getString(R.string.My_Order);
                 ft.replace(R.id.container, Fragment.instantiate(MainActivity.this, "com.app.tgif_app.MyOrderFragment"));
                 ft.addToBackStack(null);
                 ft.commit();
