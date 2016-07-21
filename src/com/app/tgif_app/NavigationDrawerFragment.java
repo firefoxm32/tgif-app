@@ -83,7 +83,6 @@ public class NavigationDrawerFragment extends Fragment {
             mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
             mFromSavedInstanceState = true;
         }
-
         // Select either the default item (0) or the last selected item.
         selectItem(mCurrentSelectedPosition);
     }
@@ -146,10 +145,10 @@ public class NavigationDrawerFragment extends Fragment {
 	 * @param drawerLayout The DrawerLayout containing this fragment's UI.
 	 */
     public void setUp(Toolbar toolbar, int fragmentId, DrawerLayout drawerLayout) {
+//    	toolbar.setNavigationIcon(R.drawable.ic_drawer);
 		mToolbar = toolbar;
         mFragmentContainerView = getActivity().findViewById(fragmentId);
         mDrawerLayout = drawerLayout;
-
         // set a custom shadow that overlays the main content when the drawer opens
         //mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         //mDrawerLayout.setDrawerShadow(null, GravityCompat.START);
@@ -196,8 +195,8 @@ public class NavigationDrawerFragment extends Fragment {
 
                 getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
             }
+            
         };
-
         // If the user hasn't 'learned' about the drawer, open it to introduce them to the drawer,
         // per the navigation drawer design guidelines.
         if (!mUserLearnedDrawer && !mFromSavedInstanceState) {
@@ -211,7 +210,7 @@ public class NavigationDrawerFragment extends Fragment {
                 mDrawerToggle.syncState();
             }
         });
-
+        
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 

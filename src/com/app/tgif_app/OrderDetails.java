@@ -69,7 +69,8 @@ public class OrderDetails extends Fragment {
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState){
 		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_order_details, null);
-		
+		System.out.println("item_id: "+getArguments().getInt("item_id"));
+		System.out.println("end: "+EndPoints.ORDER_DETAILS+"?param="+getArguments().getInt("item_id"));
 		btnAdd = (Button) rootView.findViewById(R.id.btnAdd);
 		
 		rg = (RadioGroup) rootView.findViewById(R.id.rdbGroup);
@@ -97,7 +98,7 @@ public class OrderDetails extends Fragment {
 		pDialog.show();
         Ion.with(MainActivity
 		.getContext())
-		.load(EndPoints.ORDER_DETAILS+"?param="+menuName.replace(" ", "%20"))
+		.load(EndPoints.ORDER_DETAILS+"?param="+getArguments().getInt("item_id"))
 		.progress(new ProgressCallback() {
 			@Override
 			public void onProgress(long arg0, long arg1) {

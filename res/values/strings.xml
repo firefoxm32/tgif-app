@@ -13,6 +13,7 @@
     <string name="title_activity_sub_food_menu_fragment">SubFoodMenuFragment</string>
     <string name="title_activity_order_fragment">OrderFragment</string>
     <string name="title_activity_alert_dfragment">AlertDFragment</string>
+    <string name="title_activity_edit_order">EditOrderActivity</string>
 	
     <string name="Home">Home</string>
     <string name="Food_Menu">Food Menu</string>

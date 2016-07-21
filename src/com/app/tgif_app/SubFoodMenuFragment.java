@@ -46,16 +46,17 @@ public class SubFoodMenuFragment extends Fragment {
 	
 		subFoodMenuList.setOnItemClickListener(new OnItemClickListener() {
 		
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-				Bundle orderBundle = new Bundle();
-				Fragment orderFragment = new OrderFragment();
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id){				
+				Bundle odBundle = new Bundle();
 				
-				orderBundle.putString("choice", itemName.get(position));
-				orderFragment.setArguments(orderBundle);
+				odBundle.putString("menu_name", foodMenuItems.get(position).getMenuName());
+				odBundle.putInt("item_id", foodMenuItems.get(position).getItemId());
+				
+				Fragment orderDetails = new OrderDetails();
+				orderDetails.setArguments(odBundle);
 				
 				FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-				
-				fragmentTransaction.replace(R.id.container, orderFragment);
+				fragmentTransaction.replace(R.id.container, orderDetails);
 				fragmentTransaction.addToBackStack(null);
 				fragmentTransaction.commit();
 			}
@@ -66,7 +67,7 @@ public class SubFoodMenuFragment extends Fragment {
 				
 	}
 	
-	private void getFoodItems(int itemId) {
+	private void getFoodItems(int menuId) {
 		pDialog = new ProgressDialog(getActivity());
 		pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		pDialog.setMessage("Loading.... Please wait...");
@@ -75,7 +76,7 @@ public class SubFoodMenuFragment extends Fragment {
 		pDialog.show();
 		Ion.with(MainActivity
 		.getContext())
-		.load(EndPoints.FOOD_MENU_ITEMS+"?params="+itemId)
+		.load(EndPoints.FOOD_MENU_ITEMS+"?params="+menuId)
 		.progress(new ProgressCallback() {
 			@Override
 			public void onProgress(long arg0, long arg1) {
@@ -93,13 +94,6 @@ public class SubFoodMenuFragment extends Fragment {
 				itemName = new ArrayList<>();
 		
 				foodMenuItems = fmd.getFoodMenuItems(json);
-				
-				for(FoodItem fmi : foodMenuItems) {
-					itemName.add(fmi.getMenuName());
-				}
-				for (int i = 0; i < itemName.size(); i++) {
-					System.out.println("item_name1: "+itemName.get(i));
-				}
 				
 				subFoodMenuAdapter = new SubFoodMenuAdapter(getActivity(), foodMenuItems);
 				subFoodMenuList.setAdapter(subFoodMenuAdapter);

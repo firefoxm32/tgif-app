@@ -1,7 +1,7 @@
 package com.tgif.http;
 
 public class EndPoints {
-	private static String ip = "192.168.1.101";
+	private static String ip = "192.168.1.103";
 	
 	public static final String FOOD_MENUS = "http://"+ip+"/tgif/api/get-food-menus.php";
 	
@@ -17,7 +17,11 @@ public class EndPoints {
 	
 	public static final String EDIT_ORDER = "http://"+ip+"/tgif/api/edit-my-order.php";
 	
-	public final static String DELETE_ORDER = "http://"+ip+"/tgif/api/delete-order.php";
+	public static final String DELETE_ORDER = "http://"+ip+"/tgif/api/delete-order.php";
+	
+	public static final String SEND_ORDERS = "http://"+ip+"/tgif/api/send-orders.php";
+	
+	public static final String PICASSO = "http://"+ip+"/tgif/images/";
 	
 	public final static String RECENT_API_ENDPOINT = "http://marsweather.ingenology.com/v1/latest/";
 }

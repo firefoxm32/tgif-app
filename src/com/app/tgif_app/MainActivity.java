@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity
 	public int pos = -1;
 	public int globalPos;
 	public int _globalPos;
+	public static boolean loaded = true;
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -64,8 +65,9 @@ public class MainActivity extends AppCompatActivity
         mNavigationDrawerFragment.setUp(mToolbar,
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+        
     }
-
+    
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
@@ -89,7 +91,12 @@ public class MainActivity extends AppCompatActivity
                 break;
             case 2:
                 mTitle = MainActivity.menus[2] + "s";//getString(R.string.My_Order);
-                ft.replace(R.id.container, Fragment.instantiate(MainActivity.this, "com.app.tgif_app.MyOrderFragment"));
+                
+                loaded = false;
+               
+                Fragment myOrderFragment = new MyOrderFragment();
+                
+                ft.replace(R.id.container, myOrderFragment);
                 ft.addToBackStack(null);
                 ft.commit();
                 break;

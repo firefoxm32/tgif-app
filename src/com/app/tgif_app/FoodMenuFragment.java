@@ -14,7 +14,6 @@ import com.tgif.http.EndPoints;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -24,7 +23,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import model.FoodMenu;
 public class FoodMenuFragment extends Fragment {
 	private ListView FoodMenuList;

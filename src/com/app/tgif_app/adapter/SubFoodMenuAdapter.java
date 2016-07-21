@@ -1,13 +1,10 @@
 package com.app.tgif_app.adapter;
 
-import java.text.DecimalFormat;
 import java.util.List;
 
-import com.app.tgif_app.MainActivity;
 import com.app.tgif_app.R;
 
 import android.content.Context;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

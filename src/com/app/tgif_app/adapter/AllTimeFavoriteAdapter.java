@@ -1,18 +1,17 @@
 package com.app.tgif_app.adapter;
 
-import java.text.DecimalFormat;
 import java.util.List;
 
 import com.app.tgif_app.MainActivity;
 import com.app.tgif_app.R;
 import com.squareup.picasso.Picasso;
+import com.tgif.http.EndPoints;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import model.FoodItem;
@@ -67,12 +66,13 @@ public class AllTimeFavoriteAdapter extends BaseAdapter {
 		// fmi.getImages().get(0); todo
 		itemName.setText(fmi.getMenuName());
 		timesOrdered.setText("Ordered "+String.valueOf(fmi.getOrderCtr()) + " times");
-		System.out.println("picasso: "+"http://192.168.1.101/tgif/images/"+fmi.getMenuName().replace(" ", "%20").toLowerCase()+"/tgif.jpg");
+/*		System.out.println("picasso: "+"http://192.168.1.101/tgif/images/"+fmi.getMenuName().replace(" ", "%20").toLowerCase()+"/tgif.jpg");
+		itemImage.setImageResource(R.drawable.placeholder_pic);*/
+		System.out.println("picasso: "+EndPoints.PICASSO+fmi.getMenuName().replace(" ", "%20").toLowerCase()+"/"+fmi.getImage());
 		Picasso
 		.with(MainActivity.getContext())
-		.load("http://192.168.1.101/tgif/images/"+fmi.getMenuName().replace(" ", "%20").toLowerCase()+"/tgif.png")
-//		.placeholder(placeholderResId)
-//		.error(errorResId)
+		.load(EndPoints.PICASSO+fmi.getMenuName().replace(" ", "%20").toLowerCase()+"/"+fmi.getImage())
+		.error(R.drawable.not_found)
 		.into(itemImage);
 		
 		return convertView;

@@ -1,5 +1,6 @@
 package com.app.tgif_app;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.app.tgif_app.adapter.AllTimeFavoriteAdapter;
@@ -14,9 +15,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import model.FoodItem;
 
@@ -62,13 +66,37 @@ public class Home extends Fragment {
 				FoodMenuDAO fmd = new FoodMenuDAO();
 				
 				foodMenuItems = fmd.getAllTimeFavorites(json);
+				
+				foodMenuItems = fmd.getFoodMenuItems(json);
+				
 				allTimeFavoriteAdapter = new AllTimeFavoriteAdapter(getActivity(), foodMenuItems);
 				
 				allTimeFavoriteList.setAdapter(allTimeFavoriteAdapter);
+				promoList.setAdapter(allTimeFavoriteAdapter);
 				pDialog.dismiss();
 			}
 		});
-		promoList.setAdapter(allTimeFavoriteAdapter);
+		
+		allTimeFavoriteList.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				// TODO Auto-generated method stub
+				Bundle odBundle = new Bundle();
+				odBundle.putString("menu_name", foodMenuItems.get(position).getMenuName());
+				odBundle.putInt("item_id", foodMenuItems.get(position).getItemId());
+				System.out.println("bundle: "+odBundle);
+				Fragment orderDetails = new OrderDetails();
+				orderDetails.setArguments(odBundle);
+				
+				FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+				fragmentTransaction.replace(R.id.container, orderDetails);
+				fragmentTransaction.addToBackStack(null);
+				fragmentTransaction.commit();
+			}
+//			services.gradle.org/distributions/gradle-2.13-bin.zip
+		});
+		
+		
 		return rootView;
 	}
 	
