@@ -59,7 +59,6 @@ public class EditOrderActivity extends AppCompatActivity {
 		b = getIntent().getExtras();
 		if (b == null) {
 			Toast.makeText(getContext(), "No data", Toast.LENGTH_SHORT).show();
-			
 			return;
 		}
 		image = (ImageView) findViewById(R.id.editOrderImage);
@@ -231,5 +230,10 @@ public class EditOrderActivity extends AppCompatActivity {
 		getMenuInflater().inflate(R.menu.edit_order, menu);
 		
 		return super.onCreateOptionsMenu(menu);
+	}
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onRestoreInstanceState(savedInstanceState);
 	}
 }

@@ -38,7 +38,7 @@ public class FoodMenuFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState){
 		//return inflater.inflate(R.layout.food_menu_fragment, null, false);
 		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.food_menu_fragment, null);
-		
+		MainActivity.mToolbar.setTitle("Food Menus");
 		FoodMenuList = (ListView) rootView.findViewById(R.id.listMenu);
 		
 		getMenus();
@@ -56,28 +56,17 @@ public class FoodMenuFragment extends Fragment {
 					FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
 					
 					sfmfbundle.putInt("menuId", position + 1);
-//					System.out.println("putInt");
 					sfmfbundle.putString("choice", choice);
-//					System.out.println("putString");
-//					System.out.println(choice); 	
 						
 					mfragment.setArguments(sfmfbundle);
-//					System.out.println("setArguments");
 					fragmentTransaction.replace(R.id.container, mfragment);
-//					System.out.println("replace");
 					fragmentTransaction.addToBackStack(null);
-//					System.out.println("addBackstack");
 					fragmentTransaction.commit();
 				}
 				
 		});
 		
 		return rootView;
-	}
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		super.onActivityCreated(savedInstanceState);
 	}
 	private void getMenus() {
 		pDialog = new ProgressDialog(getActivity());
@@ -106,7 +95,6 @@ public class FoodMenuFragment extends Fragment {
 				for(FoodMenu fm : list) {
 					menuName.add(fm.getLabel());
 				}
-				System.out.println("Menu Name: "+menuName);
 			
 				foodMenuAdapter = new FoodMenuAdapter(getActivity(), list);
 
@@ -114,6 +102,11 @@ public class FoodMenuFragment extends Fragment {
 				pDialog.dismiss();
 			}
 		});
+	}
+	@Override
+	public void onViewStateRestored(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onViewStateRestored(savedInstanceState);
 	}
 }
 

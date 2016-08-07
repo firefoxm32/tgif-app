@@ -3,6 +3,14 @@ package com.app.tgif_app;
 
 import java.util.List;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.ProgressCallback;
+import com.tgif.http.EndPoints;
+
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,7 +20,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 import model.DrawerItem;
+import model.Session;
 
 
 public class MainActivity extends AppCompatActivity
@@ -23,6 +33,8 @@ public class MainActivity extends AppCompatActivity
 	public int globalPos;
 	public int _globalPos;
 	public static boolean loaded = true;
+	private ProgressDialog pDialog;
+	protected Session session;
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -37,7 +49,7 @@ public class MainActivity extends AppCompatActivity
     
     
     public static String[] menus = new String[]{
-			"Home","Food Menu","My Order","Check Out"
+			"Home","Food Menu","My Order","Check Out","Logout"
     };
     
     public static List<DrawerItem> list;
@@ -84,7 +96,7 @@ public class MainActivity extends AppCompatActivity
                 ft.commit();
         		break;
         	case 1:
-                mTitle = MainActivity.menus[1];//getString(R.string.Food_Menu);
+                mTitle = MainActivity.menus[1] + "s";//getString(R.string.Food_Menu);
                 ft.replace(R.id.container, Fragment.instantiate(MainActivity.this, "com.app.tgif_app.FoodMenuFragment"));
                 ft.addToBackStack(null);
                 ft.commit();
@@ -103,6 +115,54 @@ public class MainActivity extends AppCompatActivity
             case 3:
                 mTitle = MainActivity.menus[3];//getString(R.string.Check_Out);
                 break;
+            case 4:
+            	mTitle = MainActivity.menus[4];
+            	session = new Session(getContext());
+            	pDialog = new ProgressDialog(getContext());
+				pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+				pDialog.setMessage("Loading.... Please wait...");
+				pDialog.setIndeterminate(true);
+				pDialog.setCanceledOnTouchOutside(false);
+				pDialog.show();
+            	if (session.getUsername() != "") {
+            		System.out.println("uname: "+session.getUsername());
+                	System.out.println("pass: "+session.getPassword());
+                	System.out.println("pass: "+session.getTableNumber());
+                	Ion.with(getContext())
+                	.load(EndPoints.LOGOUT)
+                	.progress(new ProgressCallback() {
+						@Override
+						public void onProgress(long arg0, long arg1) {
+							// TODO Auto-generated method stub
+							
+						}
+					})
+                	.setBodyParameter("username", session.getUsername())
+                	.asString()
+                	.setCallback(new FutureCallback<String>() {
+						@Override
+						public void onCompleted(Exception e, String response) {
+							// TODO Auto-generated method stub
+							JsonParser jsonParser = new JsonParser();
+							JsonObject object = jsonParser.parse(response).getAsJsonObject();
+							
+							if (object == null) {
+								Toast.makeText(getContext(), "json null", Toast.LENGTH_SHORT).show();
+								return;
+							}
+							if (object.get("status").getAsString().equalsIgnoreCase("error")) {
+								Toast.makeText(getContext(), object.get("message").getAsString(), Toast.LENGTH_SHORT).show();
+								return;
+							}
+							pDialog.dismiss();
+							session.clearPrefs();
+							finish();
+						}
+					});
+				} else {
+					Toast.makeText(getContext(), "error", Toast.LENGTH_SHORT).show();
+				}
+            	break;
 			default:
 				mTitle = MainActivity.menus[0];//getString(R.string.Home);
         		ft.replace(R.id.container, Fragment.instantiate(MainActivity.this, "com.app.tgif_app.Home"));
@@ -117,7 +177,12 @@ public class MainActivity extends AppCompatActivity
 		mToolbar.setTitle(mTitle);
     }
 
-
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+    	// TODO Auto-generated method stub
+    	super.onRestoreInstanceState(savedInstanceState);
+    }
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (!mNavigationDrawerFragment.isDrawerOpen()) {

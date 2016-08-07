@@ -19,14 +19,8 @@
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="unspecified"
-            android:theme="@style/AppTheme" >
-            <intent-filter>
-
-                <!-- Theme.AppCompat.DayNight.NoActionBar -->
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustResize" >
         </activity>
         <activity
             android:name=".ContentActivity"
@@ -51,9 +45,23 @@
         <activity
             android:name=".EditOrderActivity"
             android:label="@string/title_activity_edit_order"
-            android:theme="@style/AppTheme"
             android:screenOrientation="unspecified"
+            android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustResize" >
+        </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="unspecified"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustResize" >
+            <intent-filter>
+
+                <!-- Theme.AppCompat.DayNight.NoActionBar -->
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

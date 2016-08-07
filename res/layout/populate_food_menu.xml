@@ -21,8 +21,8 @@
     
 	<ImageView
 	    android:id="@+id/foodMenuImage"
-	    android:layout_width="75dp"
-	    android:layout_height="70dp"
+	    android:layout_width="105dp"
+	    android:layout_height="105dp"
 	    android:scaleType="fitCenter"
 		android:layout_marginRight="10dp"
     	android:orientation="vertical" />
@@ -37,13 +37,13 @@
 	        android:id="@+id/menuName"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
-	        android:textSize="@dimen/item_name_size"
+	        android:textSize="24sp"
 	        android:textStyle="bold" />
 	    <TextView
 	        android:id="@+id/qty"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
-	        android:textSize="@dimen/qty_price_size" />
+	        android:textSize="20sp" />
 	    
 	</LinearLayout>
 	

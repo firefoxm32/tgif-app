@@ -22,30 +22,33 @@ import android.widget.ListView;
 import model.Order;
 import model.Session;
 
-public class ServedOrder extends Fragment {
-	protected Session session;
+public class CookingOrder extends Fragment {
+	
 	private ListView myOrderListView;
 	private Button btnSend;
 	private MyOrderAdapter myOrderAdapter;
 	private List<Order> orders;
 	private ProgressDialog pDialog;
+	protected Session session;
+	
 	public static Fragment newInstance(Context context) {
-		ServedOrder servedOrder = new ServedOrder();
-		return servedOrder;
+		CookingOrder cookingOrder = new CookingOrder();
+		return cookingOrder;
 	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_my_order, null);
+//		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_my_order, null);
+		container = (ViewGroup) inflater.inflate(R.layout.fragment_my_order, null);
 		session = new Session(getContext());
-		myOrderListView = (ListView) rootView.findViewById(R.id.myOrderListView);
-		btnSend = (Button) rootView.findViewById(R.id.btnSendOrders);
+		myOrderListView = (ListView) container.findViewById(R.id.myOrderListView);
+		btnSend = (Button) container.findViewById(R.id.btnSendOrders);
 		btnSend.setVisibility(View.GONE);
 		
 		myOrder(session.getTableNumber());
 		
-		return rootView;
+		return container;
 	}
 	private void myOrder(int tableNumber) {
 		pDialog = new ProgressDialog(getActivity());
@@ -55,7 +58,7 @@ public class ServedOrder extends Fragment {
 		pDialog.setCanceledOnTouchOutside(false);
 		pDialog.show();
 		Ion.with(MainActivity.getContext())
-		.load(EndPoints.MY_ORDERS+"?table_number="+tableNumber+"&status=S")
+		.load(EndPoints.MY_ORDERS+"?table_number="+tableNumber+"&status=C")
 		.progress(new ProgressCallback() {
 			@Override
 			public void onProgress(long arg0, long arg1) {
@@ -76,7 +79,6 @@ public class ServedOrder extends Fragment {
 				pDialog.dismiss();
 			}
 		});
-		
 	}
 	@Override
 	public void onViewStateRestored(Bundle savedInstanceState) {

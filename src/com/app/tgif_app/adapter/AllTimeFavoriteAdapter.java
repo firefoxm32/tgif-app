@@ -55,20 +55,15 @@ public class AllTimeFavoriteAdapter extends BaseAdapter {
 		
 		ImageView itemImage = (ImageView) convertView.findViewById(R.id.itemImage);
 		TextView itemName = (TextView) convertView.findViewById(R.id.itemName);
-		TextView price = (TextView) convertView.findViewById(R.id.price);
-		TextView timesOrdered = (TextView) convertView.findViewById(R.id.timesOrdered);
-		//Button btnAdd = (Button) convertView.findViewById(R.id.btnAdd);
-		price.setVisibility(convertView.GONE);
-		timesOrdered.setVisibility(convertView.GONE);
+		TextView description = (TextView) convertView.findViewById(R.id.description);
+		TextView label = (TextView) convertView.findViewById(R.id.menuLabel);
 		
-		itemImage.setImageResource(R.drawable.traditional_wings);
+//		itemImage.setImageResource(R.drawable.traditional_wings);
 		FoodItem fmi = foodMenuItems.get(position);
-		// fmi.getImages().get(0); todo
 		itemName.setText(fmi.getMenuName());
-		timesOrdered.setText("Ordered "+String.valueOf(fmi.getOrderCtr()) + " times");
-/*		System.out.println("picasso: "+"http://192.168.1.101/tgif/images/"+fmi.getMenuName().replace(" ", "%20").toLowerCase()+"/tgif.jpg");
-		itemImage.setImageResource(R.drawable.placeholder_pic);*/
-		System.out.println("picasso: "+EndPoints.PICASSO+fmi.getMenuName().replace(" ", "%20").toLowerCase()+"/"+fmi.getImage());
+		label.setText("Label: "+fmi.getFoodMenu().getLabel());
+		description.setText("Description: "+fmi.getDescription());
+//		System.out.println("picasso: "+EndPoints.PICASSO+fmi.getMenuName().replace(" ", "%20").toLowerCase()+"/"+fmi.getImage());
 		Picasso
 		.with(MainActivity.getContext())
 		.load(EndPoints.PICASSO+fmi.getMenuName().replace(" ", "%20").toLowerCase()+"/"+fmi.getImage())

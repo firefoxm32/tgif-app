@@ -23,8 +23,8 @@
     
     <ImageView
         android:id="@+id/itemImage"
-        android:layout_width="70dp"
-        android:layout_height="75dp"
+        android:layout_width="105dp"
+        android:layout_height="105dp"
     	android:scaleType="fitXY"
         android:layout_marginRight="10dp"
     	android:orientation="vertical" />
@@ -38,7 +38,7 @@
             android:id="@+id/itemName"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/item_name_size"
+            android:textSize="20sp"
             android:textStyle="bold" />
         
         <LinearLayout
@@ -47,40 +47,23 @@
             android:orientation="vertical" >
         
             <TextView
-                android:id="@+id/price"
+                android:id="@+id/menuLabel"
                 android:layout_height="wrap_content"
                 android:layout_width="fill_parent"
-                android:textSize="@dimen/qty_price_size" />
+                android:textSize="18sp"
+                android:textStyle="bold"
+                 />
             
-            <TextView
-                android:id="@+id/timesOrdered"
+           <TextView
+                android:id="@+id/description"
                 android:layout_height="wrap_content"
                 android:layout_width="fill_parent"
-                android:textSize="@dimen/qty_price_size" />
-            
-            <!-- <LinearLayout
-		        android:layout_width="fill_parent"
-		        android:layout_height="fill_parent"
-		        android:orientation="horizontal" >
-		        
-		        <Button
-		            android:id="@+id/btnAdd"
-		            android:layout_width="50dp"
-		            android:layout_height="30dp"
-		            android:text="+"
-		            android:textSize="20sp"
-		            android:textStyle="bold" />
-		        <Button
-		            android:id="@+id/btnRemove"
-		            android:layout_width="50dp"
-		            android:layout_height="30dp"
-		            android:text="-"
-		            android:textSize="20sp"
-		            android:textStyle="bold" />
+                android:textSize="18sp"
+                android:textStyle="bold" />
         
-   			 </LinearLayout> -->
+   			 </LinearLayout>
             
-        </LinearLayout>
+        <!-- </LinearLayout> -->
         
     </LinearLayout>
     

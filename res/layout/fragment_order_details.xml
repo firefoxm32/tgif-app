@@ -17,6 +17,13 @@
 	   android:orientation="vertical"
 	   android:padding="5dp"
 	   android:background="#FFF" >
+	    <ImageView
+	        android:id="@+id/orderDetailsImage"
+	        android:layout_width="fill_parent"
+	        android:layout_height="250dp"
+	        android:layout_margin="10dp"
+	        android:scaleType="fitXY"
+	         />
 	    
 	    <TextView
 	        android:id="@+id/servings"
@@ -117,35 +124,5 @@
 		    android:layout_margin="6dp"
 		/>
 	</LinearLayout>
-</LinearLayout>
-
-	
+</LinearLayout>	
 </ScrollView>
-<!-- <LinearLayout
-	    android:id="@+id/lButton"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent"
-	    android:orientation="horizontal"
-	    android:background="#FFF"
-    >
-	    <Button
-		    android:id="@+id/btnAdd"
-		    android:layout_width="wrap_content"
-		    android:layout_height="40dp"
-		    android:background="#C10012"
-		    android:textColor="#FFF"
-		    android:text="ADD"
-		    android:textStyle="bold"
-		    android:layout_margin="6dp"
-		/>
-		<Button
-		    android:id="@+id/btnDone"
-		    android:layout_width="wrap_content"
-		    android:layout_height="40dp"
-		    android:background="#C10012"
-		    android:textColor="#FFF"
-		    android:text="DONE"
-		    android:textStyle="bold"
-		    android:layout_margin="6dp"
-		/>
-	</LinearLayout> -->

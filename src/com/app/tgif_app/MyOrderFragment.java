@@ -21,22 +21,17 @@ public class MyOrderFragment extends Fragment {
 		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_my_order_tabhost, null);
 		mTabHost = (FragmentTabHost) rootView.findViewById(android.R.id.tabhost);
 	 mTabHost.setup(getActivity(), getChildFragmentManager(), R.id.realtabcontent);
-//		mTabHost.setup();
-//		mTabHost.setup(getActivity(), getChildFragmentManager());
         mTabHost.addTab(mTabHost.newTabSpec("pending").setIndicator("Pending"),
                 PendingOrder.class, null);
-        mTabHost.addTab(mTabHost.newTabSpec("fragmentc").setIndicator("Sent Order"),
+        mTabHost.addTab(mTabHost.newTabSpec("cooking").setIndicator("Cooking"),
+                CookingOrder.class, null);
+        mTabHost.addTab(mTabHost.newTabSpec("served").setIndicator("Served"),
                 ServedOrder.class, null);
-//		mTabHost.addTab(mTabHost.newTabSpec("pending").setIndicator("Pending"));
 		return rootView;
 	}
-	
-/*	@Override
-	public void onDestroy() {
+	@Override
+	public void onViewStateRestored(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-		super.onDestroy();
-		FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-		ft.remove(MyOrderFragment.this);
-		mTabHost.removeAllViews();
-	}*/
+		super.onViewStateRestored(savedInstanceState);
+	}
 }

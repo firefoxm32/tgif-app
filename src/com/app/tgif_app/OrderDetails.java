@@ -2,7 +2,6 @@ package com.app.tgif_app;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -23,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -32,9 +32,12 @@ import model.FoodItem;
 import model.Order;
 import model.Sauce;
 import model.Serving;
+import model.Session;
 import model.SideDish;
 
 public class OrderDetails extends Fragment {
+	
+	protected Session session;
 	
 	private CheckBox cb[];
 	private RadioButton rdb[];
@@ -59,19 +62,23 @@ public class OrderDetails extends Fragment {
 	private Button btnAdd;
 	private int itemId;
 	private ProgressDialog pDialog;
-	/*private FoodItem fmItem;
-	private FoodMenuDAO fmd;*/
+	private ImageView image;
 	
 	public static Fragment newInstance(Context context){
 		OrderDetails orderDetails = new OrderDetails();
 		return orderDetails;
 	}
-
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState){
-		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_order_details, null);
-		System.out.println("item_id: "+getArguments().getInt("item_id"));
-		System.out.println("end: "+EndPoints.ORDER_DETAILS+"?param="+getArguments().getInt("item_id"));
+	@Override
+	public void onViewStateRestored(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onViewStateRestored(savedInstanceState);
+	}
+	public View onCreateView(LayoutInflater inflater, ViewGroup rootView, Bundle saveInstanceState){
+//		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_order_details, null);
+		rootView = (ViewGroup) inflater.inflate(R.layout.fragment_order_details, null);
+		session = new Session(getContext());
 		btnAdd = (Button) rootView.findViewById(R.id.btnAdd);
+		image = (ImageView) rootView.findViewById(R.id.orderDetailsImage);
 		
 		rg = (RadioGroup) rootView.findViewById(R.id.rdbGroup);
 		qty = (EditText) rootView.findViewById(R.id.qty);
@@ -89,6 +96,7 @@ public class OrderDetails extends Fragment {
 		/*fmd = new FoodMenuDAO()*/;
         String menuName = getArguments().getString("menu_name");
         MainActivity.mToolbar.setTitle(menuName);
+        image.setImageResource(R.drawable.traditional_wings);
         
         pDialog = new ProgressDialog(getActivity());
 		pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -198,7 +206,7 @@ public class OrderDetails extends Fragment {
 
 				order.setSauce(strSauce.substring(0, strSauce.length() - 1));
 				
-				int x = Integer.valueOf(getString(R.string.table_number));
+				int x = session.getTableNumber();
 				order.setTableNumber(x);
 				for (int i = 0; i < sideDishes.size(); i++) {
 					if (rdbSD[i].isChecked()) {
@@ -292,6 +300,4 @@ public class OrderDetails extends Fragment {
 		});
 		return rootView;			
 	}
-	
-	
 }

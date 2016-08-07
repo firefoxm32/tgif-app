@@ -20,8 +20,8 @@
     
 	<ImageView
 	    android:id="@+id/myOrderItemImage"
-	    android:layout_width="120dp"
-	    android:layout_height="120dp"
+	    android:layout_width="150dp"
+	    android:layout_height="150dp"
 	    android:scaleType="fitCenter"
 		android:layout_marginRight="12dp" />
 
@@ -36,32 +36,38 @@
 	        android:id="@+id/myOrderItemName"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
-	        android:textSize="12sp" />
+	        android:textSize="24sp"
+	        android:textStyle="bold" />
 	    <TextView
 	        android:id="@+id/myOrderServing"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
-	        android:textSize="12sp" />
+	        android:textSize="20sp"
+	        android:textStyle="bold" />
 	    <TextView
 	        android:id="@+id/myOrderSauce"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
-	        android:textSize="12sp" />
+	        android:textSize="20sp"
+	        android:textStyle="bold" />
 	    <TextView
 	        android:id="@+id/myOrderSideDish"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
-	        android:textSize="12sp" />
+	        android:textSize="20sp"
+	        android:textStyle="bold" />
 	    <TextView
 	        android:id="@+id/myOrderQty"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
-	        android:textSize="12sp" />
+	        android:textSize="20sp"
+	        android:textStyle="bold" />
 	    <TextView
 	        android:id="@+id/myOrderServedCount"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
-	        android:textSize="12sp" />
+	        android:textSize="20sp"
+	        android:textStyle="bold" />
 	    <!-- <TextView
 	        android:id="@+id/myOrderStatus"
 	        android:layout_width="fill_parent"

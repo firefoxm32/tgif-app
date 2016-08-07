@@ -24,6 +24,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import model.Order;
+import model.Session;
 
 public class PendingOrder extends Fragment {
 	private ListView myOrderListView;
@@ -31,6 +32,7 @@ public class PendingOrder extends Fragment {
 	private MyOrderAdapter myOrderAdapter;
 	private List<Order> orders;
 	private ProgressDialog pDialog;
+	protected Session session;
 	public static Fragment newInstance(Context context) {
 		PendingOrder pendingOrder = new PendingOrder();
 		return pendingOrder;
@@ -40,12 +42,12 @@ public class PendingOrder extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_my_order, null);
-
+		session = new Session(getContext());
 		myOrderListView = (ListView) rootView.findViewById(R.id.myOrderListView);
 		btnSend = (Button) rootView.findViewById(R.id.btnSendOrders);
-		btnSend.setVisibility(View.INVISIBLE);
+		btnSend.setVisibility(View.GONE);
 		
-		myOrder(Integer.valueOf(getString(R.string.table_number)));
+		myOrder(session.getTableNumber());
 		
 		myOrderListView.setOnItemClickListener(new OnItemClickListener() {
 
@@ -58,28 +60,28 @@ public class PendingOrder extends Fragment {
 				String sauces="";
 				String sideDish="";
 				int qty;
-				System.out.println("menu_name: "+order.getFoodItem().getMenuName());
+//				System.out.println("menu_name: "+order.getFoodItem().getMenuName());
 				menuName = menuName + order.getFoodItem().getMenuName();
 				if(order.getFoodItem().getServings().size() > 0) {
 					for (int i = 0; i < order.getFoodItem().getServings().size(); i++) {
-						System.out.println("serving: "+order.getFoodItem().getServings().get(i).getServingName());
+//						System.out.println("serving: "+order.getFoodItem().getServings().get(i).getServingName());
 						serving = serving + order.getFoodItem().getServings().get(i).getServingName();
 					}
 				}
 				if(order.getFoodItem().getSauces().size() > 0) {
 					for (int i = 0; i < order.getFoodItem().getSauces().size(); i++) {
-						System.out.println("sauces " + i + " : " +order.getFoodItem().getSauces().get(i).getSauceName());
+//						System.out.println("sauces " + i + " : " +order.getFoodItem().getSauces().get(i).getSauceName());
 						sauces += order.getFoodItem().getSauces().get(i).getSauceName() + ", ";
 					}
 				}
 				System.out.println("side_dish: "+order.getFoodItem().getSideDishes().size());
 				if (order.getFoodItem().getSideDishes().size() > 0) {
 					for (int i = 0; i < order.getFoodItem().getSideDishes().size(); i++) {
-						System.out.println("side_dish: "+order.getFoodItem().getSideDishes().get(i).getSideDishName());
+//						System.out.println("side_dish: "+order.getFoodItem().getSideDishes().get(i).getSideDishName());
 						sideDish = sideDish + order.getFoodItem().getSideDishes().get(i).getSideDishName();
 					}
 				}
-				System.out.println("Quantity: "+order.getQty());
+//				System.out.println("Quantity: "+order.getQty());
 				qty = order.getQty();
 				
 				Bundle odBundle = new Bundle();
@@ -117,13 +119,15 @@ public class PendingOrder extends Fragment {
 						System.out.println("On Que");
 					}
 				})
-				.setBodyParameter("table_number", getString(R.string.table_number))
+				.setBodyParameter("table_number", String.valueOf(session.getTableNumber()))
 				.asString()
 				.setCallback(new FutureCallback<String>() {
 					@Override
 					public void onCompleted(Exception arg0, String arg1) {
 						// TODO Auto-generated method stub
 						pDialog.dismiss();
+//						myOrder(Integer.valueOf(getString(R.string.table_number)));
+					myOrderListView.setAdapter(null);	
 					}
 				});
 			}
@@ -162,18 +166,8 @@ public class PendingOrder extends Fragment {
 		});	
 	}
 	@Override
-	public void onPause() {
+	public void onViewStateRestored(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-		super.onPause();
-		System.out.println("pause");
-	}
-	@Override
-	public void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
-		System.out.println("bool: "+getArguments().getBoolean("isEdit"));
-		if (getArguments().getBoolean("isEdit")) {
-			myOrder(Integer.valueOf(getString(R.string.table_number)));
-		}
+		super.onViewStateRestored(savedInstanceState);
 	}
 }

@@ -1,6 +1,5 @@
 package com.app.tgif_app;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.app.tgif_app.adapter.SubFoodMenuAdapter;
@@ -29,7 +28,7 @@ public class SubFoodMenuFragment extends Fragment {
 	private ListView subFoodMenuList;
 	private SubFoodMenuAdapter subFoodMenuAdapter;
 	private List<FoodItem> foodMenuItems;
-	private List<String> itemName;
+//	private List<String> itemName;
 	private ProgressDialog pDialog;
 	public static Fragment newInstance(Context context){
 		SubFoodMenuFragment subFoodMenuFragment = new SubFoodMenuFragment();
@@ -40,7 +39,7 @@ public class SubFoodMenuFragment extends Fragment {
 		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.sub_food_menu_fragment, null);
 		subFoodMenuList = (ListView) rootView.findViewById(R.id.ListSubFoodMenu);
 //		int menuId = getArguments().getInt("menuId");
-		
+		MainActivity.mToolbar.setTitle(getArguments().getString("choice"));
 		getFoodItems(getArguments().getInt("menuId"));
 		
 	
@@ -91,7 +90,7 @@ public class SubFoodMenuFragment extends Fragment {
 			public void onCompleted(Exception arg0, JsonObject json) {
 				// TODO Auto-generated method stub
 				FoodMenuDAO fmd = new FoodMenuDAO();
-				itemName = new ArrayList<>();
+//				itemName = new ArrayList<>();
 		
 				foodMenuItems = fmd.getFoodMenuItems(json);
 				
@@ -101,10 +100,9 @@ public class SubFoodMenuFragment extends Fragment {
 			}
 		});
 	}
-	
 	@Override
-	public void onResume() {
+	public void onViewStateRestored(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-		super.onResume();
+		super.onViewStateRestored(savedInstanceState);
 	}
 }

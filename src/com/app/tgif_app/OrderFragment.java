@@ -1,18 +1,8 @@
 package com.app.tgif_app;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.tgif.dao.FoodMenuDAO;
-import com.tgif.http.Dispatcher;
-import com.tgif.http.TGIFRequest;
-
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.provider.Settings.Global;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,8 +12,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
-import model.Order;
 
 public class OrderFragment extends Fragment {
 	
@@ -32,10 +20,6 @@ public class OrderFragment extends Fragment {
 	Button buttonViewOrder;
 	WebView webViewLayout;
 	
-//	FragmentTransaction ft = getFragmentManager().beginTransaction();
-	
-	private ArrayList<String> orderList;
-		
 	public static Fragment newInstance(Context context){
 		OrderFragment orderFragment = new OrderFragment();
 		return orderFragment;

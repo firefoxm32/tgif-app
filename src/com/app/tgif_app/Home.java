@@ -1,6 +1,5 @@
 package com.app.tgif_app;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.app.tgif_app.adapter.AllTimeFavoriteAdapter;
@@ -38,6 +37,7 @@ public class Home extends Fragment {
 	
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState){
 		//return inflater.inflate(R.layout.food_menu_fragment, null, false);
+		MainActivity.mToolbar.setTitle("Home");
 		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_home, null);
 		allTimeFavoriteList = (ListView) rootView.findViewById(R.id.allTimeFavoriteList);
 		promoList = (ListView) rootView.findViewById(R.id.promoList);
@@ -67,7 +67,7 @@ public class Home extends Fragment {
 				
 				foodMenuItems = fmd.getAllTimeFavorites(json);
 				
-				foodMenuItems = fmd.getFoodMenuItems(json);
+//				foodMenuItems = fmd.getFoodMenuItems(json);
 				
 				allTimeFavoriteAdapter = new AllTimeFavoriteAdapter(getActivity(), foodMenuItems);
 				
@@ -84,7 +84,6 @@ public class Home extends Fragment {
 				Bundle odBundle = new Bundle();
 				odBundle.putString("menu_name", foodMenuItems.get(position).getMenuName());
 				odBundle.putInt("item_id", foodMenuItems.get(position).getItemId());
-				System.out.println("bundle: "+odBundle);
 				Fragment orderDetails = new OrderDetails();
 				orderDetails.setArguments(odBundle);
 				
@@ -100,4 +99,9 @@ public class Home extends Fragment {
 		return rootView;
 	}
 	
+	@Override
+	public void onViewStateRestored(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onViewStateRestored(savedInstanceState);
+	}
 }
