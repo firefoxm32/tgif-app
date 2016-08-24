@@ -43,11 +43,11 @@ public class ServedOrder extends Fragment {
 		btnSend = (Button) rootView.findViewById(R.id.btnSendOrders);
 		btnSend.setVisibility(View.GONE);
 		
-		myOrder(session.getTableNumber());
+		myOrder(session.getTransactionId());
 		
 		return rootView;
 	}
-	private void myOrder(int tableNumber) {
+	private void myOrder(String transactionId) {
 		pDialog = new ProgressDialog(getActivity());
 		pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		pDialog.setMessage("Loading.... Please wait...");
@@ -55,7 +55,7 @@ public class ServedOrder extends Fragment {
 		pDialog.setCanceledOnTouchOutside(false);
 		pDialog.show();
 		Ion.with(MainActivity.getContext())
-		.load(EndPoints.MY_ORDERS+"?table_number="+tableNumber+"&status=S")
+		.load(EndPoints.MY_ORDERS+"?table_number="+transactionId+"&status=S")
 		.progress(new ProgressCallback() {
 			@Override
 			public void onProgress(long arg0, long arg1) {

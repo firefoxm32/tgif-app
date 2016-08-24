@@ -235,7 +235,9 @@ public class OrderDetails extends Fragment {
 				}
 			}
 			
+			
 			private void editOrder(Order order) {
+				System.out.println("order: "+order);
 				pDialog = new ProgressDialog(getActivity());
 				pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 				pDialog.setMessage("Loading.... Please wait...");
@@ -254,6 +256,7 @@ public class OrderDetails extends Fragment {
 					}
 				})
 		        .setBodyParameter("table_number",String.valueOf(order.getTableNumber()))
+		        .setBodyParameter("transaction_id", session.getTransactionId())
 		        .setBodyParameter("item_id", String.valueOf(order.getItemId()))
 		        .setBodyParameter("serving_id",String.valueOf(order.getServingId()))
 		        .setBodyParameter("sauces", order.getSauce())
@@ -264,8 +267,15 @@ public class OrderDetails extends Fragment {
 					@Override
 					public void onCompleted(Exception e, String result) {
 						// TODO Auto-generated method stub
+						System.out.println("result: " + result);
 						JsonParser parser = new JsonParser();
+						System.out.println("parse: " + parser.parse(result).toString());
 						JsonObject json = parser.parse(result).getAsJsonObject();
+						System.out.println("object: "+json);
+						if(json == null) {
+							Toast.makeText(getActivity(), "null", Toast.LENGTH_SHORT).show();
+							return;
+						}
 						if (json.get("status").getAsString().equalsIgnoreCase("error")) {
 							Toast.makeText(getActivity(), json.get("message").getAsString(), Toast.LENGTH_SHORT).show();
 							e.printStackTrace();
@@ -275,7 +285,6 @@ public class OrderDetails extends Fragment {
 						Toast.makeText(getActivity(), json.get("message").getAsString(), Toast.LENGTH_SHORT).show();
 						System.out.println("sql: "+json.get("sql").getAsString());
 						clearData();
-						System.out.println("Complete");
 						pDialog.dismiss();
 					}
 				});

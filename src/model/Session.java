@@ -35,10 +35,21 @@ public class Session {
 		return tableNumber;
 	}
 	
+	public void setTransactionId(String transactionId) {
+		prefs.edit().putString("transaction_id", transactionId).commit();
+	}
+	public String getTransactionId() {
+		String trasactionId = prefs.getString("transaction_id", "");
+		return trasactionId;
+	}
+	
 	public void remove(String username, String password, String tableNumber) {
 		prefs.edit().remove(username).commit();
 		prefs.edit().remove(password).commit();
 		prefs.edit().remove(tableNumber).commit();
+	}
+	public void removeTransactionId() {
+		prefs.edit().remove("transaction_id").commit();
 	}
 	public void clearPrefs() {
 		prefs.edit().clear().commit();

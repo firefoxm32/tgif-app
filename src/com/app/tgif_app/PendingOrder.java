@@ -47,7 +47,7 @@ public class PendingOrder extends Fragment {
 		btnSend = (Button) rootView.findViewById(R.id.btnSendOrders);
 		btnSend.setVisibility(View.GONE);
 		
-		myOrder(session.getTableNumber());
+		myOrder(session.getTransactionId());
 		
 		myOrderListView.setOnItemClickListener(new OnItemClickListener() {
 
@@ -103,6 +103,7 @@ public class PendingOrder extends Fragment {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				System.out.println("transacID: "+session.getTransactionId());
 				pDialog = new ProgressDialog(getActivity());
 				pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 				pDialog.setMessage("Loading.... Please wait...");
@@ -116,10 +117,11 @@ public class PendingOrder extends Fragment {
 					@Override
 					public void onProgress(long arg0, long arg1) {
 						// TODO Auto-generated method stub
+						System.out.println("tid:: "+session.getTransactionId());
 						System.out.println("On Que");
 					}
 				})
-				.setBodyParameter("table_number", String.valueOf(session.getTableNumber()))
+				.setBodyParameter("transaction_id", session.getTransactionId())
 				.asString()
 				.setCallback(new FutureCallback<String>() {
 					@Override
@@ -127,6 +129,7 @@ public class PendingOrder extends Fragment {
 						// TODO Auto-generated method stub
 						pDialog.dismiss();
 //						myOrder(Integer.valueOf(getString(R.string.table_number)));
+						System.out.println("arg1: "+arg1);
 					myOrderListView.setAdapter(null);	
 					}
 				});
@@ -134,7 +137,7 @@ public class PendingOrder extends Fragment {
 		});
 		return rootView;
 	}
-	private void myOrder(int tableNumber) {
+	private void myOrder(String transactionId) {
 		pDialog = new ProgressDialog(getActivity());
 		pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		pDialog.setMessage("Loading.... Please wait...");
@@ -142,7 +145,7 @@ public class PendingOrder extends Fragment {
 		pDialog.setCanceledOnTouchOutside(false);
 		pDialog.show();
 		Ion.with(MainActivity.getContext())
-		.load(EndPoints.MY_ORDERS+"?table_number="+tableNumber+"&status=P")
+		.load(EndPoints.MY_ORDERS+"?transaction_id="+transactionId)
 		.progress(new ProgressCallback() {
 			@Override
 			public void onProgress(long arg0, long arg1) {

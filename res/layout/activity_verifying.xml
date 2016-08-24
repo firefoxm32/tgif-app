@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#C10012"
+    android:orientation="vertical"
+    android:padding="120dp" >
+
+    <TextView
+        android:id="@+id/verifying"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:fontFamily="Tahoma"
+        android:gravity="center_horizontal"
+        android:text="Thank You For Coming Here in TGIfriday&apos;s Restaurant"
+        android:textAlignment="center"
+        
+        android:textColor="#FFF"
+        android:textSize="40sp" />
+
+    <TextView
+        android:id="@+id/verifying1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:fontFamily="Tahoma"
+        android:gravity="center_horizontal"
+        android:text="Please Come Again"
+        android:textAlignment="center"
+        android:textColor="#FFF"
+        android:textSize="40sp" />
+
+    <TextView
+        android:id="@+id/verifying2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:fontFamily="Tahoma"
+        android:gravity="center_horizontal"
+        android:text="Verifying..."
+        android:textAlignment="center"
+        android:textColor="#FFF"
+        android:textSize="40sp" />
+
+</LinearLayout>
