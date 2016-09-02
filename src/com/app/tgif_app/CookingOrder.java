@@ -6,7 +6,6 @@ import com.app.tgif_app.adapter.MyOrderAdapter;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
-import com.koushikdutta.ion.ProgressCallback;
 import com.tgif.dao.FoodMenuDAO;
 import com.tgif.http.EndPoints;
 
@@ -19,67 +18,76 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 import model.Order;
 import model.Session;
 
 public class CookingOrder extends Fragment {
-	
+
 	private ListView myOrderListView;
 	private Button btnSend;
 	private MyOrderAdapter myOrderAdapter;
 	private List<Order> orders;
 	private ProgressDialog pDialog;
 	protected Session session;
-	
+
 	public static Fragment newInstance(Context context) {
 		CookingOrder cookingOrder = new CookingOrder();
 		return cookingOrder;
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-//		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_my_order, null);
-		container = (ViewGroup) inflater.inflate(R.layout.fragment_my_order, null);
+		ViewGroup rootview = (ViewGroup) inflater.inflate(R.layout.fragment_my_order, container);
 		session = new Session(getContext());
-		myOrderListView = (ListView) container.findViewById(R.id.myOrderListView);
-		btnSend = (Button) container.findViewById(R.id.btnSendOrders);
+		myOrderListView = (ListView) rootview.findViewById(R.id.myOrderListView);
+		btnSend = (Button) rootview.findViewById(R.id.btnSendOrders);
 		btnSend.setVisibility(View.GONE);
-		
+
 		myOrder(session.getTransactionId());
-		
-		return container;
+
+		return rootview;
 	}
+
 	private void myOrder(String transactionId) {
-		pDialog = new ProgressDialog(getActivity());
-		pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-		pDialog.setMessage("Loading.... Please wait...");
-		pDialog.setIndeterminate(true);
-		pDialog.setCanceledOnTouchOutside(false);
-		pDialog.show();
-		Ion.with(MainActivity.getContext())
-		.load(EndPoints.MY_ORDERS+"?transaction_id="+transactionId+"&status=C")
-		.progress(new ProgressCallback() {
-			@Override
-			public void onProgress(long arg0, long arg1) {
-				// TODO Auto-generated method stub
-				System.out.println("On Que");
-			}
-		})
-		.asJsonObject()
-		.setCallback(new FutureCallback<JsonObject>() {
-			@Override
-			public void onCompleted(Exception arg0, JsonObject json) {
-				// TODO Auto-generated method stub
-				FoodMenuDAO fmd = new FoodMenuDAO();
-				orders = fmd.getMyOrders(json);
-				myOrderAdapter = new MyOrderAdapter(getActivity(), orders);
-				myOrderListView.setAdapter(myOrderAdapter);
-				System.out.println("Complete");
-				pDialog.dismiss();
-			}
-		});
+		showProgressDialog();
+		Ion.with(MainActivity.getContext()).load(EndPoints.MY_ORDERS + "?transaction_id=" + transactionId + "&status=C")
+				.asJsonObject().setCallback(new FutureCallback<JsonObject>() {
+					@Override
+					public void onCompleted(Exception arg0, JsonObject json) {
+						// TODO Auto-generated method stub
+						if (json == null) {
+							Toast.makeText(getContext(), "Network error", Toast.LENGTH_SHORT).show();
+							hideProgressDialog();
+							return;
+						}
+						FoodMenuDAO fmd = new FoodMenuDAO();
+						orders = fmd.getMyOrders(json);
+						myOrderAdapter = new MyOrderAdapter(getActivity(), orders);
+						myOrderListView.setAdapter(myOrderAdapter);
+						hideProgressDialog();
+					}
+				});
 	}
+
+	private void showProgressDialog() {
+		if (pDialog == null) {
+			pDialog = new ProgressDialog(getContext());
+			pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDialog.setMessage("Loading...");
+			pDialog.setIndeterminate(true);
+			pDialog.setCanceledOnTouchOutside(false);
+		}
+		pDialog.show();
+	}
+
+	private void hideProgressDialog() {
+		if (pDialog != null && pDialog.isShowing()) {
+			pDialog.dismiss();
+		}
+	}
+
 	@Override
 	public void onViewStateRestored(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub

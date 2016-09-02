@@ -1,7 +1,7 @@
 package com.tgif.http;
 
 public class EndPoints {
-	private static String ip = "192.168.1.103";
+	private static String ip = "192.168.1.104";
 	
 	public static final String FOOD_MENUS = "http://"+ip+"/tgif-api/api/get-food-menus.php";
 	

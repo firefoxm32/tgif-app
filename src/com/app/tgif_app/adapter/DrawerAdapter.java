@@ -17,45 +17,46 @@ public class DrawerAdapter extends BaseAdapter {
 	private Context context;
 	private LayoutInflater inflater;
 	private List<DrawerItem> drawerItems;
-	public DrawerAdapter(Context context, List<DrawerItem>drawerItems) {
+
+	public DrawerAdapter(Context context, List<DrawerItem> drawerItems) {
 		// TODO Auto-generated constructor stub
 		this.context = context;
 		this.drawerItems = drawerItems;
 	}
+
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub
 		return drawerItems.size();
 	}
+
 	@Override
 	public Object getItem(int position) {
 		// TODO Auto-generated method stub
 		return drawerItems.get(position);
 	}
+
 	@Override
 	public long getItemId(int position) {
 		// TODO Auto-generated method stub
 		return position;
 	}
+
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		// TODO Auto-generated method stub	
-		if (convertView == null){
+		// TODO Auto-generated method stub
+		if (convertView == null) {
 			inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = inflater.inflate(R.layout.populate_drawer, null);
 		}
-		
-		
+
 		ImageView menuImage = (ImageView) convertView.findViewById(R.id.drawerImage);
 		TextView menuName = (TextView) convertView.findViewById(R.id.drawerMenu);
-		
-		menuImage.setImageResource(R.drawable.traditional_wings);
-		
-		DrawerItem DI = drawerItems.get(position)
-					;
+
+		DrawerItem DI = drawerItems.get(position);
 		menuName.setText(DI.getDrawerMenus());
-		
-		
+		menuImage.setImageResource(DI.getDrawerImage());
+
 		return convertView;
 	}
 }

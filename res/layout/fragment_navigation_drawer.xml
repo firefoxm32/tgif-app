@@ -12,7 +12,7 @@
     	    android:background="#ADD6EA" >
     	    
 	   	    <ImageView android:id="@+id/imgview"
-		        android:layout_width="match_parent"
+		        android:layout_width="wrap_content"
 		        android:layout_height="140dp"
 		        android:background="@drawable/logo"
 		        android:keepScreenOn="true"
@@ -21,7 +21,7 @@
 		        />
 	        <ListView 
 	        android:id="@+id/listView"
-	        android:layout_width="match_parent"
+	        android:layout_width="wrap_content"
 	        android:layout_height="fill_parent"
 	        android:choiceMode="singleChoice"
 	        android:divider="@null"

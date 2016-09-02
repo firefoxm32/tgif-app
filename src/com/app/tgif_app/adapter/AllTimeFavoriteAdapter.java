@@ -58,12 +58,11 @@ public class AllTimeFavoriteAdapter extends BaseAdapter {
 		TextView description = (TextView) convertView.findViewById(R.id.description);
 		TextView label = (TextView) convertView.findViewById(R.id.menuLabel);
 		
-//		itemImage.setImageResource(R.drawable.traditional_wings);
 		FoodItem fmi = foodMenuItems.get(position);
 		itemName.setText(fmi.getMenuName());
-		label.setText("Label: "+fmi.getFoodMenu().getLabel());
+		label.setText("Category: "+fmi.getFoodMenu().getLabel());
 		description.setText("Description: "+fmi.getDescription());
-//		System.out.println("picasso: "+EndPoints.PICASSO+fmi.getMenuName().replace(" ", "%20").toLowerCase()+"/"+fmi.getImage());
+		
 		Picasso
 		.with(MainActivity.getContext())
 		.load(EndPoints.PICASSO+fmi.getMenuName().replace(" ", "%20").toLowerCase()+"/"+fmi.getImage())

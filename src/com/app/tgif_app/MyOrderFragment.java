@@ -11,16 +11,15 @@ import android.view.ViewGroup;
 public class MyOrderFragment extends Fragment {
 	
 	private FragmentTabHost mTabHost;
-//	private FrameLayout frameLayout;
 	public static Fragment newInstance(Context context){
 		MyOrderFragment myOrderFragment = new MyOrderFragment();
 		return myOrderFragment;
 	}
 	
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState){
-		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_my_order_tabhost, null);
+		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_my_order_tabhost, container);
 		mTabHost = (FragmentTabHost) rootView.findViewById(android.R.id.tabhost);
-	 mTabHost.setup(getActivity(), getChildFragmentManager(), R.id.realtabcontent);
+		mTabHost.setup(getActivity(), getChildFragmentManager(), R.id.realtabcontent);
         mTabHost.addTab(mTabHost.newTabSpec("pending").setIndicator("Pending"),
                 PendingOrder.class, null);
         mTabHost.addTab(mTabHost.newTabSpec("cooking").setIndicator("Cooking"),

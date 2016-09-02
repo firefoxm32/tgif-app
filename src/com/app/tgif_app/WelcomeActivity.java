@@ -2,11 +2,8 @@ package com.app.tgif_app;
 
 import java.util.UUID;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
-import com.koushikdutta.ion.ProgressCallback;
 import com.tgif.http.EndPoints;
 
 import android.app.Activity;
@@ -40,48 +37,43 @@ public class WelcomeActivity extends Activity {
 		setContentView(R.layout.activity_welcome);
 		setContext(this);
 		session = new Session(getContext());
-		System.out.println("tnum: " + session.getTableNumber());
+		if (!session.getTransactionId().isEmpty()) {
+			Intent mainActivity = new Intent(WelcomeActivity.this, MainActivity.class);
+			overridePendingTransition(0, 0);
+			startActivity(mainActivity);
+			finish();
+			return;
+		}
 		Button order = (Button) findViewById(R.id.startOrder);
 		order.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				uniqueKey = UUID.randomUUID();
-				Ion.with(getContext()).load(EndPoints.UPDATE_TABLE_STATUS).progress(new ProgressCallback() {
-					@Override
-					public void onProgress(long arg0, long arg1) {
-						// TODO Auto-generated method stub
-					}
-				}).setBodyParameter("table_number", String.valueOf(session.getTableNumber()))
-						.setBodyParameter("status", "O").setBodyParameter("transaction_id", uniqueKey.toString())
-						.asString().setCallback(new FutureCallback<String>() {
-							@Override
-							public void onCompleted(Exception arg0, String response) {
-								// TODO Auto-generated method stub
-								System.out.println("welcome: "+response);
-								JsonParser jsonParser = new JsonParser();
-								JsonObject object = jsonParser.parse(response).getAsJsonObject();
-								if (object == null) {
-									return;
-								}
-
-								if (object.get("status").getAsString().toLowerCase().equals("error")) {
-									Toast.makeText(getContext(), object.get("message").getAsString(),
-											Toast.LENGTH_SHORT).show();
-									return;
-								}
-								session.setTransactionId(uniqueKey.toString());
-								Toast.makeText(getContext(), object.get("message").getAsString(), Toast.LENGTH_SHORT)
-										.show();
-								Intent mainActivity = new Intent(WelcomeActivity.this, MainActivity.class);
-								// finish();
-								overridePendingTransition(0, 0);
-								startActivity(mainActivity);
-								finish();
-							}
-						});
+				startOrder(uniqueKey.toString());
 			}
 		});
+	}
+
+	private void startOrder(String transactionId) {
+		Ion.with(getContext()).load(EndPoints.UPDATE_TABLE_STATUS)
+				.setBodyParameter("table_number", String.valueOf(session.getTableNumber()))
+				.setBodyParameter("status", "O").setBodyParameter("transaction_id", transactionId).asString()
+				.setCallback(new FutureCallback<String>() {
+					@Override
+					public void onCompleted(Exception arg0, String response) {
+						// TODO Auto-generated method stub
+						if (response == null) {
+							Toast.makeText(getContext(), "Network error", Toast.LENGTH_SHORT).show();
+							return;
+						}
+						session.setTransactionId(uniqueKey.toString());
+						Intent mainActivity = new Intent(WelcomeActivity.this, MainActivity.class);
+						overridePendingTransition(0, 0);
+						startActivity(mainActivity);
+						finish();
+					}
+				});
 	}
 
 	@Override
@@ -90,7 +82,7 @@ public class WelcomeActivity extends Activity {
 		System.exit(0);
 		finish();
 		super.onBackPressed();
-	}	
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

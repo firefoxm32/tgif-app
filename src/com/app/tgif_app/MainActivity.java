@@ -1,7 +1,5 @@
 package com.app.tgif_app;
 
-import java.util.List;
-
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.koushikdutta.async.future.FutureCallback;
@@ -27,35 +25,22 @@ import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.Toast;
-import model.DrawerItem;
 import model.Session;
 
 public class MainActivity extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
 	public static Toolbar mToolbar;
-	public int pos = -1;
-	public int globalPos;
-	public int _globalPos;
-	public static boolean loaded = true;
 	private ProgressDialog pDialog;
 	protected Session session;
-	/**
-	 * Fragment managing the behaviors, interactions and presentation of the
-	 * navigation drawer.
-	 */
+	
 	private NavigationDrawerFragment mNavigationDrawerFragment;
 
-	/**
-	 * x Used to store the last screen title. For use in
-	 * {@link #restoreActionBar()}.
-	 */
 	private CharSequence mTitle;
 	private static Context appContext;
-	// public static TGIFRequest tgifRequest;
 
 	public static String[] menus = new String[] { "Home", "Food Menu", "My Order", "Check Out", "Logout" };
 
-	public static List<DrawerItem> list;
+//	public static List<DrawerItem> list;
 	private EditText cash;
 	private double totalBill;
 
@@ -92,26 +77,24 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
 	public void onSectionAttached(int number) {
 		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		Home home = new Home();
 		switch (number) {
 		case 0:
 			mTitle = MainActivity.menus[0];// getString(R.string.Home);
-			ft.replace(R.id.container, Fragment.instantiate(MainActivity.this, "com.app.tgif_app.Home"));
+			ft.replace(R.id.container, home);
 			ft.addToBackStack(null);
 			ft.commit();
 			break;
 		case 1:
 			mTitle = MainActivity.menus[1] + "s";// getString(R.string.Food_Menu);
-			ft.replace(R.id.container, Fragment.instantiate(MainActivity.this, "com.app.tgif_app.FoodMenuFragment"));
+			FoodMenuFragment foodMenuFragment = new FoodMenuFragment();
+			ft.replace(R.id.container, foodMenuFragment);
 			ft.addToBackStack(null);
 			ft.commit();
 			break;
 		case 2:
 			mTitle = MainActivity.menus[2] + "s";// getString(R.string.My_Order);
-
-			loaded = false;
-
 			Fragment myOrderFragment = new MyOrderFragment();
-
 			ft.replace(R.id.container, myOrderFragment);
 			ft.addToBackStack(null);
 			ft.commit();
@@ -126,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 			break;
 		default:
 			mTitle = MainActivity.menus[0];// getString(R.string.Home);
-			ft.replace(R.id.container, Fragment.instantiate(MainActivity.this, "com.app.tgif_app.Home"));
+			ft.replace(R.id.container, home);
 			ft.addToBackStack(null);
 			ft.commit();
 			break;
@@ -134,20 +117,18 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 	}
 
 	private void getTotalPrice() {
-		Ion.with(getContext()).load(EndPoints.TOTAL_PRICE).progress(new ProgressCallback() {
-			@Override
-			public void onProgress(long arg0, long arg1) {
-				// TODO Auto-generated method stub
-
-			}
-		}).setBodyParameter("transaction_id", session.getTransactionId()).asString()
+		Ion.with(getContext()).load(EndPoints.TOTAL_PRICE)
+				.setBodyParameter("transaction_id", session.getTransactionId()).asString()
 				.setCallback(new FutureCallback<String>() {
 					@Override
-					public void onCompleted(Exception arg0, String arg1) {
+					public void onCompleted(Exception arg0, String response) {
 						// TODO Auto-generated method stub
-						JsonObject obj = new JsonParser().parse(arg1).getAsJsonObject();
-						System.out.println("total_price: " + obj.get("total_price").getAsDouble());
-						checkOut(obj.get("total_price").getAsDouble());
+						if (response == null) {
+							Toast.makeText(getContext(), "Network error", Toast.LENGTH_SHORT).show();
+							return;
+						}
+						JsonObject json = new JsonParser().parse(response).getAsJsonObject();
+						checkOut(json.get("total_price").getAsDouble());
 					}
 				});
 	}
@@ -175,9 +156,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 					Toast.makeText(getContext(), "Insufficient amount", Toast.LENGTH_SHORT).show();
 					return;
 				}
-				System.out.println("IC TID: "+session.getTransactionId());
-				System.out.println("Tnumber: "+session.getTableNumber());
-				System.out.println("cashEnter: "+cashEnter);
 				insertCashHeader(session.getTransactionId(), session.getTableNumber(), cashEnter);
 			}
 		});
@@ -192,24 +170,20 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 	}
 
 	private void insertCashHeader(String transactionId, int tableNumber, double cashAmount) {
-		Ion.with(getContext()).load(EndPoints.INSERT_CASH_HEADER).progress(new ProgressCallback() {
-			@Override
-			public void onProgress(long arg0, long arg1) {
-				// TODO Auto-generated method stub
-			}
-		}).setBodyParameter("transaction_id", transactionId)
+		Ion.with(getContext()).load(EndPoints.INSERT_CASH_HEADER).setBodyParameter("transaction_id", transactionId)
 				.setBodyParameter("table_number", String.valueOf(tableNumber))
 				.setBodyParameter("cash_amount", String.valueOf(cashAmount)).asString()
 				.setCallback(new FutureCallback<String>() {
 					@Override
 					public void onCompleted(Exception arg0, String response) {
 						// TODO Auto-generated method stub
-						// JsonParser jsonParser = new JsonParser();
-						System.out.println("response_string: "+response);
+						if (response == null) {
+							Toast.makeText(getContext(), "Network error", Toast.LENGTH_SHORT).show();
+							return;
+						}
 						JsonObject object = new JsonParser().parse(response).getAsJsonObject();
-						System.out.println("object: "+object);
 						if (object == null) {
-							 return;
+							return;
 						}
 						if (object.get("status").getAsString().toLowerCase().equals("error")) {
 							Toast.makeText(getContext(), object.get("message").getAsString(), Toast.LENGTH_SHORT)
@@ -226,12 +200,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 	}
 
 	private void logout() {
-		pDialog = new ProgressDialog(getContext());
-		pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-		pDialog.setMessage("Loading.... Please wait...");
-		pDialog.setIndeterminate(true);
-		pDialog.setCanceledOnTouchOutside(false);
-		pDialog.show();
+		showProgressDialog();
 		if (session.getUsername() != "") {
 			Ion.with(getContext()).load(EndPoints.LOGOUT).progress(new ProgressCallback() {
 				@Override
@@ -245,26 +214,26 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 						@Override
 						public void onCompleted(Exception e, String response) {
 							// TODO Auto-generated method stub
-							JsonParser jsonParser = new JsonParser();
-							JsonObject object = jsonParser.parse(response).getAsJsonObject();
-
-							if (object == null) {
-								Toast.makeText(getContext(), "json null", Toast.LENGTH_SHORT).show();
+							if (response == null) {
+								Toast.makeText(getContext(), "Network error", Toast.LENGTH_SHORT).show();
+								hideProgressDialog();
 								return;
 							}
+							JsonParser jsonParser = new JsonParser();
+							JsonObject object = jsonParser.parse(response).getAsJsonObject();
 							if (object.get("status").getAsString().equalsIgnoreCase("error")) {
 								Toast.makeText(getContext(), object.get("message").getAsString(), Toast.LENGTH_SHORT)
 										.show();
+								hideProgressDialog();
 								return;
 							}
-							pDialog.dismiss();
 							session.removeTransactionId();
 							session.remove("username", "password", "tableNumber");
 							session.clearPrefs();
+							hideProgressDialog();
 							Intent loginActivity = new Intent(getContext(), LoginActivity.class);
 							startActivity(loginActivity);
 							finish();
-//							finishActivity(123);
 						}
 					});
 		} else {
@@ -309,5 +278,22 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 	public void onRestoreInstanceState(Bundle savedInstanceState, PersistableBundle persistentState) {
 		// TODO Auto-generated method stub
 		super.onRestoreInstanceState(savedInstanceState, persistentState);
+	}
+
+	private void showProgressDialog() {
+		if (pDialog == null) {
+			pDialog = new ProgressDialog(getContext());
+			pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDialog.setMessage("Loading...");
+			pDialog.setIndeterminate(true);
+			pDialog.setCanceledOnTouchOutside(false);
+		}
+		pDialog.show();
+	}
+
+	private void hideProgressDialog() {
+		if (pDialog != null && pDialog.isShowing()) {
+			pDialog.dismiss();
+		}
 	}
 }

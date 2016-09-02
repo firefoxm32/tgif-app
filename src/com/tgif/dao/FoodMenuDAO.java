@@ -181,12 +181,13 @@ public class FoodMenuDAO {
 				sideDish.setSideDishName(jsonItem.get("side_dish").getAsString());
 				sideDishes.add(sideDish);
 			}
-			
+			String image = jsonItem.get("image").getAsString();
 			FoodItem foodItem = new FoodItem();
 			foodItem.setMenuName(jsonItem.get("item_name").getAsString());
 			foodItem.setServings(servings);
 			foodItem.setSauces(sauces);
 			foodItem.setSideDishes(sideDishes);
+			foodItem.setImage(image);
 			
 			order.setFoodItem(foodItem);
 			orders.add(order);

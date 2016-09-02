@@ -12,7 +12,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -35,24 +34,24 @@ public class EditOrderActivity extends AppCompatActivity {
 	private Button btnEdit;
 	private Button btnDelete;
 	private ProgressDialog pDialog;
-	private Fragment pending;
 	private static Context appContext;
 	private Bundle b;
-	
+
 	public static Context getContext() {
-		   return appContext;
-   }
-   public static void setContext(Context context) {
-	   appContext = context;
-   }
-	
+		return appContext;
+	}
+
+	public static void setContext(Context context) {
+		appContext = context;
+	}
+
 	@Override
 	protected void onCreate(Bundle saveInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(saveInstanceState);
 		setContext(this);
 		setContentView(R.layout.activity_edit_order);
-		mToolbar = (Toolbar)findViewById(R.id.toolbar);
+		mToolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(mToolbar);
 		mToolbar.setNavigationIcon(R.drawable.ic_arrow_back2);
 		mToolbar.setTitle("Edit Order");
@@ -69,13 +68,13 @@ public class EditOrderActivity extends AppCompatActivity {
 		quantity = (EditText) findViewById(R.id.editOrderQty);
 		btnEdit = (Button) findViewById(R.id.editOrderbtnEdit);
 		btnDelete = (Button) findViewById(R.id.editOrderbtnDelete);
-		
+
 		image.setImageResource(R.drawable.traditional_wings);
-		System.out.println("id:"+b.getInt("id"));
+		System.out.println("id:" + b.getInt("id"));
 		if (b.getString("menu_name").equals("")) {
 			menuName.setVisibility(View.GONE);
 		}
-		menuName.setText("Menu Name: "+b.getString("menu_name"));
+		menuName.setText("Menu Name: " + b.getString("menu_name"));
 		if (b.getString("serving").equals("")) {
 			serving.setVisibility(View.GONE);
 		}
@@ -83,15 +82,15 @@ public class EditOrderActivity extends AppCompatActivity {
 		if (b.getString("sauces").equals("")) {
 			sauces.setVisibility(View.GONE);
 		}
-		sauces.setText("Sauce/s: "+b.getString("sauces"));
+		sauces.setText("Sauce/s: " + b.getString("sauces"));
 		if (b.getString("side_dish").equals("")) {
 			sideDish.setVisibility(View.GONE);
 		}
-		sideDish.setText("Side Dish: "+b.getString("side_dish"));
+		sideDish.setText("Side Dish: " + b.getString("side_dish"));
 		quantity.setText(String.valueOf(b.getInt("qty")));
-		
+
 		btnEdit.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
@@ -102,7 +101,7 @@ public class EditOrderActivity extends AppCompatActivity {
 				}
 			}
 		});
-		
+
 		btnDelete.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -110,7 +109,7 @@ public class EditOrderActivity extends AppCompatActivity {
 				msgBox();
 			}
 		});
-		
+
 		mToolbar.setNavigationOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -120,6 +119,7 @@ public class EditOrderActivity extends AppCompatActivity {
 			}
 		});
 	}
+
 	private void editOrder() {
 		pDialog = new ProgressDialog(getContext());
 		pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -127,45 +127,33 @@ public class EditOrderActivity extends AppCompatActivity {
 		pDialog.setIndeterminate(true);
 		pDialog.setCanceledOnTouchOutside(false);
 		pDialog.show();
-		Ion
-		.with(getContext())
-        .load(EndPoints.EDIT_ORDER)
-        .progress(new ProgressCallback() {
+		Ion.with(getContext()).load(EndPoints.EDIT_ORDER).progress(new ProgressCallback() {
 			@Override
 			public void onProgress(long arg0, long arg1) {
 				// TODO Auto-generated method stub
 				System.out.println("On Que");
 			}
-		})
-        .setBodyParameter("id", String.valueOf(b.getInt("id")))
-        .setBodyParameter("qty", quantity.getText().toString())
-        .asString()
-        .setCallback(new FutureCallback<String>() {
-			@Override
-			public void onCompleted(Exception e, String result) {
-				// TODO Auto-generated method stub
-				JsonParser parser = new JsonParser();
-				System.out.println("Complete");
-				JsonObject json = parser.parse(result).getAsJsonObject();
-				System.out.println("message: "+json.get("message").getAsString());
-				System.out.println("sql: "+json.get("sql").getAsString());
-				System.out.println("status: "+json.get("status").getAsString());
-				if (!json.get("status").getAsString().equalsIgnoreCase("error")) {
-					Toast.makeText(MainActivity.getContext(), json.get("message").getAsString(), Toast.LENGTH_SHORT).show();
-					Bundle bundle = new Bundle();
-					bundle.putBoolean("isEdit", true);
-					
-					pending = new PendingOrder();
-					pending.setArguments(bundle);
-					
-					finish();
-				} else {
-					Toast.makeText(MainActivity.getContext(), json.get("message").getAsString(), Toast.LENGTH_SHORT).show();
-				}
-				pDialog.dismiss();
-			}
-		});
+		}).setBodyParameter("id", String.valueOf(b.getInt("id"))).setBodyParameter("qty", quantity.getText().toString())
+				.asString().setCallback(new FutureCallback<String>() {
+					@Override
+					public void onCompleted(Exception e, String result) {
+						// TODO Auto-generated method stub
+						JsonParser parser = new JsonParser();
+						JsonObject json = parser.parse(result).getAsJsonObject();
+						if (json.get("status").getAsString().equalsIgnoreCase("error")) {
+							Toast.makeText(MainActivity.getContext(), json.get("message").getAsString(),
+									Toast.LENGTH_SHORT).show();
+							pDialog.dismiss();
+							return;
+						}
+						Toast.makeText(MainActivity.getContext(), json.get("message").getAsString(), Toast.LENGTH_SHORT)
+								.show();
+						pDialog.dismiss();
+						finish();
+					}
+				});
 	}
+
 	private void msgBox() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 		builder.setTitle("Delete Order");
@@ -180,38 +168,30 @@ public class EditOrderActivity extends AppCompatActivity {
 				pDialog.setIndeterminate(true);
 				pDialog.setCanceledOnTouchOutside(false);
 				pDialog.show();
-				Ion
-				.with(getContext())
-				.load(EndPoints.DELETE_ORDER)
-				.progress(new ProgressCallback() {
+				Ion.with(getContext()).load(EndPoints.DELETE_ORDER).progress(new ProgressCallback() {
 					@Override
 					public void onProgress(long arg0, long arg1) {
 						// TODO Auto-generated method stub
 						System.out.println("On Que");
 					}
-				})
-				.setBodyParameter("id", String.valueOf(b.getInt("id")))
-				.asString()
-				.setCallback(new FutureCallback<String>() {
-					@Override
-					public void onCompleted(Exception e, String result) {
-						// TODO Auto-generated method stub
-						JsonParser parser = new JsonParser();
-						JsonObject json = parser.parse(result).getAsJsonObject();
-						System.out.println("sql: "+json.get("sql").getAsString());
-						System.out.println("param: "+json.get("param").getAsString());
-						if (json.get("status").getAsString().equalsIgnoreCase("error")) {
-							Toast.makeText(getContext(), "Network Error", Toast.LENGTH_SHORT).show();
-							e.printStackTrace();
-							pDialog.dismiss();
-							return;
-						}
-						pDialog.dismiss();
-					
-						Toast.makeText(getContext(), "Order deleted", Toast.LENGTH_SHORT).show();
-						finish();
-					}
-				});
+				}).setBodyParameter("id", String.valueOf(b.getInt("id"))).asString()
+						.setCallback(new FutureCallback<String>() {
+							@Override
+							public void onCompleted(Exception e, String result) {
+								// TODO Auto-generated method stub
+								JsonParser parser = new JsonParser();
+								JsonObject json = parser.parse(result).getAsJsonObject();
+								if (json.get("status").getAsString().equalsIgnoreCase("error")) {
+									Toast.makeText(getContext(), json.get("message").getAsString(), Toast.LENGTH_SHORT)
+											.show();
+									pDialog.dismiss();
+									return;
+								}
+								pDialog.dismiss();
+								Toast.makeText(getContext(), "Order deleted", Toast.LENGTH_SHORT).show();
+								finish();
+							}
+						});
 			}
 		});
 		builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -223,17 +203,26 @@ public class EditOrderActivity extends AppCompatActivity {
 		AlertDialog dialog = builder.create();
 		dialog.show();
 	}
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// TODO Auto-generated method stub
-		
+
 		getMenuInflater().inflate(R.menu.edit_order, menu);
-		
+
 		return super.onCreateOptionsMenu(menu);
 	}
+
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onRestoreInstanceState(savedInstanceState);
+	}
+
+	@Override
+	public void onBackPressed() {
+		// TODO Auto-generated method stub
+		super.onBackPressed();
+		finish();
 	}
 }
