@@ -45,13 +45,14 @@ public class LoginActivity extends Activity {
 		username = (EditText) findViewById(R.id.Username);
 		password = (EditText) findViewById(R.id.Password);
 		Button login = (Button) findViewById(R.id.login);
-		if (!session.getUsername().isEmpty()) {
+//		session.clearPrefs();
+		if (session.getUsername().isEmpty() || !session.getUsername().isEmpty()) {
 			Intent welcomeActivity = new Intent(LoginActivity.this, WelcomeActivity.class);
 			startActivity(welcomeActivity);
 			finish();
-			// return;
 		}
 
+		
 		login.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -157,7 +158,11 @@ public class LoginActivity extends Activity {
 		// super.onBackPressed();
 		moveTaskToBack(true);
 	}
-
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onRestoreInstanceState(savedInstanceState);
+	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle action bar item clicks here. The action bar will

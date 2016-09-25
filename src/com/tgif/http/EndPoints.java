@@ -1,7 +1,8 @@
 package com.tgif.http;
 
 public class EndPoints {
-	private static String ip = "192.168.1.104";
+	
+	private static final String ip = "192.168.1.100";
 	
 	public static final String FOOD_MENUS = "http://"+ip+"/tgif-api/api/get-food-menus.php";
 	
@@ -32,6 +33,8 @@ public class EndPoints {
 	public static final String TOTAL_PRICE = "http://"+ip+"/tgif-api/api/get-total-price.php";
 	
 	public static final String TABLE_STATUS = "http://"+ip+"/tgif-api/api/get-table-status.php";
+	
+	public static final String SEND_FEEDBACK = "http://"+ip+"/tgif-api/api/send-feedback.php";
 	
 	public static final String PICASSO = "http://"+ip+"/tgif-api/images/";
 	

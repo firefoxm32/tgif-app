@@ -16,8 +16,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import model.Order;
 import model.Session;
@@ -25,7 +26,7 @@ import model.Session;
 public class ServedOrder extends Fragment {
 	protected Session session;
 	private ListView myOrderListView;
-	private Button btnSend;
+	private ImageButton imgbtnSend;
 	private MyOrderAdapter myOrderAdapter;
 	private List<Order> orders;
 	private ProgressDialog pDialog;
@@ -38,11 +39,11 @@ public class ServedOrder extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-		ViewGroup rootview = (ViewGroup) inflater.inflate(R.layout.fragment_my_order, container);
+		ViewGroup rootview = (ViewGroup) inflater.inflate(R.layout.fragment_my_order, null);
 		session = new Session(getContext());
 		myOrderListView = (ListView) rootview.findViewById(R.id.myOrderListView);
-		btnSend = (Button) rootview.findViewById(R.id.btnSendOrders);
-		btnSend.setVisibility(View.GONE);
+		imgbtnSend = (ImageButton) rootview.findViewById(R.id.img_btn_send_orders);
+		imgbtnSend.setVisibility(View.GONE);
 
 		myOrder(session.getTransactionId());
 
@@ -51,13 +52,13 @@ public class ServedOrder extends Fragment {
 
 	private void myOrder(String transactionId) {
 		showProgressDialog();
-		Ion.with(MainActivity.getContext()).load(EndPoints.MY_ORDERS + "?table_number=" + transactionId + "&status=S")
+		Ion.with(MainActivity.getContext()).load(EndPoints.MY_ORDERS + "?transaction_id=" + transactionId + "&status=S")
 				.asJsonObject().setCallback(new FutureCallback<JsonObject>() {
 					@Override
 					public void onCompleted(Exception arg0, JsonObject json) {
 						// TODO Auto-generated method stub
 						if (json == null) {
-							Toast.makeText(getContext(), "Network error", Toast.LENGTH_SHORT).show();
+							toastMessage("Network error");
 							hideProgressDialog();
 							return;
 						}
@@ -91,5 +92,15 @@ public class ServedOrder extends Fragment {
 	public void onViewStateRestored(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onViewStateRestored(savedInstanceState);
+	}
+	private void toastMessage(String message) {
+		LayoutInflater inflater = getActivity().getLayoutInflater();
+		View layout = inflater.inflate(R.layout.custom_toast_layout, null);
+		TextView msg = (TextView) layout.findViewById(R.id.toast_message);
+		msg.setText(message);
+		Toast toast = new Toast(getContext());
+		toast.setDuration(Toast.LENGTH_SHORT);
+		toast.setView(layout);
+		toast.show();
 	}
 }

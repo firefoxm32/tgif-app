@@ -102,10 +102,11 @@ public class NavigationDrawerFragment extends Fragment {
 		
 		list = new ArrayList<>();
 		int[] drawables = new int[]{
-				R.drawable.ic_home_black_24dp,
-				R.drawable.ic_restaurant_menu_black_24dp,
-				R.drawable.ic_content_paste_black_24dp,
-				R.drawable.ic_payment_black_24dp,
+				R.drawable.ic_home_black_18dp,
+				R.drawable.ic_restaurant_menu_black_18dp,
+				R.drawable.ic_content_paste_black_18dp,
+				R.drawable.ic_payment_black_18dp,
+				R.drawable.ic_feedback_black_18dp,
 				R.drawable.not_found
 		};
 		for (int j = 0; j < MainActivity.menus.length; j++) {
@@ -311,7 +312,7 @@ public class NavigationDrawerFragment extends Fragment {
 		 * actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		 * actionBar.setTitle(R.string.app_name);
 		 */
-		mToolbar.setTitle(R.string.app_name);
+//		mToolbar.setTitle(R.string.app_name);
 	}
 
 	/*

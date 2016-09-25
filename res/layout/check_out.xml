@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/bill"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:fontFamily="sans-serif-light"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:layout_margin="15dp"
+        android:textColor="#000"
+        android:textSize="28sp" />
+
+    <EditText
+        android:id="@+id/cash"
+        style="@style/Base.V12.Widget.AppCompat.EditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-light"
+        android:hint="Cash Amount"
+        android:inputType="number"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:layout_margin="15dp"
+        android:layout_marginBottom="5dp"
+        android:textColor="#000"
+        android:textColorHint="#000"
+        android:textSize="28sp" />
+
+    <!--
+         <EditText
+	    android:id="@+id/member_card"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:textSize="20sp"
+	    android:textColor="#000"
+	    android:fontFamily="sans-serif"
+	    android:textColorHint="#000"
+	    android:hint="Member Card"
+	    android:padding="5dp"
+	    android:password="true"
+	    style="@style/Base.V12.Widget.AppCompat.EditText" />
+    -->
+
+</LinearLayout>

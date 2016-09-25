@@ -4,16 +4,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
-import com.koushikdutta.ion.ProgressCallback;
+import com.squareup.picasso.Picasso;
 import com.tgif.http.EndPoints;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,8 +27,8 @@ import android.widget.Toast;
 
 public class EditOrderActivity extends AppCompatActivity {
 	private static Toolbar mToolbar;
-	private ImageView image;
-	private TextView menuName;
+	private ImageView itemImage;
+	private TextView itemName;
 	private TextView serving;
 	private TextView sauces;
 	private TextView sideDish;
@@ -54,27 +56,31 @@ public class EditOrderActivity extends AppCompatActivity {
 		mToolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(mToolbar);
 		mToolbar.setNavigationIcon(R.drawable.ic_arrow_back2);
-		mToolbar.setTitle("Edit Order");
+		mToolbar.setTitle("Edit / Delete Order");
 		b = getIntent().getExtras();
 		if (b == null) {
-			Toast.makeText(getContext(), "No data", Toast.LENGTH_SHORT).show();
+			toastMessage("No data");
 			return;
 		}
-		image = (ImageView) findViewById(R.id.editOrderImage);
-		menuName = (TextView) findViewById(R.id.editOrderFoodName);
-		serving = (TextView) findViewById(R.id.editOrderServing);
-		sauces = (TextView) findViewById(R.id.editOrderSauce);
-		sideDish = (TextView) findViewById(R.id.editOrderSideDish);
-		quantity = (EditText) findViewById(R.id.editOrderQty);
-		btnEdit = (Button) findViewById(R.id.editOrderbtnEdit);
-		btnDelete = (Button) findViewById(R.id.editOrderbtnDelete);
+		itemImage = (ImageView) findViewById(R.id.edit_order_image);
+		itemName = (TextView) findViewById(R.id.edit_order_item_name);
+		serving = (TextView) findViewById(R.id.edit_order_serving);
+		sauces = (TextView) findViewById(R.id.edit_order_sauce);
+		sideDish = (TextView) findViewById(R.id.edit_order_side_dish);
+		quantity = (EditText) findViewById(R.id.edit_order_edittext_quantity);
+		btnEdit = (Button) findViewById(R.id.edit_order_btn_edit);
+		btnDelete = (Button) findViewById(R.id.edit_order_btn_delete);
 
-		image.setImageResource(R.drawable.traditional_wings);
-		System.out.println("id:" + b.getInt("id"));
-		if (b.getString("menu_name").equals("")) {
-			menuName.setVisibility(View.GONE);
+		Picasso
+		.with(getContext())
+		.load(EndPoints.PICASSO+b.getString("item_name").replace(" ", "%20").toLowerCase()+"/"+b.getString("item_image"))
+		.error(R.drawable.not_found)
+		.into(itemImage);
+		
+		if (b.getString("item_name").equals("")) {
+			itemName.setVisibility(View.GONE);
 		}
-		menuName.setText("Menu Name: " + b.getString("menu_name"));
+		itemName.setText("Item Name: " + b.getString("item_name"));
 		if (b.getString("serving").equals("")) {
 			serving.setVisibility(View.GONE);
 		}
@@ -83,7 +89,9 @@ public class EditOrderActivity extends AppCompatActivity {
 			sauces.setVisibility(View.GONE);
 		}
 		sauces.setText("Sauce/s: " + b.getString("sauces"));
+		
 		if (b.getString("side_dish").equals("")) {
+			
 			sideDish.setVisibility(View.GONE);
 		}
 		sideDish.setText("Side Dish: " + b.getString("side_dish"));
@@ -97,7 +105,7 @@ public class EditOrderActivity extends AppCompatActivity {
 				if (Integer.valueOf(quantity.getText().toString()) > 0) {
 					editOrder();
 				} else {
-					Toast.makeText(getContext(), "Quantity is 0 or less than 0", Toast.LENGTH_SHORT).show();
+					toastMessage("Invalid input");
 				}
 			}
 		});
@@ -114,42 +122,34 @@ public class EditOrderActivity extends AppCompatActivity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				System.out.println("back!!");
-				finish();
+				finishActivity();
 			}
 		});
 	}
 
 	private void editOrder() {
-		pDialog = new ProgressDialog(getContext());
-		pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-		pDialog.setMessage("Loading.... Please wait...");
-		pDialog.setIndeterminate(true);
-		pDialog.setCanceledOnTouchOutside(false);
-		pDialog.show();
-		Ion.with(getContext()).load(EndPoints.EDIT_ORDER).progress(new ProgressCallback() {
-			@Override
-			public void onProgress(long arg0, long arg1) {
-				// TODO Auto-generated method stub
-				System.out.println("On Que");
-			}
-		}).setBodyParameter("id", String.valueOf(b.getInt("id"))).setBodyParameter("qty", quantity.getText().toString())
-				.asString().setCallback(new FutureCallback<String>() {
+		showProgressDialog();
+		Ion.with(getContext()).load(EndPoints.EDIT_ORDER).setBodyParameter("id", String.valueOf(b.getInt("id")))
+				.setBodyParameter("qty", quantity.getText().toString()).asString()
+				.setCallback(new FutureCallback<String>() {
 					@Override
 					public void onCompleted(Exception e, String result) {
 						// TODO Auto-generated method stub
+						if (result == null) {
+							toastMessage("Network error");
+							hideProgressDialog();
+							return;
+						}
 						JsonParser parser = new JsonParser();
 						JsonObject json = parser.parse(result).getAsJsonObject();
 						if (json.get("status").getAsString().equalsIgnoreCase("error")) {
-							Toast.makeText(MainActivity.getContext(), json.get("message").getAsString(),
-									Toast.LENGTH_SHORT).show();
-							pDialog.dismiss();
+							toastMessage(json.get("message").getAsString());
+							hideProgressDialog();
 							return;
 						}
-						Toast.makeText(MainActivity.getContext(), json.get("message").getAsString(), Toast.LENGTH_SHORT)
-								.show();
-						pDialog.dismiss();
-						finish();
+						toastMessage(json.get("message").getAsString());
+						hideProgressDialog();
+						finishActivity();
 					}
 				});
 	}
@@ -162,33 +162,27 @@ public class EditOrderActivity extends AppCompatActivity {
 		builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				// TODO Auto-generated method stub
-				pDialog = new ProgressDialog(getContext());
-				pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-				pDialog.setMessage("Loading.... Please wait...");
-				pDialog.setIndeterminate(true);
-				pDialog.setCanceledOnTouchOutside(false);
-				pDialog.show();
-				Ion.with(getContext()).load(EndPoints.DELETE_ORDER).progress(new ProgressCallback() {
-					@Override
-					public void onProgress(long arg0, long arg1) {
-						// TODO Auto-generated method stub
-						System.out.println("On Que");
-					}
-				}).setBodyParameter("id", String.valueOf(b.getInt("id"))).asString()
+				showProgressDialog();
+				Ion.with(getContext()).load(EndPoints.DELETE_ORDER)
+						.setBodyParameter("id", String.valueOf(b.getInt("id"))).asString()
 						.setCallback(new FutureCallback<String>() {
 							@Override
 							public void onCompleted(Exception e, String result) {
 								// TODO Auto-generated method stub
+								if (result == null) {
+									toastMessage("Network error");
+									hideProgressDialog();
+									return;
+								}
 								JsonParser parser = new JsonParser();
 								JsonObject json = parser.parse(result).getAsJsonObject();
 								if (json.get("status").getAsString().equalsIgnoreCase("error")) {
-									Toast.makeText(getContext(), json.get("message").getAsString(), Toast.LENGTH_SHORT)
-											.show();
-									pDialog.dismiss();
+									toastMessage(json.get("message").getAsString());
+									hideProgressDialog();
 									return;
 								}
-								pDialog.dismiss();
-								Toast.makeText(getContext(), "Order deleted", Toast.LENGTH_SHORT).show();
+								hideProgressDialog();
+								toastMessage("Order deleted");
 								finish();
 							}
 						});
@@ -218,11 +212,42 @@ public class EditOrderActivity extends AppCompatActivity {
 		// TODO Auto-generated method stub
 		super.onRestoreInstanceState(savedInstanceState);
 	}
+	private void showProgressDialog() {
+		if (pDialog == null) {
+			pDialog = new ProgressDialog(getContext());
+			pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDialog.setMessage("Loading...");
+			pDialog.setIndeterminate(true);
+			pDialog.setCanceledOnTouchOutside(false);
+		}
+		pDialog.show();
+	}
 
+	private void hideProgressDialog() {
+		if (pDialog != null && pDialog.isShowing()) {
+			pDialog.dismiss();
+		}
+	}
+	private void finishActivity(){
+		Intent mainActivity = new Intent(EditOrderActivity.this, MainActivity.class);
+		mainActivity.putExtra("tag", "my-order");
+		startActivity(mainActivity);
+		finish();
+	}
 	@Override
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
 		super.onBackPressed();
-		finish();
+		finishActivity();
+	}
+	private void toastMessage(String message) {
+		LayoutInflater inflater = getLayoutInflater();
+		View layout = inflater.inflate(R.layout.custom_toast_layout, null);
+		TextView msg = (TextView) layout.findViewById(R.id.toast_message);
+		msg.setText(message);
+		Toast toast = new Toast(getContext());
+		toast.setDuration(Toast.LENGTH_SHORT);
+		toast.setView(layout);
+		toast.show();
 	}
 }

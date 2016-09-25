@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import model.FoodMenu;
 
@@ -38,9 +39,9 @@ public class FoodMenuFragment extends Fragment {
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState) {
 		// return inflater.inflate(R.layout.food_menu_fragment, null, false);
-		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.food_menu_fragment, container);
+		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.food_menu_fragment, null);
 		MainActivity.mToolbar.setTitle("Food Menus");
-		FoodMenuList = (ListView) rootView.findViewById(R.id.listMenu);
+		FoodMenuList = (ListView) rootView.findViewById(R.id.list_menu);
 
 		getMenus();
 
@@ -61,13 +62,13 @@ public class FoodMenuFragment extends Fragment {
 					public void onCompleted(Exception e, JsonObject json) {
 						// TODO Auto-generated method stub
 						if (json == null) {
-							Toast.makeText(getContext(), "Network error", Toast.LENGTH_SHORT).show();
+							toastMessage("Network error");
 						}
 						FoodMenuDAO fmd = new FoodMenuDAO();
 						list = fmd.getFoodMenus(json);
 						menuName = new ArrayList<>();
 						for (FoodMenu fm : list) {
-							menuName.add(fm.getLabel());
+							menuName.add(fm.getMenuName());
 						}
 
 						foodMenuAdapter = new FoodMenuAdapter(getActivity(), list);
@@ -117,5 +118,15 @@ public class FoodMenuFragment extends Fragment {
 	public void onViewStateRestored(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onViewStateRestored(savedInstanceState);
+	}
+	private void toastMessage(String message) {
+		LayoutInflater inflater = getActivity().getLayoutInflater();
+		View layout = inflater.inflate(R.layout.custom_toast_layout, null);
+		TextView msg = (TextView) layout.findViewById(R.id.toast_message);
+		msg.setText(message);
+		Toast toast = new Toast(getContext());
+		toast.setDuration(Toast.LENGTH_SHORT);
+		toast.setView(layout);
+		toast.show();
 	}
 }

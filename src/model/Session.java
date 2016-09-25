@@ -42,6 +42,13 @@ public class Session {
 		String trasactionId = prefs.getString("transaction_id", "");
 		return trasactionId;
 	}
+	public void setIpAddress(String ipaddress) {
+		prefs.edit().putString("ip_address", ipaddress).commit();
+	}
+	public String getIpAddress() {
+		String ipAdress = prefs.getString("ip_address", "");
+		return ipAdress;
+	}
 	
 	public void remove(String username, String password, String tableNumber) {
 		prefs.edit().remove(username).commit();

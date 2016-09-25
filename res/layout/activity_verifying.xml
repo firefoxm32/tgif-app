@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#C10012"
-    android:orientation="vertical"
-    android:padding="120dp" >
+    android:background="@drawable/verifying" >
 
-    <TextView
+    <!--
+    	android:background="#C10012"
+     <TextView
         android:id="@+id/verifying"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,7 +15,6 @@
         android:gravity="center_horizontal"
         android:text="Thank You For Coming Here in TGIfriday&apos;s Restaurant"
         android:textAlignment="center"
-        
         android:textColor="#FFF"
         android:textSize="40sp" />
 
@@ -29,18 +28,18 @@
         android:text="Please Come Again"
         android:textAlignment="center"
         android:textColor="#FFF"
-        android:textSize="40sp" />
-
-    <TextView
+        android:textSize="40sp" /> -->
+	<TextView
         android:id="@+id/verifying2"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:fontFamily="Tahoma"
-        android:gravity="center_horizontal"
-        android:text="Verifying..."
+        android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="150dp"
         android:textAlignment="center"
-        android:textColor="#FFF"
-        android:textSize="40sp" />
-
-</LinearLayout>
+        android:textColor="#000"
+        android:textSize="40sp"
+        android:background="#ff270b" />
+</RelativeLayout>

@@ -4,25 +4,41 @@ import java.util.List;
 
 public class FoodItem {
 	private int itemId;
-	private String menuName;
+	private String itemName;
 	private String image;
 	private String description;
+	private Double promoPrice;
+	private String promoStatus;
 	private int orderCtr;
 	private List<Serving> servings;
 	private List<Sauce> sauces;
 	private List<SideDish> sideDishes;
 	private FoodMenu foodMenu;
+	
+	
+	public String getItemName() {
+		return itemName;
+	}
+	public void setItemName(String itemName) {
+		this.itemName = itemName;
+	}
+	public Double getPromoPrice() {
+		return promoPrice;
+	}
+	public void setPromoPrice(Double promoPrice) {
+		this.promoPrice = promoPrice;
+	}
+	public String getPromoStatus() {
+		return promoStatus;
+	}
+	public void setPromoStatus(String promoStatus) {
+		this.promoStatus = promoStatus;
+	}
 	public int getItemId() {
 		return itemId;
 	}
 	public void setItemId(int itemId) {
 		this.itemId = itemId;
-	}
-	public String getMenuName() {
-		return menuName;
-	}
-	public void setMenuName(String menuName) {
-		this.menuName = menuName;
 	}
 	public String getImage() {
 		return image;

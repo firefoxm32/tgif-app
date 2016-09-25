@@ -8,8 +8,9 @@
   	android:paddingBottom="@dimen/feed_item_margin" >
     
     <ListView
-        android:id="@+id/listMenu"
-        android:layout_width="fill_parent"
+        android:id="@+id/list_menu"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:divider="@null" />
+        android:divider="@null"
+        android:scrollbars="none" />
 </LinearLayout>

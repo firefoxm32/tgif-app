@@ -17,15 +17,19 @@ public class MyOrderFragment extends Fragment {
 	}
 	
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState){
-		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_my_order_tabhost, container);
+		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_my_order_tabhost, null);
+		MainActivity.mToolbar.setTitle("My Orders");
 		mTabHost = (FragmentTabHost) rootView.findViewById(android.R.id.tabhost);
 		mTabHost.setup(getActivity(), getChildFragmentManager(), R.id.realtabcontent);
+		
         mTabHost.addTab(mTabHost.newTabSpec("pending").setIndicator("Pending"),
                 PendingOrder.class, null);
         mTabHost.addTab(mTabHost.newTabSpec("cooking").setIndicator("Cooking"),
                 CookingOrder.class, null);
         mTabHost.addTab(mTabHost.newTabSpec("served").setIndicator("Served"),
                 ServedOrder.class, null);
+        
+        
 		return rootView;
 	}
 	@Override

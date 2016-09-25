@@ -1,5 +1,7 @@
 package com.app.tgif_app;
 
+import java.text.DecimalFormat;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.koushikdutta.async.future.FutureCallback;
@@ -20,10 +22,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.inputmethod.EditorInfo;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import model.Session;
 
@@ -32,17 +37,16 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 	public static Toolbar mToolbar;
 	private ProgressDialog pDialog;
 	protected Session session;
-	
 	private NavigationDrawerFragment mNavigationDrawerFragment;
 
 	private CharSequence mTitle;
 	private static Context appContext;
 
-	public static String[] menus = new String[] { "Home", "Food Menu", "My Order", "Check Out", "Logout" };
+	public static String[] menus = new String[] { "Home", "Food Menu", "My Order", "Check Out", "Feedback", "Logout" };
 
-//	public static List<DrawerItem> list;
-	private EditText cash;
-	private double totalBill;
+	// public static List<DrawerItem> list;
+//	private EditText cash;
+//	private double totalBill;
 
 	public static Context getContext() {
 		return appContext;
@@ -56,11 +60,20 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
 		setContext(this);
 		session = new Session(getContext());
+		String tag = "default";
+		if (getIntent().getExtras() != null) {
+			System.out.println("welcome");
+			tag = getIntent().getStringExtra("tag");
+			if (tag.equalsIgnoreCase("my-order")) {
+				onSectionAttached(2);
+			}
+		}
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.navigation_drawer);
-		mTitle = MainActivity.menus[0];// getString(MainActivity.menus[0]);
+		// mTitle = MainActivity.menus[0];// getString(MainActivity.menus[0]);
 
 		mToolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(mToolbar);
@@ -104,8 +117,12 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 			getTotalPrice();
 			break;
 		case 4:
+			feedback();
+			break;
+		case 5:
 			mTitle = MainActivity.menus[4];
-			logout();
+			
+			confirmAdmin("admin12345");
 			break;
 		default:
 			mTitle = MainActivity.menus[0];// getString(R.string.Home);
@@ -116,6 +133,75 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 		}
 	}
 
+	private void feedback() {
+		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
+		LayoutInflater layoutInflater = getLayoutInflater();
+		View dialogView = layoutInflater.inflate(R.layout.fragment_feedback, null);
+		alertBuilder.setView(dialogView);
+		alertBuilder.setCancelable(false);
+		final EditText customerName = (EditText) dialogView.findViewById(R.id.feedback_user);
+		final EditText msg = (EditText) dialogView.findViewById(R.id.feedback_messageg);
+		alertBuilder.setPositiveButton("Send", new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				String customer = customerName.getText().toString();
+				String message = msg.getText().toString();
+				if (message.isEmpty()) {
+					toastMessage("Cannot send feedback with empty message");
+					msg.requestFocus();
+				} else {
+					toastMessage("Sent!");
+					if (customer.isEmpty()) {
+						customer = "Customer";
+					} 
+					sendFeedBack(customer, message);
+				}
+			}
+		});
+		alertBuilder.setNegativeButton("Cancel", new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				dialog.cancel();
+				toastMessage("Sending feedback cancelled");
+			}
+		});
+		AlertDialog alertDialog = alertBuilder.create();
+		View view = getLayoutInflater().inflate(R.layout.custom_alert_dialog_title, null);
+		TextView title = (TextView) view.findViewById(R.id.custom_title);
+		title.setText("FEEDBACK");
+		alertDialog.setCustomTitle(view);
+		alertDialog.show();
+		hideSoftKeyboard();
+	}
+
+	private void sendFeedBack(String customerName, String message) {
+		Ion.with(getContext()).load(EndPoints.SEND_FEEDBACK)
+				.setBodyParameter("transaction_id", session.getTransactionId())
+				.setBodyParameter("customer_name", customerName).setBodyParameter("message", message).asString()
+				.setCallback(new FutureCallback<String>() {
+
+					@Override
+					public void onCompleted(Exception e, String response) {
+						// TODO Auto-generated method stub
+						if (response == null) {
+							toastMessage("Network error");
+							return;
+						}
+						JsonObject object = new JsonParser().parse(response).getAsJsonObject();
+						if (object == null) {
+							return;
+						}
+						if (object.get("status").getAsString().toLowerCase().equals("error")) {
+							toastMessage(object.get("message").getAsString());
+							return;
+						}
+						toastMessage(object.get("message").getAsString());
+					}
+				});
+	}
+
 	private void getTotalPrice() {
 		Ion.with(getContext()).load(EndPoints.TOTAL_PRICE)
 				.setBodyParameter("transaction_id", session.getTransactionId()).asString()
@@ -124,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 					public void onCompleted(Exception arg0, String response) {
 						// TODO Auto-generated method stub
 						if (response == null) {
-							Toast.makeText(getContext(), "Network error", Toast.LENGTH_SHORT).show();
+							toastMessage("Network error");
 							return;
 						}
 						JsonObject json = new JsonParser().parse(response).getAsJsonObject();
@@ -134,51 +220,70 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 	}
 
 	private void checkOut(double _totalBill) {
-		cash = new EditText(getContext());
-		cash.setInputType(EditorInfo.TYPE_CLASS_NUMBER);
-		totalBill = _totalBill;
+		final DecimalFormat formatter = new DecimalFormat("#,##0.00");
 		AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
-		alert.setMessage("Total Bill: " + totalBill);
-		alert.setTitle("Check Out");
-		alert.setView(cash);
+		LayoutInflater layoutInflater = getLayoutInflater();
+		View dialogView = layoutInflater.inflate(R.layout.check_out, null);
+		alert.setTitle("Checking Out");
+		alert.setCancelable(false);
+		alert.setView(dialogView);
+		final TextView total = (TextView) dialogView.findViewById(R.id.bill);
+		final EditText cash = (EditText) dialogView.findViewById(R.id.cash);
+//		final EditText memberCard = (EditText) dialogView.findViewById(R.id.member_card);
+//		memberCard.setVisibility(View.GONE);
+		final Double totalBill = _totalBill;
+		total.setText("Total: "+formatter.format(totalBill));
+		cash.requestFocus();
 		alert.setPositiveButton("Yes", new OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				// TODO Auto-generated method stub
-				double cashEnter = 0.0;
+				double cashEnter = 0.00;
+				
+				if (totalBill == cashEnter) {
+					toastMessage("Not yet order");
+					return;
+				}
+				if (cash.getText().toString().isEmpty()){
+					toastMessage("Invalid input cash");
+					return;
+				}
+				if (Double.valueOf(total.getText().toString()) > cashEnter) {
+					toastMessage("Insufficient amount");
+					return;
+				}
 				cashEnter = Double.valueOf(cash.getText().toString());
-
-				if (totalBill == 0.0) {
-					Toast.makeText(getContext(), "Not yet order", Toast.LENGTH_SHORT).show();
-					return;
-				}
-				if (totalBill > cashEnter) {
-					Toast.makeText(getContext(), "Insufficient amount", Toast.LENGTH_SHORT).show();
-					return;
-				}
-				insertCashHeader(session.getTransactionId(), session.getTableNumber(), cashEnter);
+				toastMessage("here");
+				insertCashHeader(session.getTransactionId(), session.getTableNumber(), cashEnter, 
+						Double.valueOf(total.getText().toString()));
 			}
 		});
 		alert.setNegativeButton("No", new OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				// TODO Auto-generated method stub
-				Toast.makeText(getContext(), "Cancelled", Toast.LENGTH_SHORT).show();
+				toastMessage("CANCELLED!");
 			}
 		});
-		alert.show();
+		AlertDialog alertDialog = alert.create();
+		View view = getLayoutInflater().inflate(R.layout.custom_alert_dialog_title, null);
+		TextView title = (TextView) view.findViewById(R.id.custom_title);
+		title.setText("CHECK OUT");
+		alertDialog.setCustomTitle(view);
+		alertDialog.show();
+		hideSoftKeyboard();
 	}
 
-	private void insertCashHeader(String transactionId, int tableNumber, double cashAmount) {
+	private void insertCashHeader(String transactionId, int tableNumber, double cashAmount, double total) {
 		Ion.with(getContext()).load(EndPoints.INSERT_CASH_HEADER).setBodyParameter("transaction_id", transactionId)
-				.setBodyParameter("table_number", String.valueOf(tableNumber))
-				.setBodyParameter("cash_amount", String.valueOf(cashAmount)).asString()
+				.setBodyParameter("cash_amount", String.valueOf(cashAmount))
+				.setBodyParameter("total_price", String.valueOf(total)).asString()
 				.setCallback(new FutureCallback<String>() {
 					@Override
 					public void onCompleted(Exception arg0, String response) {
 						// TODO Auto-generated method stub
 						if (response == null) {
-							Toast.makeText(getContext(), "Network error", Toast.LENGTH_SHORT).show();
+							toastMessage("Network error");
 							return;
 						}
 						JsonObject object = new JsonParser().parse(response).getAsJsonObject();
@@ -186,11 +291,10 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 							return;
 						}
 						if (object.get("status").getAsString().toLowerCase().equals("error")) {
-							Toast.makeText(getContext(), object.get("message").getAsString(), Toast.LENGTH_SHORT)
-									.show();
+							toastMessage(object.get("message").getAsString());
 							return;
 						}
-						Toast.makeText(getContext(), object.get("message").getAsString(), Toast.LENGTH_SHORT).show();
+						toastMessage(object.get("message").getAsString());
 						Intent verifying = new Intent(MainActivity.this, VerifyingActivity.class);
 						overridePendingTransition(0, 0);
 						startActivity(verifying);
@@ -215,15 +319,14 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 						public void onCompleted(Exception e, String response) {
 							// TODO Auto-generated method stub
 							if (response == null) {
-								Toast.makeText(getContext(), "Network error", Toast.LENGTH_SHORT).show();
+								toastMessage("Network error");
 								hideProgressDialog();
 								return;
 							}
 							JsonParser jsonParser = new JsonParser();
 							JsonObject object = jsonParser.parse(response).getAsJsonObject();
 							if (object.get("status").getAsString().equalsIgnoreCase("error")) {
-								Toast.makeText(getContext(), object.get("message").getAsString(), Toast.LENGTH_SHORT)
-										.show();
+								toastMessage(object.get("message").getAsString());
 								hideProgressDialog();
 								return;
 							}
@@ -237,13 +340,25 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 						}
 					});
 		} else {
-			Toast.makeText(getContext(), "error", Toast.LENGTH_SHORT).show();
+			toastMessage("Error");
 		}
 	}
 
 	public void restoreActionBar() {
 		// Instead of ActionBar, work with Toolbar
-		mToolbar.setTitle(mTitle);
+		// if (getSupportFragmentManager().getBackStackEntryCount() == 1) {
+		// mToolbar.setTag(mTitle);
+		// }
+	}
+
+	@Override
+	public void onBackPressed() {
+		// TODO Auto-generated method stub
+		if (getSupportFragmentManager().getBackStackEntryCount() == 1) {
+			finish();
+		} else {
+			super.onBackPressed();
+		}
 	}
 
 	@Override
@@ -295,5 +410,55 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 		if (pDialog != null && pDialog.isShowing()) {
 			pDialog.dismiss();
 		}
+	}
+
+	private void toastMessage(String message) {
+		LayoutInflater inflater = getLayoutInflater();
+		View layout = inflater.inflate(R.layout.custom_toast_layout, null);
+		TextView msg = (TextView) layout.findViewById(R.id.toast_message);
+		msg.setText(message);
+		Toast toast = new Toast(getContext());
+		toast.setDuration(Toast.LENGTH_SHORT);
+		toast.setView(layout);
+		toast.show();
+	}
+	private void hideSoftKeyboard() {
+//		if (getCurrentFocus() != null) {
+//			InputMethodManager inputMethodManager = (InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+//			inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+			getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+//		}
+	}
+	
+	private void confirmAdmin(final String adminPass) {
+		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
+		alertBuilder.setTitle("Confirmation");
+		LayoutInflater layoutInflater = getLayoutInflater();
+		View dialogView = layoutInflater.inflate(R.layout.confirm_alert_dialog, null);
+		alertBuilder.setView(dialogView);
+		alertBuilder.setCancelable(false);
+		final EditText password = (EditText) dialogView.findViewById(R.id.confirm_password);
+		alertBuilder.setPositiveButton("Ok", new android.content.DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				String pass = password.getText().toString();
+				if (!adminPass.equalsIgnoreCase(pass)) {
+					toastMessage("You're not a ADMIN");
+					return;
+				}
+				logout();
+			}
+		});
+		alertBuilder.setNegativeButton("Cancel", new android.content.DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				dialog.cancel();
+				toastMessage("Confirmation cancelled");
+			}
+		});
+		AlertDialog alertDialog = alertBuilder.create();
+		alertDialog.show();
 	}
 }

@@ -61,15 +61,15 @@ public class MyOrderAdapter extends BaseAdapter {
 
 		Order order = orders.get(position);
 		Picasso.with(MainActivity.getContext())
-				.load(EndPoints.PICASSO + order.getFoodItem().getMenuName().replace(" ", "%20").toLowerCase() + "/"
+				.load(EndPoints.PICASSO + order.getFoodItem().getItemName().replace(" ", "%20").toLowerCase() + "/"
 						+ order.getFoodItem().getImage())
 				.error(R.drawable.not_found).into(itemImage);
 
-		if (order.getFoodItem().getMenuName().equals("")) {
+		if (order.getFoodItem().getItemName().equals("")) {
 			itemName.setVisibility(View.GONE);
 		} else {
 			itemName.setVisibility(View.VISIBLE);
-			itemName.setText("Food Name: " + order.getFoodItem().getMenuName());
+			itemName.setText("Food Name: " + order.getFoodItem().getItemName());
 		}
 
 		if (order.getFoodItem().getServings().size() > 0) {

@@ -22,15 +22,16 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import model.Order;
 import model.Session;
 
 public class PendingOrder extends Fragment {
 	private ListView myOrderListView;
-	private Button btnSend;
+	private ImageButton imgbtnSend;
 	private MyOrderAdapter myOrderAdapter;
 	private List<Order> orders;
 	private ProgressDialog pDialog;
@@ -44,12 +45,13 @@ public class PendingOrder extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_my_order, container);
+		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_my_order, null);
 		session = new Session(getContext());
 		myOrderListView = (ListView) rootView.findViewById(R.id.myOrderListView);
-		btnSend = (Button) rootView.findViewById(R.id.btnSendOrders);
-		btnSend.setVisibility(View.GONE);
+		imgbtnSend = (ImageButton) rootView.findViewById(R.id.img_btn_send_orders);
+//		btnSend.setVisibility(View.GONE);
 
+		
 		myOrder(session.getTransactionId());
 
 		myOrderListView.setOnItemClickListener(new OnItemClickListener() {
@@ -60,10 +62,14 @@ public class PendingOrder extends Fragment {
 				editOrder(position);
 			}
 		});
-		btnSend.setOnClickListener(new OnClickListener() {
+		imgbtnSend.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				if(myOrderAdapter.isEmpty()) {
+					toastMessage("No order to send");
+					return;
+				}
 				sendOrders(session.getTransactionId());
 			}
 		});
@@ -84,7 +90,7 @@ public class PendingOrder extends Fragment {
 					public void onCompleted(Exception arg0, JsonObject json) {
 						// TODO Auto-generated method stub
 						if (json == null) {
-							Toast.makeText(getContext(), "Network error", Toast.LENGTH_SHORT).show();
+							toastMessage("Network error");
 							hideProgressDialog();
 							return;
 						}
@@ -93,26 +99,25 @@ public class PendingOrder extends Fragment {
 						myOrderAdapter = new MyOrderAdapter(getActivity(), orders);
 						myOrderListView.setAdapter(myOrderAdapter);
 						hideProgressDialog();
-						btnSend.setVisibility(View.VISIBLE);
+						imgbtnSend.setVisibility(View.VISIBLE);
 					}
 				});
 	}
 
 	private void sendOrders(String param) {
 		showProgressDialog();
-		Ion.with(getContext()).load(EndPoints.SEND_ORDERS)
-				.setBodyParameter("transaction_id", param).asString()
+		Ion.with(getContext()).load(EndPoints.SEND_ORDERS).setBodyParameter("transaction_id", param).asString()
 				.setCallback(new FutureCallback<String>() {
 					@Override
 					public void onCompleted(Exception arg0, String response) {
 						// TODO Auto-generated method stub
 						if (response == null) {
-							Toast.makeText(getContext(), "Network error", Toast.LENGTH_SHORT).show();
+							toastMessage("Network error");
 							hideProgressDialog();
 							return;
 						}
 						JsonObject json = new JsonParser().parse(response).getAsJsonObject();
-						Toast.makeText(getContext(), json.get("message").getAsString(), Toast.LENGTH_SHORT).show();
+						toastMessage(json.get("message").getAsString());
 						hideProgressDialog();
 						myOrderListView.setAdapter(null);
 					}
@@ -121,13 +126,14 @@ public class PendingOrder extends Fragment {
 
 	private void editOrder(int position) {
 		Order order = orders.get(position);
-		String menuName = "";
+		String itemName = "";
 		String serving = "";
 		String sauces = "";
 		String sideDish = "";
+		String itemImage = "";
 		int qty;
 
-		menuName = menuName + order.getFoodItem().getMenuName();
+		itemName = order.getFoodItem().getItemName();
 		if (order.getFoodItem().getServings().size() > 0) {
 			for (int i = 0; i < order.getFoodItem().getServings().size(); i++) {
 				serving = serving + order.getFoodItem().getServings().get(i).getServingName();
@@ -138,22 +144,27 @@ public class PendingOrder extends Fragment {
 				sauces += order.getFoodItem().getSauces().get(i).getSauceName() + ", ";
 			}
 		}
-		System.out.println("side_dish: " + order.getFoodItem().getSideDishes().size());
 		if (order.getFoodItem().getSideDishes().size() > 0) {
 			for (int i = 0; i < order.getFoodItem().getSideDishes().size(); i++) {
 				sideDish = sideDish + order.getFoodItem().getSideDishes().get(i).getSideDishName();
 			}
 		}
 		qty = order.getQty();
+		itemImage = order.getFoodItem().getImage();
+		String subSauces = "";
+		if (sauces != "") {
+			subSauces = sauces.substring(0, sauces.length() - 2);
+		}
 
 		Bundle odBundle = new Bundle();
 
-		odBundle.putString("menu_name", menuName);
+		odBundle.putString("item_name", itemName);
 		odBundle.putString("serving", serving);
 		odBundle.putString("side_dish", sideDish);
 		odBundle.putInt("qty", qty);
 		odBundle.putInt("id", order.getId());
-		odBundle.putString("sauces", sauces.substring(0, sauces.length() - 2));
+		odBundle.putString("sauces", subSauces);
+		odBundle.putString("item_image", itemImage);
 
 		Intent editOrderActivity = new Intent(getContext(), EditOrderActivity.class);
 		editOrderActivity.putExtras(odBundle);
@@ -182,5 +193,15 @@ public class PendingOrder extends Fragment {
 	public void onViewStateRestored(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onViewStateRestored(savedInstanceState);
+	}
+	private void toastMessage(String message) {
+		LayoutInflater inflater = getActivity().getLayoutInflater();
+		View layout = inflater.inflate(R.layout.custom_toast_layout, null);
+		TextView msg = (TextView) layout.findViewById(R.id.toast_message);
+		msg.setText(message);
+		Toast toast = new Toast(getContext());
+		toast.setDuration(Toast.LENGTH_SHORT);
+		toast.setView(layout);
+		toast.show();
 	}
 }

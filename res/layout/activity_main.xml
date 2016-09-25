@@ -13,21 +13,11 @@
  		
         <include layout="@layout/toolbar"/>
  		
-       <!--  <HorizontalScrollView
-        android:id="@+id/horizontalScrollView"
-        android:layout_width="fill_parent"
-        android:layout_height="250dp"
-         /> -->
-        
         <FrameLayout
             android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
    </LinearLayout>
-	<!-- <RelativeLayout android:id="@+id/RelativeLayout1"
-	    android:layout_width="match_parent"
-	    android:layout_height="100dp"
-	    android:background="@drawable/header" > -->    
     <fragment
         android:id="@+id/navigation_drawer"
         android:layout_width="@dimen/navigation_drawer_width"
@@ -35,5 +25,4 @@
         android:layout_gravity="start"
         tools:layout="@layout/fragment_navigation_drawer"
         android:name="com.app.tgif_app.NavigationDrawerFragment" />
- 	<!-- </RelativeLayout> -->
 </android.support.v4.widget.DrawerLayout>

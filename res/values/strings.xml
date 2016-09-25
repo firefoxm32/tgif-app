@@ -2,27 +2,39 @@
 <resources>
 
     <string name="app_name">TGIF</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <!-- <string name="action_example">Example action</string> -->
     <string name="drawer_close">Closed</string>
     <string name="drawer_open">Opened</string>
-    <string name="title_activity_content">ContentActivity</string>
-    <string name="title_activity_food_menu">FoodMenuActivity</string>
-    <string name="title_activity_sub_food_menu_fragment">SubFoodMenuFragment</string>
-    <string name="title_activity_order_fragment">OrderFragment</string>
-    <string name="title_activity_alert_dfragment">AlertDFragment</string>
+    <string name="title_fragment_cooking_order">CookingOrder</string>
     <string name="title_activity_edit_order">EditOrderActivity</string>
+    <string name="title_fragment_food_menu">FoodMenuFragment</string>
+    <string name="title_fragment_home">Home</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_fragment_my_order">MyOrderFragment</string>
+    <string name="title_fragment_order_details">OrderDetails</string>
+    <string name="title_fragment_pending_order">PendingOrder</string>
+    <string name="title_fragment_served_order">ServedOrder</string>
+    <string name="title_fragment_sub_food_menu">SubFoodMenuFragment</string>
+	<string name="title_activity_verifying">VerifyingActivity</string>
+	<string name="title_activity_welcome">Welcome</string>
+	
     <string name="Home">Home</string>
     <string name="Food_Menu">Food Menu</string>
     <string name="My_Order">My Order</string>
     <string name="Check_Out">Check Out</string>
-    <string name="peso_sign">&#8369;</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="table_number">9</string>
-    <string name="title_activity_settings">SettingsActivity</string>
-    <string name="title_activity_welcome">Welcome</string>
-    <string name="title_activity_verifying">VerifyingActivity</string>
-
+    
+    <string name="all_time_favorites">ALL TIME FAVORITES</string>
+    <string name="promos">PROMOS</string>
+    <string name="rating">Rating: </string>
+    
+    <string name="btn_login">Login</string>
+    <string name="password_hint">Password</string>
+    <string name="username_hint">Username</string>
+    <string name="lbl_login">Login</string>
+    <string name="servings">Serving/s</string>
+    <string name="sauces">Sauce/s</string>
+    <string name="side_dishes">Side Dish/es</string>
 </resources>

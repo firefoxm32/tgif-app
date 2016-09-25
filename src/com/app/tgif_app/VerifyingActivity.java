@@ -10,8 +10,11 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 import model.Session;
 
@@ -35,13 +38,12 @@ public class VerifyingActivity extends Activity {
 		setContentView(R.layout.activity_verifying);
 		setContext(this);
 		session = new Session(getContext());
-		System.out.println("transaction_id: "+session.getTransactionId());
 		if (!session.getTransactionId().isEmpty()) {
 			verifying();
 		}
 	}
-
-	private void verifying() {
+	private String loading = "Verifying.";
+	private void verifying() {		
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -56,10 +58,22 @@ public class VerifyingActivity extends Activity {
 									public void onCompleted(Exception arg0, JsonObject json) {
 										// TODO Auto-generated method stub
 										if (json == null) {
-											Toast.makeText(getContext(), "Network error", Toast.LENGTH_SHORT).show();
+											toastMessage("Network error");
 											return;
 										}
 										String status = json.get("table_status").getAsString();
+										
+										setText(loading);
+										if (loading.equals("Verifying.")) {
+											loading = "Verifying..";
+											setText(loading);
+										} else if (loading.equals("Verifying..")) {
+											loading = "Verifying...";
+											setText(loading);
+										} else if (loading.equals("Verifying...")) {
+											loading = "Verifying.";
+											setText(loading);
+										}
 										if (status.equalsIgnoreCase("W")) {
 											isDone = true;
 											session.removeTransactionId();
@@ -70,7 +84,7 @@ public class VerifyingActivity extends Activity {
 										}
 									}
 								});
-						Thread.sleep(3000);
+						Thread.sleep(500);
 					} catch (Exception e) {
 						// TODO: handle exception
 						e.printStackTrace();
@@ -78,6 +92,18 @@ public class VerifyingActivity extends Activity {
 				}
 			}
 		}).start();
+	}
+	
+	private void setText(final String _loading) {
+//		final TextView verifying = (TextView)findViewById(R.id.verifying2);
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+//				verifying.setText(loading);
+				((TextView)findViewById(R.id.verifying2)).setText(_loading);
+			}
+		});
 	}
 	
 	@Override
@@ -97,5 +123,20 @@ public class VerifyingActivity extends Activity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onRestoreInstanceState(savedInstanceState);
+	}
+	private void toastMessage(String message) {
+		LayoutInflater inflater = getLayoutInflater();
+		View layout = inflater.inflate(R.layout.custom_toast_layout, null);
+		TextView msg = (TextView) layout.findViewById(R.id.toast_message);
+		msg.setText(message);
+		Toast toast = new Toast(getContext());
+		toast.setDuration(Toast.LENGTH_SHORT);
+		toast.setView(layout);
+		toast.show();
 	}
 }

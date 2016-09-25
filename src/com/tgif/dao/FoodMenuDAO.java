@@ -21,13 +21,13 @@ public class FoodMenuDAO {
 		JsonArray menuItems = json.get("items").getAsJsonArray();
 		for(int i = 0; i < menuItems.size(); i++) {
 			JsonObject jsonObject = menuItems.get(i).getAsJsonObject();
-			String label = jsonObject.get("label").getAsString();
+			String menuName = jsonObject.get("menu_name").getAsString();
 			int id = jsonObject.get("id").getAsInt();
 			int qty = jsonObject.get("ctr").getAsInt();
 
 			FoodMenu fm = new FoodMenu();
 			fm.setMenuId(id);
-			fm.setLabel(label);
+			fm.setMenuName(menuName);
 			fm.setQty(qty);
 			list.add(fm);
 		}
@@ -43,7 +43,7 @@ public class FoodMenuDAO {
 			
 			int itemId = jsonObject.get("item_id").getAsInt();
 			int menuId = jsonObject.get("menu_id").getAsInt();
-			String menuName = jsonObject.get("menu_name").getAsString();
+			String itemName = jsonObject.get("item_name").getAsString();
 			String image = jsonObject.get("image").getAsString();
 			String description = String.valueOf(jsonObject.get("description"));
 			
@@ -52,7 +52,7 @@ public class FoodMenuDAO {
 			fm.setMenuId(menuId);
 			fmi.setFoodMenu(fm);
 			fmi.setItemId(itemId);
-			fmi.setMenuName(menuName);
+			fmi.setItemName(itemName);
 			fmi.setImage(image);
 			fmi.setDescription(description);
 			list.add(fmi);
@@ -70,21 +70,22 @@ public class FoodMenuDAO {
 			
 			int itemId = jsonObject.get("item_id").getAsInt();
 			int menuId = jsonObject.get("menu_id").getAsInt();
-			String menuName = jsonObject.get("menu_name").getAsString();
+			String itemName = jsonObject.get("item_name").getAsString();
 			String image = jsonObject.get("image").getAsString();
-//			String description = jsonObject.get("description").getAsString();
 			String description = String.valueOf(jsonObject.get("description"));
-			String label = jsonObject.get("label").getAsString();
+			String menuName = jsonObject.get("menu_name").getAsString();
+			String promoStatus = jsonObject.get("promo_status").getAsString();
 			
 			FoodItem fmi = new FoodItem();
 			FoodMenu fm = new FoodMenu();
 			fm.setMenuId(menuId);
-			fm.setLabel(label);
+			fm.setMenuName(menuName);
 			fmi.setFoodMenu(fm);
 			fmi.setItemId(itemId);
-			fmi.setMenuName(menuName);
+			fmi.setItemName(itemName);
 			fmi.setImage(image);
 			fmi.setDescription(description);
+			fmi.setPromoStatus(promoStatus);
 			list.add(fmi);
 		}
 		return list;
@@ -97,7 +98,7 @@ public class FoodMenuDAO {
 		
 		int itemId = jsonItem.get("id").getAsInt();
 		fmi.setItemId(itemId);
-		
+		fmi.setDescription(jsonItem.get("description").getAsString());
 		JsonArray jsonServings = jsonItem.get("servings").getAsJsonArray();			
 		List<Serving> servings = new ArrayList<>();
 		for (int i = 0; i < jsonServings.size(); i++) {
@@ -183,7 +184,7 @@ public class FoodMenuDAO {
 			}
 			String image = jsonItem.get("image").getAsString();
 			FoodItem foodItem = new FoodItem();
-			foodItem.setMenuName(jsonItem.get("item_name").getAsString());
+			foodItem.setItemName(jsonItem.get("item_name").getAsString());
 			foodItem.setServings(servings);
 			foodItem.setSauces(sauces);
 			foodItem.setSideDishes(sideDishes);

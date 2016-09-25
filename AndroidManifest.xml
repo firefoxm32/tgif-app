@@ -19,30 +19,42 @@
         android:theme="@style/Theme.AppCompat" >
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name"
+            android:label="@string/Home"
             android:screenOrientation="unspecified"
             android:theme="@style/AppTheme"
-            android:windowSoftInputMode="adjustResize" >
+            android:windowSoftInputMode="stateHidden|adjustResize" >
         </activity>
         <activity
-            android:name=".ContentActivity"
-            android:label="@string/title_activity_content" >
+            android:name=".CookingOrder"
+            android:label="@string/title_fragment_cooking_order" >
+        </activity>
+        <activity
+            android:name=".OrderDetails"
+            android:label="@string/title_fragment_order_details" >
         </activity>
         <activity
             android:name=".FoodMenuFragment"
-            android:label="@string/title_activity_food_menu" >
+            android:label="@string/title_fragment_food_menu" >
         </activity>
         <activity
             android:name=".SubFoodMenuFragment"
-            android:label="@string/title_activity_sub_food_menu_fragment" >
+            android:label="@string/title_fragment_sub_food_menu" >
         </activity>
         <activity
-            android:name=".OrderFragment"
-            android:label="@string/title_activity_order_fragment" >
+            android:name=".Home"
+            android:label="@string/title_fragment_home" >
         </activity>
         <activity
-            android:name=".AlertDFragment"
-            android:label="@string/title_activity_alert_dfragment" >
+            android:name=".MyOrderFragment"
+            android:label="@string/title_fragment_my_order" >
+        </activity>
+        <activity
+            android:name=".PendingOrder"
+            android:label="@string/title_fragment_pending_order" >
+        </activity>
+        <activity
+            android:name=".ServedOrder"
+            android:label="@string/title_fragment_served_order" >
         </activity>
         <activity
             android:name=".EditOrderActivity"
@@ -51,9 +63,23 @@
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustResize" >
         </activity>
-        <activity
+        <!-- <activity
             android:name=".LoginActivity"
             android:label="@string/app_name"
+            android:screenOrientation="unspecified"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustResize" >
+            <intent-filter>
+
+                Theme.AppCompat.DayNight.NoActionBar
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>            
+        </activity> -->
+        <activity
+            android:name=".WelcomeActivity"
+            android:label="@string/title_activity_welcome"
             android:screenOrientation="unspecified"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustResize" >
@@ -63,11 +89,7 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>            
-        </activity>
-        <activity
-            android:name=".WelcomeActivity"
-            android:label="@string/title_activity_welcome" >
+            </intent-filter> 
         </activity>
         <activity
             android:name=".VerifyingActivity"

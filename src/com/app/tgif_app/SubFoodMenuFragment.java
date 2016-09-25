@@ -20,8 +20,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import model.FoodItem;
+import model.Session;
 
 public class SubFoodMenuFragment extends Fragment {
 
@@ -29,6 +31,7 @@ public class SubFoodMenuFragment extends Fragment {
 	private SubFoodMenuAdapter subFoodMenuAdapter;
 	private List<FoodItem> foodMenuItems;
 	private ProgressDialog pDialog;
+	protected Session session;
 
 	public static Fragment newInstance(Context context) {
 		SubFoodMenuFragment subFoodMenuFragment = new SubFoodMenuFragment();
@@ -36,13 +39,13 @@ public class SubFoodMenuFragment extends Fragment {
 	}
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState) {
-		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.sub_food_menu_fragment, container);
+		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.sub_food_menu_fragment, null);
 		subFoodMenuList = (ListView) rootView.findViewById(R.id.ListSubFoodMenu);
 		MainActivity.mToolbar.setTitle(getArguments().getString("choice"));
 		getFoodItems(getArguments().getInt("menuId"));
 
 		subFoodMenuList.setOnItemClickListener(new OnItemClickListener() {
-
+			
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				orderDetails(position);
 			}
@@ -59,14 +62,14 @@ public class SubFoodMenuFragment extends Fragment {
 					public void onCompleted(Exception arg0, JsonObject json) {
 						// TODO Auto-generated method stub
 						if(json == null) {
-							Toast.makeText(getContext(), "Network error", Toast.LENGTH_SHORT).show();
+							toastMessage("Network error");
 							hideProgressDialog();
 							return;
 						}
 						FoodMenuDAO fmd = new FoodMenuDAO();
 						foodMenuItems = fmd.getFoodMenuItems(json);
 
-						subFoodMenuAdapter = new SubFoodMenuAdapter(getActivity(), foodMenuItems);
+						subFoodMenuAdapter = new SubFoodMenuAdapter(getContext(), foodMenuItems);
 						subFoodMenuList.setAdapter(subFoodMenuAdapter);
 						hideProgressDialog();
 					}
@@ -76,7 +79,7 @@ public class SubFoodMenuFragment extends Fragment {
 	private void orderDetails(int position) {
 		Bundle odBundle = new Bundle();
 
-		odBundle.putString("menu_name", foodMenuItems.get(position).getMenuName());
+		odBundle.putString("item_name", foodMenuItems.get(position).getItemName());
 		odBundle.putString("image", foodMenuItems.get(position).getImage());
 		odBundle.putInt("item_id", foodMenuItems.get(position).getItemId());
 
@@ -110,5 +113,15 @@ public class SubFoodMenuFragment extends Fragment {
 	public void onViewStateRestored(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onViewStateRestored(savedInstanceState);
+	}
+	private void toastMessage(String message) {
+		LayoutInflater inflater = getActivity().getLayoutInflater();
+		View layout = inflater.inflate(R.layout.custom_toast_layout, null);
+		TextView msg = (TextView) layout.findViewById(R.id.toast_message);
+		msg.setText(message);
+		Toast toast = new Toast(getContext());
+		toast.setDuration(Toast.LENGTH_SHORT);
+		toast.setView(layout);
+		toast.show();
 	}
 }

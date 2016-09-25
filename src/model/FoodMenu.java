@@ -2,21 +2,21 @@ package model;
 
 public class FoodMenu {
 	private int menuId;
-	private String label;
+	private String menuName;
 	private int qty;
 	
 	
+	public String getMenuName() {
+		return menuName;
+	}
+	public void setMenuName(String menuName) {
+		this.menuName = menuName;
+	}
 	public int getMenuId() {
 		return menuId;
 	}
 	public void setMenuId(int menuId) {
 		this.menuId = menuId;
-	}
-	public String getLabel() {
-		return label;
-	}
-	public void setLabel(String label) {
-		this.label = label;
 	}
 	public int getQty() {
 		return qty;
@@ -27,6 +27,5 @@ public class FoodMenu {
 	
 	public void displayData() {
 		System.out.println(menuId);
-		System.out.println(label);
 	}
 }

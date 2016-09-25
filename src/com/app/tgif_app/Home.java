@@ -3,6 +3,7 @@ package com.app.tgif_app;
 import java.util.List;
 
 import com.app.tgif_app.adapter.AllTimeFavoriteAdapter;
+import com.app.tgif_app.adapter.AllTimeFavoriteAndPromoAdapter;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
@@ -13,87 +14,77 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import model.FoodItem;
 
 public class Home extends Fragment {
 
 	private ListView allTimeFavoriteList;
-	private ListView promoList;
 	private AllTimeFavoriteAdapter allTimeFavoriteAdapter;
 	private List<FoodItem> foodMenuItems;
 	private ProgressDialog pDialog;
-
+	private RecyclerView rv;
+	private LinearLayoutManager llm;
+	public static int pos;
 	public static Fragment newIntance(Context context) {
 		Home home = new Home();
 		return home;
 	}
-
+	
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState) {
 		// return inflater.inflate(R.layout.food_menu_fragment, null, false);
-		MainActivity.mToolbar.setTitle("Home");
-		ViewGroup rootview = (ViewGroup) inflater.inflate(R.layout.fragment_home, container);
-		allTimeFavoriteList = (ListView) rootview.findViewById(R.id.allTimeFavoriteList);
-		promoList = (ListView) rootview.findViewById(R.id.promoList);
-
+//		MainActivity.mToolbar.setTitle("Home");
+		ViewGroup rootview = (ViewGroup) inflater.inflate(R.layout.fragment_home, null);
+//		allTimeFavoriteList = (ListView) rootview.findViewById(R.id.allTimeFavoriteList);
+		llm = new LinearLayoutManager(getContext());
+		rv = (RecyclerView) rootview.findViewById(R.id.rv);
+		rv.setHasFixedSize(true);
+		llm.setOrientation(LinearLayoutManager.HORIZONTAL);
 		allTimeFavorites();
-
-		allTimeFavoriteList.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				// TODO Auto-generated method stub
-				orderDetails(position);
-			}
-		});
-
+	
 		return rootview;
 	}
 
+	public void initList() {
+//		listItems.clear();
+//		for(int i = 0; i < itemName.length; i++) {
+//		}
+	}
+	
 	private void allTimeFavorites() {
 		showProgressDialog();
-		Ion.with(MainActivity.getContext()).load(EndPoints.ALL_TIME_FAVORITES).asJsonObject()
+		Ion.with(getContext()).load(EndPoints.ALL_TIME_FAVORITES).asJsonObject()
 				.setCallback(new FutureCallback<JsonObject>() {
 					@Override
 					public void onCompleted(Exception e, JsonObject json) {
 						// TODO Auto-generated method stub
 						if (json == null) {
-							Toast.makeText(getContext(), "Network error", Toast.LENGTH_SHORT).show();
+							toastMessage("Network error");
 							hideProgressDialog();
 							return;
 						}
 						FoodMenuDAO fmd = new FoodMenuDAO();
 
 						foodMenuItems = fmd.getAllTimeFavorites(json);
-
-						allTimeFavoriteAdapter = new AllTimeFavoriteAdapter(getActivity(), foodMenuItems);
-
-						allTimeFavoriteList.setAdapter(allTimeFavoriteAdapter);
+						
+						rv.setAdapter(new AllTimeFavoriteAndPromoAdapter(foodMenuItems, getContext()));
+						rv.setLayoutManager(llm);
+						
 						hideProgressDialog();
 					}
 				});
 	}
-
-	private void orderDetails(int position) {
-		Bundle odBundle = new Bundle();
-		odBundle.putString("menu_name", foodMenuItems.get(position).getMenuName());
-		odBundle.putInt("item_id", foodMenuItems.get(position).getItemId());
-		odBundle.putString("image", foodMenuItems.get(position).getImage());
-		Fragment orderDetails = new OrderDetails();
-		orderDetails.setArguments(odBundle);
-
-		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-		fragmentTransaction.replace(R.id.container, orderDetails);
-		fragmentTransaction.addToBackStack(null);
-		fragmentTransaction.commit();
-	}
 	
+	private void promos() {
+	}
+
 	private void showProgressDialog() {
 		if (pDialog == null) {
 			pDialog = new ProgressDialog(getContext());
@@ -110,10 +101,20 @@ public class Home extends Fragment {
 			pDialog.dismiss();
 		}
 	}
-	
+
 	@Override
 	public void onViewStateRestored(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onViewStateRestored(savedInstanceState);
+	}
+	private void toastMessage(String message) {
+		LayoutInflater inflater = getActivity().getLayoutInflater();
+		View layout = inflater.inflate(R.layout.custom_toast_layout, null);
+		TextView msg = (TextView) layout.findViewById(R.id.toast_message);
+		msg.setText(message);
+		Toast toast = new Toast(getContext());
+		toast.setDuration(Toast.LENGTH_SHORT);
+		toast.setView(layout);
+		toast.show();
 	}
 }
