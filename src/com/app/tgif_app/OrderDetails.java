@@ -17,6 +17,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -99,15 +102,15 @@ public class OrderDetails extends Fragment {
 		String itemImage = getArguments().getString("image");
 		itemId = getArguments().getInt("item_id");
 		MainActivity.mToolbar.setTitle(itemName);
-
+		System.out.println("IMAGE: "+EndPoints.HTTP+session.getIpAddress()+EndPoints.PICASSO + itemName.replace(" ", "%20").toLowerCase() + "/" + itemImage);
 		Picasso.with(MainActivity.getContext())
-				.load(EndPoints.PICASSO + itemName.replace(" ", "%20").toLowerCase() + "/" + itemImage)
+				.load(EndPoints.HTTP+session.getIpAddress()+EndPoints.PICASSO + itemName.replace(" ", "%20").toLowerCase() + "/" + itemImage)
 				.error(R.drawable.not_found)
 				.fit()
 				.centerInside()
 				.into(image);
 		orderDetails(itemId);
-
+		qty.requestFocus();
 		btnAdd.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -121,8 +124,8 @@ public class OrderDetails extends Fragment {
 	}
 	private void orderDetails(int param) {
 		System.out.println("param:: "+param);
-		showProgressDialog();
-		Ion.with(MainActivity.getContext()).load(EndPoints.ORDER_DETAILS + "?param=" + param)
+		showProgressDialog("Loading...");
+		Ion.with(MainActivity.getContext()).load(EndPoints.HTTP+session.getIpAddress()+EndPoints.ORDER_DETAILS + "?param=" + param)
 				.asJsonObject().setCallback(new FutureCallback<JsonObject>() {
 					@Override
 					public void onCompleted(Exception e, JsonObject json) {
@@ -134,7 +137,7 @@ public class OrderDetails extends Fragment {
 						}
 						FoodMenuDAO fmd = new FoodMenuDAO();
 						FoodItem foodItem = fmd.getOrderDetails(json);
-						description.setText("\t\t"+foodItem.getDescription());
+						description.setText(foodItem.getDescription());
 						
 						servings = foodItem.getServings();
 
@@ -242,9 +245,9 @@ public class OrderDetails extends Fragment {
 	}
 
 	private void addOrder(Order order) {
-		showProgressDialog();
+		showProgressDialog("Loading...");
 
-		Ion.with(getContext()).load(EndPoints.ADD_ORDER)
+		Ion.with(getContext()).load(EndPoints.HTTP+session.getIpAddress()+EndPoints.ADD_ORDER)
 				.setBodyParameter("table_number", String.valueOf(order.getTableNumber()))
 				.setBodyParameter("transaction_id", session.getTransactionId())
 				.setBodyParameter("item_id", String.valueOf(order.getItemId()))
@@ -310,13 +313,16 @@ public class OrderDetails extends Fragment {
 		qty.setText("");
 	}
 
-	private void showProgressDialog() {
+	private void showProgressDialog(String message) {
 		if (pDialog == null) {
 			pDialog = new ProgressDialog(getContext());
 			pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			pDialog.setMessage("Loading...");
 			pDialog.setIndeterminate(true);
 			pDialog.setCanceledOnTouchOutside(false);
+			SpannableString ss1 = new SpannableString(message);
+			ss1.setSpan(new RelativeSizeSpan(2f), 0, ss1.length(), 0);
+			ss1.setSpan(new ForegroundColorSpan(R.color.black), 0, ss1.length(), 0);
+			pDialog.setMessage(ss1);
 		}
 		pDialog.show();
 	}

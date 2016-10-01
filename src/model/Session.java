@@ -49,6 +49,13 @@ public class Session {
 		String ipAdress = prefs.getString("ip_address", "");
 		return ipAdress;
 	}
+	public void setTableStatus(String tableStatus) {
+		prefs.edit().putString("table_status", tableStatus).commit();
+	}
+	public String getTablestatus() {
+		String tableStatus = prefs.getString("table_status", "");
+		return tableStatus;
+	}
 	
 	public void remove(String username, String password, String tableNumber) {
 		prefs.edit().remove(username).commit();

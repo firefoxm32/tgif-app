@@ -3,7 +3,7 @@ package com.app.tgif_app;
 import java.util.List;
 
 import com.app.tgif_app.adapter.AllTimeFavoriteAdapter;
-import com.app.tgif_app.adapter.AllTimeFavoriteAndPromoAdapter;
+import com.app.tgif_app.adapter.PromoAdapter;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
@@ -16,52 +16,56 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import model.FoodItem;
+import model.Session;
 
 public class Home extends Fragment {
-
-	private ListView allTimeFavoriteList;
-	private AllTimeFavoriteAdapter allTimeFavoriteAdapter;
+	protected Session session;
 	private List<FoodItem> foodMenuItems;
 	private ProgressDialog pDialog;
-	private RecyclerView rv;
-	private LinearLayoutManager llm;
+	private RecyclerView allTimeFavoritesRV;
+	private LinearLayoutManager allTimeFavoriteLlm;
+	private LinearLayoutManager promoLlm;
+	private RecyclerView promoRV;
+
 	public static int pos;
+
 	public static Fragment newIntance(Context context) {
 		Home home = new Home();
 		return home;
 	}
-	
+
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState) {
 		// return inflater.inflate(R.layout.food_menu_fragment, null, false);
-//		MainActivity.mToolbar.setTitle("Home");
 		ViewGroup rootview = (ViewGroup) inflater.inflate(R.layout.fragment_home, null);
-//		allTimeFavoriteList = (ListView) rootview.findViewById(R.id.allTimeFavoriteList);
-		llm = new LinearLayoutManager(getContext());
-		rv = (RecyclerView) rootview.findViewById(R.id.rv);
-		rv.setHasFixedSize(true);
-		llm.setOrientation(LinearLayoutManager.HORIZONTAL);
+		session = new Session(getContext());
+		MainActivity.mToolbar.setTitle("Home");
+		allTimeFavoriteLlm = new LinearLayoutManager(getContext());
+		allTimeFavoritesRV = (RecyclerView) rootview.findViewById(R.id.all_time_favorite_rv);
+		allTimeFavoritesRV.setHasFixedSize(true);
+		allTimeFavoriteLlm.setOrientation(LinearLayoutManager.HORIZONTAL);
 		allTimeFavorites();
-	
+
+		promoLlm = new LinearLayoutManager(getContext());
+		promoRV = (RecyclerView) rootview.findViewById(R.id.promo_rv);
+		promoRV.setHasFixedSize(true);
+		promoLlm.setOrientation(LinearLayoutManager.HORIZONTAL);
+		promos();
 		return rootview;
 	}
 
-	public void initList() {
-//		listItems.clear();
-//		for(int i = 0; i < itemName.length; i++) {
-//		}
-	}
-	
 	private void allTimeFavorites() {
-		showProgressDialog();
-		Ion.with(getContext()).load(EndPoints.ALL_TIME_FAVORITES).asJsonObject()
-				.setCallback(new FutureCallback<JsonObject>() {
+//		showProgressDialog("Loading...");
+		Ion.with(getContext()).load(EndPoints.HTTP + session.getIpAddress() + EndPoints.ALL_TIME_FAVORITES)
+				.asJsonObject().setCallback(new FutureCallback<JsonObject>() {
 					@Override
 					public void onCompleted(Exception e, JsonObject json) {
 						// TODO Auto-generated method stub
@@ -73,25 +77,49 @@ public class Home extends Fragment {
 						FoodMenuDAO fmd = new FoodMenuDAO();
 
 						foodMenuItems = fmd.getAllTimeFavorites(json);
-						
-						rv.setAdapter(new AllTimeFavoriteAndPromoAdapter(foodMenuItems, getContext()));
-						rv.setLayoutManager(llm);
-						
-						hideProgressDialog();
+
+						allTimeFavoritesRV.setAdapter(new AllTimeFavoriteAdapter(foodMenuItems, getContext()));
+						allTimeFavoritesRV.setLayoutManager(allTimeFavoriteLlm);
+
+//						hideProgressDialog();
 					}
 				});
 	}
-	
+
 	private void promos() {
+//		showProgressDialog("Loading...");
+		Ion.with(getContext()).load(EndPoints.HTTP + session.getIpAddress() + EndPoints.PROMOS).asJsonObject()
+				.setCallback(new FutureCallback<JsonObject>() {
+					@Override
+					public void onCompleted(Exception e, JsonObject json) {
+						// TODO Auto-generated method stub
+						if (json == null) {
+							toastMessage("Network error");
+							hideProgressDialog();
+							return;
+						}
+						FoodMenuDAO fmd = new FoodMenuDAO();
+
+						foodMenuItems = fmd.getPromos(json);
+
+						promoRV.setAdapter(new PromoAdapter(foodMenuItems, getContext()));
+						promoRV.setLayoutManager(promoLlm);
+
+//						hideProgressDialog();
+					}
+				});
 	}
 
-	private void showProgressDialog() {
+	private void showProgressDialog(String message) {
 		if (pDialog == null) {
 			pDialog = new ProgressDialog(getContext());
 			pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			pDialog.setMessage("Loading...");
 			pDialog.setIndeterminate(true);
 			pDialog.setCanceledOnTouchOutside(false);
+			SpannableString ss1 = new SpannableString(message);
+			ss1.setSpan(new RelativeSizeSpan(2f), 0, ss1.length(), 0);
+			ss1.setSpan(new ForegroundColorSpan(R.color.black), 0, ss1.length(), 0);
+			pDialog.setMessage(ss1);
 		}
 		pDialog.show();
 	}
@@ -107,6 +135,7 @@ public class Home extends Fragment {
 		// TODO Auto-generated method stub
 		super.onViewStateRestored(savedInstanceState);
 	}
+
 	private void toastMessage(String message) {
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		View layout = inflater.inflate(R.layout.custom_toast_layout, null);

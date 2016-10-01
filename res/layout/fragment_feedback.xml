@@ -3,31 +3,36 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    
+
     <EditText
         android:id="@+id/feedback_user"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="22sp"
-	    android:textColor="#000"
-	    android:textColorHint="#000"
-        android:textCursorDrawable="@null"
+        android:layout_margin="15dp"
+        android:fontFamily="sans-serif-light"
         android:hint="Customer Name (Optional)"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
         android:singleLine="true"
-        android:fontFamily="sans-serif-light" />
-    
+        android:textColor="#000"
+        android:textColorHint="#000"
+        android:textCursorDrawable="@null"
+        android:textSize="22sp" />
+
     <EditText
         android:id="@+id/feedback_messageg"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:textAlignment="gravity"
-        android:textSize="22sp"
-	    android:textColor="#000"
-	    android:textColorHint="#000"
-        android:textCursorDrawable="@null"
+        android:layout_margin="15dp"
+        android:fontFamily="sans-serif-light"
         android:hint="Feedback"
         android:inputType="text|textMultiLine"
-        android:fontFamily="sans-serif-light"
-         />
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:textAlignment="gravity"
+        android:textColor="#000"
+        android:textColorHint="#000"
+        android:textCursorDrawable="@null"
+        android:textSize="22sp" />
 
 </LinearLayout>

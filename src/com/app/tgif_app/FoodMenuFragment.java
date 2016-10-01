@@ -15,6 +15,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +27,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import model.FoodMenu;
+import model.Session;
 
 public class FoodMenuFragment extends Fragment {
+	protected Session session;
 	private ListView FoodMenuList;
 	private List<String> menuName;
 	private FoodMenuAdapter foodMenuAdapter;
@@ -41,6 +46,7 @@ public class FoodMenuFragment extends Fragment {
 		// return inflater.inflate(R.layout.food_menu_fragment, null, false);
 		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.food_menu_fragment, null);
 		MainActivity.mToolbar.setTitle("Food Menus");
+		session = new Session(getContext());
 		FoodMenuList = (ListView) rootView.findViewById(R.id.list_menu);
 
 		getMenus();
@@ -55,8 +61,8 @@ public class FoodMenuFragment extends Fragment {
 	}
 
 	private void getMenus() {
-		showProgressDialog();
-		Ion.with(MainActivity.getContext()).load(EndPoints.FOOD_MENUS).asJsonObject()
+		showProgressDialog("Loading...");
+		Ion.with(MainActivity.getContext()).load(EndPoints.HTTP+session.getIpAddress()+EndPoints.FOOD_MENUS).asJsonObject()
 				.setCallback(new FutureCallback<JsonObject>() {
 					@Override
 					public void onCompleted(Exception e, JsonObject json) {
@@ -97,13 +103,16 @@ public class FoodMenuFragment extends Fragment {
 		fragmentTransaction.commit();
 	}
 
-	private void showProgressDialog() {
+	private void showProgressDialog(String message) {
 		if (pDialog == null) {
 			pDialog = new ProgressDialog(getContext());
 			pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			pDialog.setMessage("Loading...");
 			pDialog.setIndeterminate(true);
 			pDialog.setCanceledOnTouchOutside(false);
+			SpannableString ss1 = new SpannableString(message);
+			ss1.setSpan(new RelativeSizeSpan(2f), 0, ss1.length(), 0);
+			ss1.setSpan(new ForegroundColorSpan(R.color.black), 0, ss1.length(), 0);
+			pDialog.setMessage(ss1);
 		}
 		pDialog.show();
 	}

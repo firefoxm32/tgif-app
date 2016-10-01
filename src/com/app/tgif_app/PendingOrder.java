@@ -11,11 +11,16 @@ import com.koushikdutta.ion.ProgressCallback;
 import com.tgif.dao.FoodMenuDAO;
 import com.tgif.http.EndPoints;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -66,19 +71,20 @@ public class PendingOrder extends Fragment {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				if(myOrderAdapter.isEmpty()) {
+				System.out.println("ADAPTER: "+orders.size());
+				if(orders.size() == 0) {
 					toastMessage("No order to send");
 					return;
 				}
-				sendOrders(session.getTransactionId());
+				YesNo();
 			}
 		});
 		return rootView;
 	}
 
 	private void myOrder(String transactionId) {
-		showProgressDialog();
-		Ion.with(MainActivity.getContext()).load(EndPoints.MY_ORDERS + "?transaction_id=" + transactionId)
+		showProgressDialog("Loading...");
+		Ion.with(MainActivity.getContext()).load(EndPoints.HTTP+session.getIpAddress()+EndPoints.MY_ORDERS + "?transaction_id=" + transactionId)
 				.progress(new ProgressCallback() {
 					@Override
 					public void onProgress(long arg0, long arg1) {
@@ -96,7 +102,7 @@ public class PendingOrder extends Fragment {
 						}
 						FoodMenuDAO fmd = new FoodMenuDAO();
 						orders = fmd.getMyOrders(json);
-						myOrderAdapter = new MyOrderAdapter(getActivity(), orders);
+						myOrderAdapter = new MyOrderAdapter(getActivity(), "pending", orders);
 						myOrderListView.setAdapter(myOrderAdapter);
 						hideProgressDialog();
 						imgbtnSend.setVisibility(View.VISIBLE);
@@ -105,8 +111,8 @@ public class PendingOrder extends Fragment {
 	}
 
 	private void sendOrders(String param) {
-		showProgressDialog();
-		Ion.with(getContext()).load(EndPoints.SEND_ORDERS).setBodyParameter("transaction_id", param).asString()
+		showProgressDialog("Loading...");
+		Ion.with(getContext()).load(EndPoints.HTTP+session.getIpAddress()+EndPoints.SEND_ORDERS).setBodyParameter("transaction_id", param).asString()
 				.setCallback(new FutureCallback<String>() {
 					@Override
 					public void onCompleted(Exception arg0, String response) {
@@ -172,13 +178,16 @@ public class PendingOrder extends Fragment {
 		getActivity().finish();
 	}
 
-	private void showProgressDialog() {
+	private void showProgressDialog(String message) {
 		if (pDialog == null) {
 			pDialog = new ProgressDialog(getContext());
 			pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			pDialog.setMessage("Loading...");
 			pDialog.setIndeterminate(true);
 			pDialog.setCanceledOnTouchOutside(false);
+			SpannableString ss1 = new SpannableString(message);
+			ss1.setSpan(new RelativeSizeSpan(2f), 0, ss1.length(), 0);
+			ss1.setSpan(new ForegroundColorSpan(R.color.black), 0, ss1.length(), 0);
+			pDialog.setMessage(ss1);
 		}
 		pDialog.show();
 	}
@@ -203,5 +212,32 @@ public class PendingOrder extends Fragment {
 		toast.setDuration(Toast.LENGTH_SHORT);
 		toast.setView(layout);
 		toast.show();
+	}
+	
+	private void YesNo() {
+		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
+		alertBuilder.setMessage("Are you sure you want to send orders?");
+		alertBuilder.setPositiveButton("Yes", new android.content.DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+//				getTotalPrice();
+					sendOrders(session.getTransactionId());
+			}
+		});
+		alertBuilder.setNegativeButton("No", new android.content.DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				dialog.cancel();
+				toastMessage("Sending orders cancelled");
+			}
+		});
+		AlertDialog alertDialog = alertBuilder.create();
+		View view = getActivity().getLayoutInflater().inflate(R.layout.custom_alert_dialog_title, null);
+		TextView title = (TextView) view.findViewById(R.id.custom_title);
+		title.setText("CONFIRMATION");
+		alertDialog.setCustomTitle(view);
+		alertDialog.show();
 	}
 }

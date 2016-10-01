@@ -12,11 +12,13 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import model.FoodMenu;
+import model.Session;
 
 public class FoodMenuAdapter extends BaseAdapter {
 	private Context context;
 	private LayoutInflater inflater;
 	private List<FoodMenu> foodMenus;
+	protected Session session;
 	public FoodMenuAdapter(Context context, List<FoodMenu> foodMenus) {
 		this.context = context;
 		this.foodMenus = foodMenus;
@@ -43,7 +45,7 @@ public class FoodMenuAdapter extends BaseAdapter {
 			inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = inflater.inflate(R.layout.populate_food_menu, null);
 		}
-		
+		session = new Session(parent.getContext());
 		
 		ImageView menuImage = (ImageView) convertView.findViewById(R.id.foodMenuImage);
 		TextView menuName = (TextView) convertView.findViewById(R.id.menu_name);

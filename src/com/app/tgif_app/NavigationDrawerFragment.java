@@ -105,8 +105,8 @@ public class NavigationDrawerFragment extends Fragment {
 				R.drawable.ic_home_black_18dp,
 				R.drawable.ic_restaurant_menu_black_18dp,
 				R.drawable.ic_content_paste_black_18dp,
-				R.drawable.ic_payment_black_18dp,
 				R.drawable.ic_feedback_black_18dp,
+				R.drawable.ic_payment_black_18dp,
 				R.drawable.not_found
 		};
 		for (int j = 0; j < MainActivity.menus.length; j++) {

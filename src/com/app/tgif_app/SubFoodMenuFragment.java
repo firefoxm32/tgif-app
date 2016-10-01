@@ -14,6 +14,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +44,7 @@ public class SubFoodMenuFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState) {
 		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.sub_food_menu_fragment, null);
 		subFoodMenuList = (ListView) rootView.findViewById(R.id.ListSubFoodMenu);
+		session = new Session(getContext());
 		MainActivity.mToolbar.setTitle(getArguments().getString("choice"));
 		getFoodItems(getArguments().getInt("menuId"));
 
@@ -55,8 +59,8 @@ public class SubFoodMenuFragment extends Fragment {
 	}
 	
 	private void getFoodItems(int menuId) {
-		showProgressDialog();
-		Ion.with(MainActivity.getContext()).load(EndPoints.FOOD_MENU_ITEMS + "?params=" + menuId).asJsonObject()
+		showProgressDialog("Loading...");
+		Ion.with(MainActivity.getContext()).load(EndPoints.HTTP+session.getIpAddress()+EndPoints.FOOD_MENU_ITEMS + "?params=" + menuId).asJsonObject()
 				.setCallback(new FutureCallback<JsonObject>() {
 					@Override
 					public void onCompleted(Exception arg0, JsonObject json) {
@@ -92,13 +96,16 @@ public class SubFoodMenuFragment extends Fragment {
 		fragmentTransaction.commit();
 	}
 	
-	private void showProgressDialog() {
+	private void showProgressDialog(String message) {
 		if (pDialog == null) {
 			pDialog = new ProgressDialog(getContext());
 			pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			pDialog.setMessage("Loading...");
 			pDialog.setIndeterminate(true);
 			pDialog.setCanceledOnTouchOutside(false);
+			SpannableString ss1 = new SpannableString(message);
+			ss1.setSpan(new RelativeSizeSpan(2f), 0, ss1.length(), 0);
+			ss1.setSpan(new ForegroundColorSpan(R.color.black), 0, ss1.length(), 0);
+			pDialog.setMessage(ss1);
 		}
 		pDialog.show();
 	}

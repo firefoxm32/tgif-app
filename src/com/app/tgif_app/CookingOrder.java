@@ -13,6 +13,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,15 +49,33 @@ public class CookingOrder extends Fragment {
 		imgbtnSend = (ImageButton) rootview.findViewById(R.id.img_btn_send_orders);
 		imgbtnSend.setVisibility(View.GONE);
 
-		myOrder(session.getTransactionId());
+		threading();
 
 		return rootview;
 	}
 
+	private void threading() {
+		new Thread(new Runnable() {
+			public void run() {
+				while (true) {
+
+					try {
+						myOrder(session.getTransactionId());
+						Thread.sleep(1000);
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+					}
+				}
+			}
+		}).start();
+	}
+
 	private void myOrder(String transactionId) {
-		showProgressDialog();
-		Ion.with(MainActivity.getContext()).load(EndPoints.MY_ORDERS + "?transaction_id=" + transactionId + "&status=C")
-				.asJsonObject().setCallback(new FutureCallback<JsonObject>() {
+//		showProgressDialog("Loading...");
+		Ion.with(MainActivity.getContext()).load(EndPoints.HTTP + session.getIpAddress() + EndPoints.MY_ORDERS
+				+ "?transaction_id=" + transactionId + "&status=C").asJsonObject()
+				.setCallback(new FutureCallback<JsonObject>() {
 					@Override
 					public void onCompleted(Exception arg0, JsonObject json) {
 						// TODO Auto-generated method stub
@@ -65,20 +86,23 @@ public class CookingOrder extends Fragment {
 						}
 						FoodMenuDAO fmd = new FoodMenuDAO();
 						orders = fmd.getMyOrders(json);
-						myOrderAdapter = new MyOrderAdapter(getActivity(), orders);
+						myOrderAdapter = new MyOrderAdapter(getActivity(), "cooking", orders);
 						myOrderListView.setAdapter(myOrderAdapter);
-						hideProgressDialog();
+//						hideProgressDialog();
 					}
 				});
 	}
 
-	private void showProgressDialog() {
+	private void showProgressDialog(String message) {
 		if (pDialog == null) {
 			pDialog = new ProgressDialog(getContext());
 			pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			pDialog.setMessage("Loading...");
 			pDialog.setIndeterminate(true);
 			pDialog.setCanceledOnTouchOutside(false);
+			SpannableString ss1 = new SpannableString(message);
+			ss1.setSpan(new RelativeSizeSpan(2f), 0, ss1.length(), 0);
+			ss1.setSpan(new ForegroundColorSpan(R.color.black), 0, ss1.length(), 0);
+			pDialog.setMessage(ss1);
 		}
 		pDialog.show();
 	}
@@ -88,11 +112,13 @@ public class CookingOrder extends Fragment {
 			pDialog.dismiss();
 		}
 	}
+
 	@Override
 	public void onViewStateRestored(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onViewStateRestored(savedInstanceState);
 	}
+
 	private void toastMessage(String message) {
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		View layout = inflater.inflate(R.layout.custom_toast_layout, null);

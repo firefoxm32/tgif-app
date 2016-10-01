@@ -2,78 +2,104 @@ package com.app.tgif_app.adapter;
 
 import java.util.List;
 
-import com.app.tgif_app.MainActivity;
+import com.app.tgif_app.OrderDetails;
 import com.app.tgif_app.R;
 import com.squareup.picasso.Picasso;
 import com.tgif.http.EndPoints;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import model.FoodItem;
+import model.Session;
 
-public class AllTimeFavoriteAdapter extends BaseAdapter {
-	private Context context;
-	private LayoutInflater inflater;
-	private List<FoodItem> foodMenuItems;
-	public AllTimeFavoriteAdapter(Context context, List<FoodItem> foodMenuItems) {
-		// TODO Auto-generated constructor stub
-		this.context = context;
-		this.foodMenuItems = foodMenuItems;
+public class AllTimeFavoriteAdapter extends RecyclerView.Adapter<AllTimeFavoriteAdapter.ViewHolder> {
+	private List<FoodItem> list;
+	private Context appContext;
+	protected Session session;
+
+	public AllTimeFavoriteAdapter(List<FoodItem> data, Context context) {
+		list = data;
+		// appContext = context;
 	}
 
 	@Override
-	public int getCount() {
+	public AllTimeFavoriteAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 		// TODO Auto-generated method stub
-		return foodMenuItems.size();
+		View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.all_time_favorite_card_view, parent,
+				false);
+		appContext = parent.getContext();
+		session = new Session(parent.getContext());
+		return new ViewHolder(view);
 	}
 
 	@Override
-	public Object getItem(int position) {
+	public void onBindViewHolder(ViewHolder holder, int position) {
 		// TODO Auto-generated method stub
-		return foodMenuItems.get(position);
-	}
-
-	@Override
-	public long getItemId(int position) {
-		// TODO Auto-generated method stub
-		return position;
-	}
-
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		// TODO Auto-generated method stub
-		
-		if (convertView == null){
-			inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = inflater.inflate(R.layout.populate_sub_food_menu, null);
+		if (list.get(position).getPromoStatus().equalsIgnoreCase("I")) {
+			String imageUrl = EndPoints.HTTP + session.getIpAddress() + EndPoints.PICASSO
+					+ list.get(position).getItemName().replace(" ", "%20").toLowerCase() + "/"
+					+ list.get(position).getImage();
+			System.out.println("IMAGE: "+imageUrl);
+			Picasso.with(appContext).load(imageUrl).placeholder(R.drawable.placeholder_pic).error(R.drawable.not_found)
+					.fit().centerCrop().into(holder.allTimeFavoriteImage);
+			holder.itemName.setText(list.get(position).getItemName());
+			holder.category.setText(list.get(position).getFoodMenu().getMenuName());
+			holder.description.setText(list.get(position).getDescription().replace("\"", ""));
+			holder.ratingBar.setRating(2f);
 		}
-		
-		ImageView itemImage = (ImageView) convertView.findViewById(R.id.itemImage);
-		TextView itemName = (TextView) convertView.findViewById(R.id.itemName);
-		TextView description = (TextView) convertView.findViewById(R.id.description);
-		TextView label = (TextView) convertView.findViewById(R.id.menuLabel);
-		RatingBar rating = (RatingBar) convertView.findViewById(R.id.rating_bar);
-		rating.setMax(1000);
-		FoodItem fmi = foodMenuItems.get(position);
-		
-		Picasso
-		.with(MainActivity.getContext())
-		.load(EndPoints.PICASSO+fmi.getItemName().replace(" ", "%20").toLowerCase()+"/"+fmi.getImage())
-		.error(R.drawable.not_found)
-		.fit()
-		.centerCrop()
-		.into(itemImage);
-		
-		itemName.setText(fmi.getItemName());
-		label.setText("Category: "+fmi.getFoodMenu().getMenuName());
-		description.setText("Description: "+fmi.getDescription().replace("\"", ""));
-		rating.setRating(0.1f);
-		return convertView;
+	}
+
+	@Override
+	public int getItemCount() {
+		// TODO Auto-generated method stub
+		return list.size();
+	}
+
+	public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+		TextView itemName;
+		TextView category;
+		TextView description;
+		ImageView allTimeFavoriteImage;
+		RatingBar ratingBar;
+
+		public ViewHolder(View view) {
+			super(view);
+			// TODO Auto-generated constructor stub
+			allTimeFavoriteImage = (ImageView) view.findViewById(R.id.atf_image);
+			itemName = (TextView) view.findViewById(R.id.atf_item_name);
+			category = (TextView) view.findViewById(R.id.atf_category);
+			description = (TextView) view.findViewById(R.id.atf_description);
+			ratingBar = (RatingBar) view.findViewById(R.id.atf_rating_bar);
+			view.setOnClickListener(this);
+		}
+
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			orderDetails(getLayoutPosition());
+		}
+
+		public void orderDetails(int position) {
+			Bundle odBundle = new Bundle();
+			odBundle.putString("item_name", list.get(position).getItemName());
+			odBundle.putInt("item_id", list.get(position).getItemId());
+			odBundle.putString("image", list.get(position).getImage());
+			Fragment orderDetails = new OrderDetails();
+			orderDetails.setArguments(odBundle);
+
+			FragmentTransaction fragmentTransaction = ((AppCompatActivity) appContext).getSupportFragmentManager()
+					.beginTransaction();
+			fragmentTransaction.replace(R.id.container, orderDetails).addToBackStack(null).commit();
+		}
 	}
 }

@@ -2,52 +2,41 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/feed_bg"
+    android:orientation="vertical"
     android:paddingBottom="@dimen/feed_item_margin" >
-    
-     <TextView
+
+    <TextView
         android:id="@+id/allTimeFavorite"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:layout_marginLeft="6dp"
-        android:layout_marginTop="10dp"
-        android:textSize="20sp"
-        android:textStyle="bold"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:fontFamily="sans-serif-condense"
+        android:text="@string/all_time_favorites"
         android:textColor="#000"
-        android:text="@string/all_time_favorites" />
-    <include layout="@layout/recycle_viewer"
-        android:layout_height="0dp"
-        android:layout_width="match_parent"
-        android:layout_weight="0.5"/>
-    <!-- <ListView
-        android:id="@+id/allTimeFavoriteList"
+        android:textSize="28sp"
+        android:textStyle="bold" />
+
+    <include
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.5"
-        android:divider="@null"
-        android:scrollbars="none" /> -->
+        layout="@layout/all_time_favorite_recycle_viewer" />
+
     <TextView
         android:id="@+id/promo"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:layout_marginLeft="6dp"
-        android:layout_marginTop="10dp"
-        android:textSize="20sp"
-        android:textStyle="bold"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:fontFamily="sans-serif-condense"
+        android:text="@string/promos"
         android:textColor="#000"
-        android:text="@string/promos" />
-    <include layout="@layout/recycle_viewer"
-        android:layout_height="0dp"
-        android:layout_width="match_parent"
-        android:layout_weight="0.5" />
-   <!--  
-   <ListView
-        android:id="@+id/promoList"
+        android:textSize="28sp"
+        android:textStyle="bold" />
+
+    <include
         android:layout_width="match_parent"
         android:layout_height="0dp"
-   		android:layout_weight="0.5"     
-        android:divider="@null"
-        android:scrollbars="none" /> -->
-   
+        android:layout_weight="0.5"
+        layout="@layout/promo_recycler_view" />
 </LinearLayout>

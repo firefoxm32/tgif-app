@@ -1,5 +1,6 @@
 package com.app.tgif_app;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.app.tgif_app.adapter.MyOrderAdapter;
@@ -13,6 +14,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,15 +48,29 @@ public class ServedOrder extends Fragment {
 		myOrderListView = (ListView) rootview.findViewById(R.id.myOrderListView);
 		imgbtnSend = (ImageButton) rootview.findViewById(R.id.img_btn_send_orders);
 		imgbtnSend.setVisibility(View.GONE);
-
-		myOrder(session.getTransactionId());
-
+		threading();
+		
 		return rootview;
 	}
-
+	private void threading() {
+		new Thread(new Runnable() {
+			public void run() {
+				while (true) {
+					try {
+						myOrder(session.getTransactionId());
+						Thread.sleep(1000);
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+					}
+				}
+			}
+		}).start();
+	}
+	
 	private void myOrder(String transactionId) {
-		showProgressDialog();
-		Ion.with(MainActivity.getContext()).load(EndPoints.MY_ORDERS + "?transaction_id=" + transactionId + "&status=S")
+//		showProgressDialog("Loading...");
+		Ion.with(MainActivity.getContext()).load(EndPoints.HTTP+session.getIpAddress()+EndPoints.MY_ORDERS + "?transaction_id=" + transactionId + "&status=S")
 				.asJsonObject().setCallback(new FutureCallback<JsonObject>() {
 					@Override
 					public void onCompleted(Exception arg0, JsonObject json) {
@@ -62,22 +80,33 @@ public class ServedOrder extends Fragment {
 							hideProgressDialog();
 							return;
 						}
+						List<Order> orderList = new ArrayList<>();
 						FoodMenuDAO fmd = new FoodMenuDAO();
-						orders = fmd.getMyOrders(json);
-						myOrderAdapter = new MyOrderAdapter(getActivity(), orders);
+						orders = fmd.getMyOrders(json, orderList);
+						
+						if (myOrderListView.getAdapter() != null) {
+							for (int i = 0; i < myOrderListView.getAdapter().getCount(); i++) {
+								Order orderObj = (Order) myOrderListView.getAdapter().getItem(i);
+								orderList.add(orderObj);
+							}
+						}
+						
+						myOrderAdapter = new MyOrderAdapter(getActivity(), "served", orders);
 						myOrderListView.setAdapter(myOrderAdapter);
-						hideProgressDialog();
 					}
 				});
 	}
 
-	private void showProgressDialog() {
+	private void showProgressDialog(String message) {
 		if (pDialog == null) {
 			pDialog = new ProgressDialog(getContext());
 			pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			pDialog.setMessage("Loading...");
 			pDialog.setIndeterminate(true);
 			pDialog.setCanceledOnTouchOutside(false);
+			SpannableString ss1 = new SpannableString(message);
+			ss1.setSpan(new RelativeSizeSpan(2f), 0, ss1.length(), 0);
+			ss1.setSpan(new ForegroundColorSpan(R.color.black), 0, ss1.length(), 0);
+			pDialog.setMessage(ss1);
 		}
 		pDialog.show();
 	}

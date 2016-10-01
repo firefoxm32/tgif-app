@@ -10,6 +10,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,48 +45,16 @@ public class VerifyingActivity extends Activity {
 			verifying();
 		}
 	}
-	private String loading = "Verifying.";
-	private void verifying() {		
+
+	private void verifying() {
+		showProgressDialog("Processing Payments...");
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
 				while (!isDone) {
 					try {
-						Ion.with(getContext())
-								.load(EndPoints.TABLE_STATUS
-										+ "?transaction_id="+session.getTransactionId())
-								.asJsonObject().setCallback(new FutureCallback<JsonObject>() {
-									@Override
-									public void onCompleted(Exception arg0, JsonObject json) {
-										// TODO Auto-generated method stub
-										if (json == null) {
-											toastMessage("Network error");
-											return;
-										}
-										String status = json.get("table_status").getAsString();
-										
-										setText(loading);
-										if (loading.equals("Verifying.")) {
-											loading = "Verifying..";
-											setText(loading);
-										} else if (loading.equals("Verifying..")) {
-											loading = "Verifying...";
-											setText(loading);
-										} else if (loading.equals("Verifying...")) {
-											loading = "Verifying.";
-											setText(loading);
-										}
-										if (status.equalsIgnoreCase("W")) {
-											isDone = true;
-											session.removeTransactionId();
-											Intent welcomeActivity = new Intent(VerifyingActivity.this, WelcomeActivity.class);
-											overridePendingTransition(0, 0);
-											startActivity(welcomeActivity);
-											finish();
-										}
-									}
-								});
+						processing();
 						Thread.sleep(500);
 					} catch (Exception e) {
 						// TODO: handle exception
@@ -93,19 +64,34 @@ public class VerifyingActivity extends Activity {
 			}
 		}).start();
 	}
-	
-	private void setText(final String _loading) {
-//		final TextView verifying = (TextView)findViewById(R.id.verifying2);
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-//				verifying.setText(loading);
-				((TextView)findViewById(R.id.verifying2)).setText(_loading);
-			}
-		});
+
+	private void processing() {
+		Ion.with(getContext()).load(EndPoints.HTTP + session.getIpAddress() + EndPoints.TABLE_STATUS
+				+ "?transaction_id=" + session.getTransactionId()).asJsonObject()
+				.setCallback(new FutureCallback<JsonObject>() {
+					@Override
+					public void onCompleted(Exception arg0, JsonObject json) {
+						// TODO Auto-generated method stub
+						if (json == null) {
+							toastMessage("Network error");
+							return;
+						}
+						String status = json.get("table_status").getAsString();
+
+						if (status.equalsIgnoreCase("W")) {
+							isDone = true;
+							session.removeTransactionId();
+							session.setTableStatus("W");
+							hideProgressDialog();
+							Intent welcomeActivity = new Intent(VerifyingActivity.this, WelcomeActivity.class);
+							overridePendingTransition(0, 0);
+							startActivity(welcomeActivity);
+							finish();
+						}
+					}
+				});
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -124,11 +110,13 @@ public class VerifyingActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onRestoreInstanceState(savedInstanceState);
 	}
+
 	private void toastMessage(String message) {
 		LayoutInflater inflater = getLayoutInflater();
 		View layout = inflater.inflate(R.layout.custom_toast_layout, null);
@@ -138,5 +126,25 @@ public class VerifyingActivity extends Activity {
 		toast.setDuration(Toast.LENGTH_SHORT);
 		toast.setView(layout);
 		toast.show();
+	}
+
+	private void showProgressDialog(String message) {
+		if (pDialog == null) {
+			pDialog = new ProgressDialog(getContext());
+			pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			pDialog.setIndeterminate(true);
+			pDialog.setCanceledOnTouchOutside(false);
+			SpannableString ss1 = new SpannableString(message);
+			ss1.setSpan(new RelativeSizeSpan(2f), 0, ss1.length(), 0);
+			ss1.setSpan(new ForegroundColorSpan(R.color.white), 0, ss1.length(), 0);
+			pDialog.setMessage(ss1);
+		}
+		pDialog.show();
+	}
+
+	private void hideProgressDialog() {
+		if (pDialog != null && pDialog.isShowing()) {
+			pDialog.dismiss();
+		}
 	}
 }

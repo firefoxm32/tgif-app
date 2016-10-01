@@ -4,47 +4,99 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
+    <LinearLayout
+       	android:layout_width="match_parent"
+       	android:layout_height="wrap_content"
+       	android:orientation="horizontal" >
+        
+        <Button
+            android:id="@+id/cash_method"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="Cash"
+            android:textAlignment="center"
+            android:textStyle="bold" />
+        
+        <Button
+            android:id="@+id/credit_card_method"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:text="Via Credit Card"
+            android:textAlignment="center"
+            android:textStyle="bold" />
+    </LinearLayout>
+    
     <TextView
         android:id="@+id/bill"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="15dp"
         android:layout_marginBottom="10dp"
-        android:fontFamily="sans-serif-light"
         android:paddingLeft="10dp"
         android:paddingTop="10dp"
-        android:layout_margin="15dp"
         android:textColor="#000"
         android:textSize="28sp" />
 
     <EditText
         android:id="@+id/cash"
-        style="@style/Base.V12.Widget.AppCompat.EditText"
+        style="@style/Widget.AppCompat.EditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-light"
-        android:hint="Cash Amount"
-        android:inputType="number"
-        android:paddingLeft="10dp"
-        android:paddingTop="10dp"
         android:layout_margin="15dp"
         android:layout_marginBottom="5dp"
+        android:hint="Cash Amount"
+        android:inputType="numberDecimal"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
         android:textColor="#000"
         android:textColorHint="#000"
         android:textSize="28sp" />
 
-    <!--
-         <EditText
-	    android:id="@+id/member_card"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:textSize="20sp"
-	    android:textColor="#000"
-	    android:fontFamily="sans-serif"
-	    android:textColorHint="#000"
-	    android:hint="Member Card"
-	    android:padding="5dp"
-	    android:password="true"
-	    style="@style/Base.V12.Widget.AppCompat.EditText" />
-    -->
+        <EditText
+        android:id="@+id/credit_card_name"
+        style="@style/Widget.AppCompat.EditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:layout_marginBottom="5dp"
+        android:hint="Credit Card Holder Name"
+        android:inputType="text"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:textColor="#000"
+        android:textColorHint="#000"
+        android:textSize="28sp" />
+    
+    <EditText
+        android:id="@+id/credit_card_number"
+        style="@style/Widget.AppCompat.EditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:layout_marginBottom="5dp"
+        android:hint="Card Number"
+        android:inputType="numberPassword"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:textColor="#000"
+        android:textColorHint="#000"
+        android:textSize="28sp" />
+
+    <EditText
+        android:id="@+id/member_id"
+        style="@style/Widget.AppCompat.EditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:layout_marginBottom="5dp"
+        android:hint="Member ID"
+        android:inputType="textPassword"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:textColor="#000"
+        android:textColorHint="#000"
+        android:textSize="28sp" />
 
 </LinearLayout>

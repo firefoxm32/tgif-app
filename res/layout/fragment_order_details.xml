@@ -14,131 +14,136 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="#FFF" >
-            <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="5dp" >
-
-            <ImageView
-                android:id="@+id/order_details_image"
-                android:layout_width="wrap_content"
-                android:layout_height="400dp"
-                android:layout_margin="10dp" />
+            android:background="#FFF"
+            android:orientation="vertical" >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+                android:orientation="vertical"
+                android:padding="5dp" >
+
+                <ImageView
+                    android:id="@+id/order_details_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="500dp"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitXY" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:id="@+id/order_details_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:singleLine="false"
+                        android:textAlignment="gravity"
+                        android:textColor="#000"
+                        android:textSize="26sp" />
+
+                    <TextView
+                        android:id="@+id/servings"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:fontFamily="sans-serif-condense"
+                        android:text="@string/servings"
+                        android:textColor="#000"
+                        android:textSize="22sp" />
+
+                    <RadioGroup
+                        android:id="@+id/rd_group"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:weightSum="1" >
+                    </RadioGroup>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/l_sauce"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
                 android:orientation="vertical" >
 
                 <TextView
-                    android:id="@+id/order_details_description"
+                    android:id="@+id/sauce"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAlignment="gravity"
+                    android:fontFamily="sans-serif-condense"
+                    android:text="@string/sauces"
                     android:textColor="#000"
-                    android:textSize="26sp"
-                    android:singleLine="false" />
-                
+                    android:textSize="22sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/l_side_dish"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:orientation="vertical" >
+
                 <TextView
-                    android:id="@+id/servings"
-                    android:layout_width="match_parent"
+                    android:id="@+id/side_dish"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="@string/servings"
+                    android:fontFamily="sans-serif-condense"
+                    android:text="@string/side_dishes"
                     android:textColor="#000"
                     android:textSize="22sp" />
 
                 <RadioGroup
-                    android:id="@+id/rd_group"
+                    android:id="@+id/rd_group_sd"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:weightSum="1" >
                 </RadioGroup>
             </LinearLayout>
-        </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/l_sauce"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/sauce"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/sauces"
-                android:textColor="#000"
-                android:textSize="22sp" />
+                android:layout_marginLeft="10dp"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-condense"
+                    android:text="Quantity:"
+                    android:textColor="#000"
+                    android:textSize="22sp" />
+
+                <EditText
+                    android:id="@+id/qty"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:hint="0"
+                    android:inputType="number"
+                    android:padding="10dp"
+                    android:textColor="#000"
+                    android:textColorHint="#000"
+                    android:textSize="20sp" />
+
+                <Button
+                    android:id="@+id/btn_add"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_margin="6dp"
+                    android:background="#C10012"
+                    android:text="ADD ORDER"
+                    android:textColor="#FFF"
+                    android:textStyle="bold" />
+            </LinearLayout>
         </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/l_side_dish"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/side_dish"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/side_dishes"
-                android:textColor="#000"
-                android:textSize="22sp" />
-
-            <RadioGroup
-                android:id="@+id/rd_group_sd"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="1" >
-            </RadioGroup>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:orientation="vertical" >
-
-            <EditText
-                android:id="@+id/qty"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Quantity"
-                android:padding="10dp"
-                android:textCursorDrawable="@null"
-                android:textColor="#000"
-                android:textColorHint="#000"
-                android:textSize="20sp"
-                android:inputType="number" />
-            <Button
-                android:id="@+id/btn_add"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_margin="6dp"
-                android:background="#C10012"
-                android:text="ADD"
-                android:textColor="#FFF"
-                android:textStyle="bold" />
-        </LinearLayout>
-            
-        </LinearLayout>
-
-        <!-- <LinearLayout
-            android:id="@+id/lButton"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#FFF"
-            android:orientation="horizontal" > -->
-
-            
-        <!-- </LinearLayout> -->
     </LinearLayout>
 
 </ScrollView>

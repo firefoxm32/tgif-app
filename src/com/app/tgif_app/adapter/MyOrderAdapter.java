@@ -10,21 +10,28 @@ import com.tgif.http.EndPoints;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import model.Order;
+import model.Session;
 
 public class MyOrderAdapter extends BaseAdapter {
 	private Context context;
 	private LayoutInflater inflater;
 	private List<Order> orders;
+	private String tab;
+	private RatingBar rateMe;
+	protected Session session;
 
-	public MyOrderAdapter(Context context, List<Order> orders) {
+	public MyOrderAdapter(Context context, String tabName, List<Order> orders) {
 		// TODO Auto-generated constructor stub
 		this.context = context;
 		this.orders = orders;
+		this.tab = tabName;
 	}
 
 	@Override
@@ -52,19 +59,17 @@ public class MyOrderAdapter extends BaseAdapter {
 			inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = inflater.inflate(R.layout.populate_my_order, null);
 		}
+		session = new Session(parent.getContext());
 		ImageView itemImage = (ImageView) convertView.findViewById(R.id.myOrderItemImage);
 		TextView itemName = (TextView) convertView.findViewById(R.id.myOrderItemName);
 		TextView serving = (TextView) convertView.findViewById(R.id.myOrderServing);
 		TextView sauce = (TextView) convertView.findViewById(R.id.myOrderSauce);
 		TextView sideDish = (TextView) convertView.findViewById(R.id.myOrderSideDish);
 		TextView qty = (TextView) convertView.findViewById(R.id.myOrderQty);
+		TextView tvRateMe = (TextView) convertView.findViewById(R.id.rateMe);
+		rateMe = (RatingBar) convertView.findViewById(R.id.rate_me);
 
 		Order order = orders.get(position);
-		Picasso.with(MainActivity.getContext())
-				.load(EndPoints.PICASSO + order.getFoodItem().getItemName().replace(" ", "%20").toLowerCase() + "/"
-						+ order.getFoodItem().getImage())
-				.error(R.drawable.not_found).into(itemImage);
-
 		if (order.getFoodItem().getItemName().equals("")) {
 			itemName.setVisibility(View.GONE);
 		} else {
@@ -116,6 +121,29 @@ public class MyOrderAdapter extends BaseAdapter {
 		}
 		qty.setText("Quantity: " + order.getQty());
 
+		if (this.tab.equalsIgnoreCase("pending")) {
+			tvRateMe.setVisibility(View.GONE);
+			rateMe.setVisibility(View.GONE);
+		} else if (this.tab.equalsIgnoreCase("cooking")) {
+			tvRateMe.setVisibility(View.GONE);
+			rateMe.setVisibility(View.GONE);
+		} else {
+			tvRateMe.setVisibility(View.VISIBLE);
+			rateMe.setVisibility(View.VISIBLE);
+		}
+		rateMe.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				rateMe.setRating(3.0f);
+			}
+		});
+		
+		Picasso.with(MainActivity.getContext())
+				.load(EndPoints.HTTP + session.getIpAddress() + EndPoints.PICASSO
+						+ order.getFoodItem().getItemName().replace(" ", "%20").toLowerCase() + "/"
+						+ order.getFoodItem().getImage())
+				.error(R.drawable.not_found).into(itemImage);
 		return convertView;
-	}	
+	}
 }

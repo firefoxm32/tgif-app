@@ -15,6 +15,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -24,9 +27,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import model.Session;
 
 public class EditOrderActivity extends AppCompatActivity {
 	private static Toolbar mToolbar;
+	protected Session session;
 	private ImageView itemImage;
 	private TextView itemName;
 	private TextView serving;
@@ -52,11 +57,15 @@ public class EditOrderActivity extends AppCompatActivity {
 		// TODO Auto-generated method stub
 		super.onCreate(saveInstanceState);
 		setContext(this);
+		session = new Session(getContext());
 		setContentView(R.layout.activity_edit_order);
 		mToolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(mToolbar);
-		mToolbar.setNavigationIcon(R.drawable.ic_arrow_back2);
 		mToolbar.setTitle("Edit / Delete Order");
+//		mToolbar.setNavigationIcon(R.drawable.ic_arrow_back2);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
+		
 		b = getIntent().getExtras();
 		if (b == null) {
 			toastMessage("No data");
@@ -73,7 +82,7 @@ public class EditOrderActivity extends AppCompatActivity {
 
 		Picasso
 		.with(getContext())
-		.load(EndPoints.PICASSO+b.getString("item_name").replace(" ", "%20").toLowerCase()+"/"+b.getString("item_image"))
+		.load(EndPoints.HTTP+session.getIpAddress()+EndPoints.PICASSO+b.getString("item_name").replace(" ", "%20").toLowerCase()+"/"+b.getString("item_image"))
 		.error(R.drawable.not_found)
 		.into(itemImage);
 		
@@ -128,8 +137,8 @@ public class EditOrderActivity extends AppCompatActivity {
 	}
 
 	private void editOrder() {
-		showProgressDialog();
-		Ion.with(getContext()).load(EndPoints.EDIT_ORDER).setBodyParameter("id", String.valueOf(b.getInt("id")))
+		showProgressDialog("Loading...");
+		Ion.with(getContext()).load(EndPoints.HTTP+session.getIpAddress()+EndPoints.EDIT_ORDER).setBodyParameter("id", String.valueOf(b.getInt("id")))
 				.setBodyParameter("qty", quantity.getText().toString()).asString()
 				.setCallback(new FutureCallback<String>() {
 					@Override
@@ -156,14 +165,13 @@ public class EditOrderActivity extends AppCompatActivity {
 
 	private void msgBox() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-		builder.setTitle("Delete Order");
 		builder.setMessage("Are you sure?");
 		builder.setIcon(null);
 		builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				// TODO Auto-generated method stub
-				showProgressDialog();
-				Ion.with(getContext()).load(EndPoints.DELETE_ORDER)
+				showProgressDialog("Loading...");
+				Ion.with(getContext()).load(EndPoints.HTTP+session.getIpAddress()+EndPoints.DELETE_ORDER)
 						.setBodyParameter("id", String.valueOf(b.getInt("id"))).asString()
 						.setCallback(new FutureCallback<String>() {
 							@Override
@@ -194,8 +202,12 @@ public class EditOrderActivity extends AppCompatActivity {
 				dialog.cancel();
 			}
 		});
-		AlertDialog dialog = builder.create();
-		dialog.show();
+		AlertDialog alertDialog = builder.create();
+		View view = getLayoutInflater().inflate(R.layout.custom_alert_dialog_title, null);
+		TextView title = (TextView) view.findViewById(R.id.custom_title);
+		title.setText("DELETE");
+		alertDialog.setCustomTitle(view);
+		alertDialog.show();
 	}
 
 	@Override
@@ -212,13 +224,16 @@ public class EditOrderActivity extends AppCompatActivity {
 		// TODO Auto-generated method stub
 		super.onRestoreInstanceState(savedInstanceState);
 	}
-	private void showProgressDialog() {
+	private void showProgressDialog(String message) {
 		if (pDialog == null) {
 			pDialog = new ProgressDialog(getContext());
 			pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			pDialog.setMessage("Loading...");
 			pDialog.setIndeterminate(true);
 			pDialog.setCanceledOnTouchOutside(false);
+			SpannableString ss1 = new SpannableString(message);
+			ss1.setSpan(new RelativeSizeSpan(2f), 0, ss1.length(), 0);
+			ss1.setSpan(new ForegroundColorSpan(R.color.black), 0, ss1.length(), 0);
+			pDialog.setMessage(ss1);
 		}
 		pDialog.show();
 	}

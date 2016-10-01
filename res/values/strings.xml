@@ -7,7 +7,7 @@
     <string name="drawer_close">Closed</string>
     <string name="drawer_open">Opened</string>
     <string name="title_fragment_cooking_order">CookingOrder</string>
-    <string name="title_activity_edit_order">EditOrderActivity</string>
+    <string name="title_activity_edit_order">Edit / Delete Order</string>
     <string name="title_fragment_food_menu">FoodMenuFragment</string>
     <string name="title_fragment_home">Home</string>
     <string name="title_activity_login">LoginActivity</string>
@@ -16,20 +16,17 @@
     <string name="title_fragment_pending_order">PendingOrder</string>
     <string name="title_fragment_served_order">ServedOrder</string>
     <string name="title_fragment_sub_food_menu">SubFoodMenuFragment</string>
-	<string name="title_activity_verifying">VerifyingActivity</string>
-	<string name="title_activity_welcome">Welcome</string>
-	
+    <string name="title_activity_verifying">VerifyingActivity</string>
+    <string name="title_activity_welcome">Welcome</string>
     <string name="Home">Home</string>
     <string name="Food_Menu">Food Menu</string>
     <string name="My_Order">My Order</string>
     <string name="Check_Out">Check Out</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    
     <string name="all_time_favorites">ALL TIME FAVORITES</string>
     <string name="promos">PROMOS</string>
     <string name="rating">Rating: </string>
-    
     <string name="btn_login">Login</string>
     <string name="password_hint">Password</string>
     <string name="username_hint">Username</string>
@@ -37,4 +34,5 @@
     <string name="servings">Serving/s</string>
     <string name="sauces">Sauce/s</string>
     <string name="side_dishes">Side Dish/es</string>
+
 </resources>

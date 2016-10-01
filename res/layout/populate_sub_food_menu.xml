@@ -21,14 +21,6 @@
             android:layout_height="105dp"
             android:layout_marginRight="10dp" />
 
-        <!--
-        	</ImageView>
-             android:scaleType="fitCenter"
-        	android:scaleType="fitXY"
-        	android:orientation="vertical"
-        	android:layout_marginRight="10dp"
-        -->
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -40,6 +32,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="#000"
                 android:textSize="20sp"
+                android:fontFamily="sans-serif-condense"
                 android:textStyle="bold" />
 
             <TextView

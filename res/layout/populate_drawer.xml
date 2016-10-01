@@ -12,17 +12,17 @@
 	    
 	    <ImageView
 	        android:id="@+id/drawerImage"
-	        android:layout_width="50dp"
-	        android:layout_height="50dp"
+	        android:layout_width="32dp"
+	        android:layout_height="32dp"
 	        android:layout_margin="5dp" />
 	    <TextView
 	        android:id="@+id/drawerMenu"
 	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
+	        android:layout_height="32dp"
 	        android:textSize="20sp"
 	        android:textColor="#000"
-	        android:layout_marginTop="15dp"
-	        android:layout_marginLeft="10dp"
+	        android:layout_marginTop="5dp"
+	        android:layout_marginLeft="15dp"
 	        />
 	</LinearLayout>
 </LinearLayout>
