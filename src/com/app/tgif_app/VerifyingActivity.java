@@ -14,8 +14,6 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +38,7 @@ public class VerifyingActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_verifying);
 		setContext(this);
+//		showProgressDialog("Processing Payments...");
 		session = new Session(getContext());
 		if (!session.getTransactionId().isEmpty()) {
 			verifying();
@@ -55,7 +54,7 @@ public class VerifyingActivity extends Activity {
 				while (!isDone) {
 					try {
 						processing();
-						Thread.sleep(500);
+						Thread.sleep(3000);
 					} catch (Exception e) {
 						// TODO: handle exception
 						e.printStackTrace();
@@ -87,29 +86,38 @@ public class VerifyingActivity extends Activity {
 							overridePendingTransition(0, 0);
 							startActivity(welcomeActivity);
 							finish();
+						} else if (status.equalsIgnoreCase("O")) {
+							isDone = true;
+							session.setTableStatus("O");
+							hideProgressDialog();
+							toastMessage("Payment cancelled! Invalid credit card.");
+							Intent mainActivity = new Intent(VerifyingActivity.this, MainActivity.class);
+							overridePendingTransition(0, 0);
+							startActivity(mainActivity);
+							finish();
 						}
 					}
 				});
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.verifying, menu);
-		return true;
-	}
+//	@Override
+//	public boolean onCreateOptionsMenu(Menu menu) {
+//		// Inflate the menu; this adds items to the action bar if it is present.
+//		getMenuInflater().inflate(R.menu.verifying, menu);
+//		return true;
+//	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+//	@Override
+//	public boolean onOptionsItemSelected(MenuItem item) {
+//		// Handle action bar item clicks here. The action bar will
+//		// automatically handle clicks on the Home/Up button, so long
+//		// as you specify a parent activity in AndroidManifest.xml.
+//		int id = item.getItemId();
+//		if (id == R.id.action_settings) {
+//			return true;
+//		}
+//		return super.onOptionsItemSelected(item);
+//	}
 
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -136,7 +144,7 @@ public class VerifyingActivity extends Activity {
 			pDialog.setCanceledOnTouchOutside(false);
 			SpannableString ss1 = new SpannableString(message);
 			ss1.setSpan(new RelativeSizeSpan(2f), 0, ss1.length(), 0);
-			ss1.setSpan(new ForegroundColorSpan(R.color.white), 0, ss1.length(), 0);
+			ss1.setSpan(new ForegroundColorSpan(R.color.black), 0, ss1.length(), 0);
 			pDialog.setMessage(ss1);
 		}
 		pDialog.show();

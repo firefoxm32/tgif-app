@@ -9,8 +9,10 @@ import com.tgif.http.EndPoints;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -131,11 +133,12 @@ public class MyOrderAdapter extends BaseAdapter {
 			tvRateMe.setVisibility(View.VISIBLE);
 			rateMe.setVisibility(View.VISIBLE);
 		}
-		rateMe.setOnClickListener(new OnClickListener() {
+		rateMe.setOnTouchListener(new OnTouchListener() {
 			@Override
-			public void onClick(View v) {
+			public boolean onTouch(View v, MotionEvent event) {
 				// TODO Auto-generated method stub
-				rateMe.setRating(3.0f);
+				System.out.println("rateme");
+				return false;
 			}
 		});
 		

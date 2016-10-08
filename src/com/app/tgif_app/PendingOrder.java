@@ -60,7 +60,6 @@ public class PendingOrder extends Fragment {
 		myOrder(session.getTransactionId());
 
 		myOrderListView.setOnItemClickListener(new OnItemClickListener() {
-
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				// TO DO Auto-generated method stub
@@ -71,7 +70,6 @@ public class PendingOrder extends Fragment {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				System.out.println("ADAPTER: "+orders.size());
 				if(orders.size() == 0) {
 					toastMessage("No order to send");
 					return;
@@ -216,7 +214,7 @@ public class PendingOrder extends Fragment {
 	
 	private void YesNo() {
 		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
-		alertBuilder.setMessage("Are you sure you want to send orders?");
+		alertBuilder.setMessage("Are you sure you want to send orders? Cannot cancel after sending.");
 		alertBuilder.setPositiveButton("Yes", new android.content.DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {

@@ -96,9 +96,9 @@ public class PromoAdapter extends RecyclerView.Adapter<PromoAdapter.ViewHolder> 
 			Fragment orderDetails = new OrderDetails();
 			orderDetails.setArguments(odBundle);
 
-			FragmentTransaction fragmentTransaction = ((AppCompatActivity) appContext).getSupportFragmentManager()
-					.beginTransaction();
-			fragmentTransaction.replace(R.id.container, orderDetails).addToBackStack(null).commit();
+//			FragmentTransaction fragmentTransaction = ((AppCompatActivity) appContext).getSupportFragmentManager()
+//					.beginTransaction();
+//			fragmentTransaction.replace(R.id.container, orderDetails).addToBackStack(null).commit();
 		}
 	}
 }

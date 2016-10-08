@@ -18,5 +18,6 @@
     	    android:id="@+id/main_setup"
     	    android:orderInCategory="100"
     	    android:title="Setup"
+    	    android:showAsAction="never"
     	     />
 </menu>

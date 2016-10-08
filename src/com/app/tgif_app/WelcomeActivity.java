@@ -53,12 +53,18 @@ public class WelcomeActivity extends Activity {
 		setContext(this);
 		relativeLayout = (RelativeLayout) findViewById(R.id.welcome_relative_layout);
 		session = new Session(getContext());
-		// if (!session.getUsername().isEmpty()) {
-		// System.out.println("SESSION UNAME: " + session.getUsername());
-		// System.out.println("SESSION PASS: " + session.getPassword());
-		// System.out.println("SESSION TABLE NUM: " + session.getTableNumber());
-		// session.clearPrefs();
-		// }
+//		showProgressDialog("WELCOME");
+//		Intent verifying = new Intent(WelcomeActivity.this, VerifyingActivity.class);
+//		overridePendingTransition(0, 0);
+//		startActivity(verifying);
+//		finish();
+//		if (!session.getUsername().isEmpty()) {
+//			
+//			System.out.println("SESSION UNAME: " + session.getUsername());
+//			System.out.println("SESSION PASS: " + session.getPassword());
+//			System.out.println("SESSION TABLE NUM: " + session.getTableNumber());
+//			session.clearPrefs();
+//		}
 		if (!session.getTransactionId().isEmpty()) {
 			Intent mainActivity = new Intent(WelcomeActivity.this, MainActivity.class);
 			overridePendingTransition(0, 0);

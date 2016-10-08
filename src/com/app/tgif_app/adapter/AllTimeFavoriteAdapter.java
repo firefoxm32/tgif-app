@@ -2,6 +2,7 @@ package com.app.tgif_app.adapter;
 
 import java.util.List;
 
+import com.app.tgif_app.MainActivity;
 import com.app.tgif_app.OrderDetails;
 import com.app.tgif_app.R;
 import com.squareup.picasso.Picasso;
@@ -10,8 +11,6 @@ import com.tgif.http.EndPoints;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,7 +54,7 @@ public class AllTimeFavoriteAdapter extends RecyclerView.Adapter<AllTimeFavorite
 			holder.itemName.setText(list.get(position).getItemName());
 			holder.category.setText(list.get(position).getFoodMenu().getMenuName());
 			holder.description.setText(list.get(position).getDescription().replace("\"", ""));
-			holder.ratingBar.setRating(2f);
+//			holder.ratingBar.setRating(2f);
 		}
 	}
 
@@ -90,16 +89,18 @@ public class AllTimeFavoriteAdapter extends RecyclerView.Adapter<AllTimeFavorite
 		}
 
 		public void orderDetails(int position) {
+/*			System.out.println("ORDER DETAILS");
+			System.out.println("POSITION: "+position);
+			System.out.println("ITEM NAME: "+list.get(position).getItemName());
+			System.out.println("ITEM ID: "+list.get(position).getItemId());
+			System.out.println("ITEM IMAGE: "+list.get(position).getImage());*/
 			Bundle odBundle = new Bundle();
 			odBundle.putString("item_name", list.get(position).getItemName());
 			odBundle.putInt("item_id", list.get(position).getItemId());
 			odBundle.putString("image", list.get(position).getImage());
-			Fragment orderDetails = new OrderDetails();
-			orderDetails.setArguments(odBundle);
-
-			FragmentTransaction fragmentTransaction = ((AppCompatActivity) appContext).getSupportFragmentManager()
-					.beginTransaction();
-			fragmentTransaction.replace(R.id.container, orderDetails).addToBackStack(null).commit();
+			MainActivity.orderDetailsBundle.putBoolean("isNull", false);
+			MainActivity.orderDetailsBundle.putBundle("order_details", odBundle);
+			MainActivity.mTabHost.setCurrentTab(3);
 		}
 	}
 }

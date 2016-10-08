@@ -20,6 +20,7 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -47,7 +48,6 @@ public class Home extends Fragment {
 		// return inflater.inflate(R.layout.food_menu_fragment, null, false);
 		ViewGroup rootview = (ViewGroup) inflater.inflate(R.layout.fragment_home, null);
 		session = new Session(getContext());
-		MainActivity.mToolbar.setTitle("Home");
 		allTimeFavoriteLlm = new LinearLayoutManager(getContext());
 		allTimeFavoritesRV = (RecyclerView) rootview.findViewById(R.id.all_time_favorite_rv);
 		allTimeFavoritesRV.setHasFixedSize(true);
@@ -145,5 +145,11 @@ public class Home extends Fragment {
 		toast.setDuration(Toast.LENGTH_SHORT);
 		toast.setView(layout);
 		toast.show();
+	}
+	
+	@Override
+	public void onPrepareOptionsMenu(Menu menu) {
+		// TODO Auto-generated method stub
+		super.onPrepareOptionsMenu(menu);
 	}
 }

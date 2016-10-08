@@ -20,6 +20,8 @@ import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -49,7 +51,14 @@ public class ServedOrder extends Fragment {
 		imgbtnSend = (ImageButton) rootview.findViewById(R.id.img_btn_send_orders);
 		imgbtnSend.setVisibility(View.GONE);
 		threading();
-		
+		myOrderListView.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				// TODO Auto-generated method stub
+				Order order = orders.get(position);
+				System.out.println("ITEM ID: "+order.getItemId());
+			}
+		});
 		return rootview;
 	}
 	private void threading() {
@@ -58,7 +67,7 @@ public class ServedOrder extends Fragment {
 				while (true) {
 					try {
 						myOrder(session.getTransactionId());
-						Thread.sleep(1000);
+						Thread.sleep(5000);
 					} catch (Exception e) {
 						// TODO: handle exception
 						e.printStackTrace();
@@ -97,6 +106,24 @@ public class ServedOrder extends Fragment {
 				});
 	}
 
+	private void rating(int rating, int id) {
+		Ion.with(getContext()).load(EndPoints.HTTP + session.getIpAddress() + EndPoints.MY_ORDERS)
+		.setBodyParameter("item_id", String.valueOf(rating))
+		.setBodyParameter("rating", String.valueOf(id))
+		.asString().setCallback(new FutureCallback<String>() {
+			@Override
+			public void onCompleted(Exception arg0, String response) {
+				// TODO Auto-generated method stub
+				
+				if (response == null) {
+					toastMessage("Network Error");
+					return;
+				}
+				toastMessage("Rated");
+			}
+		});
+	}
+	
 	private void showProgressDialog(String message) {
 		if (pDialog == null) {
 			pDialog = new ProgressDialog(getContext());

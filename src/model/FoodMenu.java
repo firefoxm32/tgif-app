@@ -4,8 +4,15 @@ public class FoodMenu {
 	private int menuId;
 	private String menuName;
 	private int qty;
+	private String menuImage;
 	
 	
+	public String getMenuImage() {
+		return menuImage;
+	}
+	public void setMenuImage(String menuImage) {
+		this.menuImage = menuImage;
+	}
 	public String getMenuName() {
 		return menuName;
 	}

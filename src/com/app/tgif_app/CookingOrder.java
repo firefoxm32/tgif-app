@@ -61,7 +61,7 @@ public class CookingOrder extends Fragment {
 
 					try {
 						myOrder(session.getTransactionId());
-						Thread.sleep(1000);
+						Thread.sleep(5000);
 					} catch (Exception e) {
 						// TODO: handle exception
 						e.printStackTrace();
@@ -87,8 +87,12 @@ public class CookingOrder extends Fragment {
 						FoodMenuDAO fmd = new FoodMenuDAO();
 						orders = fmd.getMyOrders(json);
 						myOrderAdapter = new MyOrderAdapter(getActivity(), "cooking", orders);
+						int index = myOrderListView.getFirstVisiblePosition();
+						System.out.println("INDEX: "+index);
 						myOrderListView.setAdapter(myOrderAdapter);
+						myOrderListView.smoothScrollToPosition(index);
 //						hideProgressDialog();
+						
 					}
 				});
 	}

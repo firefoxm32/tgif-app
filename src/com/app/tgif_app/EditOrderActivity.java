@@ -111,10 +111,10 @@ public class EditOrderActivity extends AppCompatActivity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				if (Integer.valueOf(quantity.getText().toString()) > 0) {
+				if ((Integer.valueOf(quantity.getText().toString()) > 0) && (Integer.valueOf(quantity.getText().toString()) < 11)) {
 					editOrder();
 				} else {
-					toastMessage("Invalid input");
+					toastMessage("Enter only 1 - 10 quantity.");
 				}
 			}
 		});
@@ -191,7 +191,7 @@ public class EditOrderActivity extends AppCompatActivity {
 								}
 								hideProgressDialog();
 								toastMessage("Order deleted");
-								finish();
+								finishActivity();
 							}
 						});
 			}
@@ -210,14 +210,14 @@ public class EditOrderActivity extends AppCompatActivity {
 		alertDialog.show();
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// TODO Auto-generated method stub
-
-		getMenuInflater().inflate(R.menu.edit_order, menu);
-
-		return super.onCreateOptionsMenu(menu);
-	}
+//	@Override
+//	public boolean onCreateOptionsMenu(Menu menu) {
+//		// TODO Auto-generated method stub
+//
+//		getMenuInflater().inflate(R.menu.edit_order, menu);
+//
+//		return super.onCreateOptionsMenu(menu);
+//	}
 
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {

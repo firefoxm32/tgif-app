@@ -33,8 +33,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
                     android:orientation="vertical" >
 
                     <TextView
@@ -46,15 +46,32 @@
                         android:textColor="#000"
                         android:textSize="26sp" />
 
-                    <TextView
-                        android:id="@+id/servings"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:fontFamily="sans-serif-condense"
-                        android:text="@string/servings"
-                        android:textColor="#000"
-                        android:textSize="22sp" />
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:id="@+id/servings"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:fontFamily="sans-serif-condense"
+                            android:text="@string/servings"
+                            android:textColor="#000"
+                            android:paddingRight="300dp"
+                            android:textSize="22sp" />
+                        
+                        <CheckBox
+                            android:id="@+id/takeout"
+                            android:layout_width="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:layout_height="wrap_content"
+                            android:text="Take Out"
+                            android:textColor="#000"
+                            android:textSize="22sp"
+                             />
+                    </LinearLayout>
 
                     <RadioGroup
                         android:id="@+id/rd_group"
@@ -69,8 +86,8 @@
                 android:id="@+id/l_sauce"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
                 android:orientation="vertical" >
 
                 <TextView
@@ -87,8 +104,8 @@
                 android:id="@+id/l_side_dish"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
                 android:orientation="vertical" >
 
                 <TextView

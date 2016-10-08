@@ -39,6 +39,10 @@ public class EndPoints {
 	
 	public static final String SEND_FEEDBACK = "/tgif-api/api/send-feedback.php";
 	
+	public static final String GET_ALL_COOKING = "/tgif-api/api/get-all-cooking-status.php";
+	
+	public static final String RATING = "/tgif-api/api/rating.php";
+	
 	public static final String PICASSO = "/tgif-api/images/";
 	
 	public final static String RECENT_API_ENDPOINT = "http://marsweather.ingenology.com/v1/latest/";

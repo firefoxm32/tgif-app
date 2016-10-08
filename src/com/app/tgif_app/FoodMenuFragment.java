@@ -45,7 +45,6 @@ public class FoodMenuFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState) {
 		// return inflater.inflate(R.layout.food_menu_fragment, null, false);
 		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.food_menu_fragment, null);
-		MainActivity.mToolbar.setTitle("Food Menus");
 		session = new Session(getContext());
 		FoodMenuList = (ListView) rootView.findViewById(R.id.list_menu);
 
@@ -67,8 +66,11 @@ public class FoodMenuFragment extends Fragment {
 					@Override
 					public void onCompleted(Exception e, JsonObject json) {
 						// TODO Auto-generated method stub
+//						e.printStackTrace();
 						if (json == null) {
 							toastMessage("Network error");
+							hideProgressDialog();
+							return;
 						}
 						FoodMenuDAO fmd = new FoodMenuDAO();
 						list = fmd.getFoodMenus(json);
@@ -86,21 +88,24 @@ public class FoodMenuFragment extends Fragment {
 	}
 
 	private void foodItems(int position) {
-		Bundle sfmfbundle = new Bundle();
+//		Bundle sfmfbundle = new Bundle();
 
 		// SubFoodMenuFragment SFMF = new SubFoodMenuFragment();
-		Fragment mfragment = new SubFoodMenuFragment();
-		String choice = menuName.get(position);
+//		Fragment mfragment = new SubFoodMenuFragment();
+//		String choice = menuName.get(position);
 
-		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+//		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
 
-		sfmfbundle.putInt("menuId", position + 1);
-		sfmfbundle.putString("choice", choice);
+//		sfmfbundle.putInt("menu_id", position + 1);
+//		sfmfbundle.putString("choice", choice);
 
-		mfragment.setArguments(sfmfbundle);
-		fragmentTransaction.replace(R.id.container, mfragment);
-		fragmentTransaction.addToBackStack(null);
-		fragmentTransaction.commit();
+//		mfragment.setArguments(sfmfbundle);
+		MainActivity.subFoodMenuBundle.putBoolean("isNull", false);
+		MainActivity.subFoodMenuBundle.putInt("menu_id", position + 1);
+		MainActivity.mTabHost.setCurrentTab(2);
+//		fragmentTransaction.replace(R.id.container, mfragment);
+//		fragmentTransaction.addToBackStack(null);
+//		fragmentTransaction.commit();
 	}
 
 	private void showProgressDialog(String message) {

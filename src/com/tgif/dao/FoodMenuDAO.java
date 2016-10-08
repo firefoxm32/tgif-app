@@ -17,18 +17,19 @@ import model.SideDish;
 public class FoodMenuDAO {
 	public List<FoodMenu> getFoodMenus(JsonObject json) {
 		List<FoodMenu> list = new ArrayList<>();
-
 		JsonArray menuItems = json.get("items").getAsJsonArray();
 		for (int i = 0; i < menuItems.size(); i++) {
 			JsonObject jsonObject = menuItems.get(i).getAsJsonObject();
 			String menuName = jsonObject.get("menu_name").getAsString();
 			int id = jsonObject.get("id").getAsInt();
 			int qty = jsonObject.get("ctr").getAsInt();
+			String image = jsonObject.get("images").getAsString();
 
 			FoodMenu fm = new FoodMenu();
 			fm.setMenuId(id);
 			fm.setMenuName(menuName);
 			fm.setQty(qty);
+			fm.setMenuImage(image);
 			list.add(fm);
 		}
 		return list;
@@ -198,16 +199,52 @@ public class FoodMenuDAO {
 	private List<Order> orders(JsonObject json, List<Order> list) {
 		List<Order> orders = new ArrayList<>();
 		String status = json.get("statuss").getAsString();
-		System.out.println("status: " + status);
 		JsonArray items = json.get("items").getAsJsonArray();
 		for (int i = 0; i < items.size(); i++) {
 			JsonObject jsonItem = items.get(i).getAsJsonObject();
 			Order order = new Order();
-			
+
 			// order.setStatus(jsonItem.get("status").getAsString());
 			order.setId(jsonItem.get("id").getAsInt());
-			
-			if (!isDataExist(list, order.getId())) {
+
+			if (list != null) {
+				if (!isDataExist(list, order.getId())) {
+					order.setQty(jsonItem.get("qty").getAsInt());
+					order.setOrderType(jsonItem.get("order_type").getAsString());
+					List<Serving> servings = new ArrayList<>();
+					if (!jsonItem.get("serving").toString().equalsIgnoreCase("null")) {
+						Serving serving = new Serving();
+						serving.setServingName(jsonItem.get("serving").getAsString());
+						servings.add(serving);
+					}
+					JsonArray arrSauces = jsonItem.get("sauces").getAsJsonArray();
+					List<Sauce> sauces = new ArrayList<>();
+					if (arrSauces.size() > 0) {
+						for (int j = 0; j < arrSauces.size(); j++) {
+							JsonObject jsonSauce = arrSauces.get(j).getAsJsonObject();
+							Sauce sauce = new Sauce();
+							sauce.setSauceName(jsonSauce.get("sauce_name").getAsString());
+							sauces.add(sauce);
+						}
+					}
+					List<SideDish> sideDishes = new ArrayList<>();
+					if (!jsonItem.get("side_dish").toString().equalsIgnoreCase("null")) {
+						SideDish sideDish = new SideDish();
+						sideDish.setSideDishName(jsonItem.get("side_dish").getAsString());
+						sideDishes.add(sideDish);
+					}
+					String image = jsonItem.get("image").getAsString();
+					FoodItem foodItem = new FoodItem();
+					foodItem.setItemName(jsonItem.get("item_name").getAsString());
+					foodItem.setServings(servings);
+					foodItem.setSauces(sauces);
+					foodItem.setSideDishes(sideDishes);
+					foodItem.setImage(image);
+
+					order.setFoodItem(foodItem);
+					orders.add(order);
+				}
+			} else {
 				order.setQty(jsonItem.get("qty").getAsInt());
 				List<Serving> servings = new ArrayList<>();
 				if (!jsonItem.get("serving").toString().equalsIgnoreCase("null")) {
@@ -240,22 +277,13 @@ public class FoodMenuDAO {
 				foodItem.setImage(image);
 
 				order.setFoodItem(foodItem);
-				System.out.println("ORDERS: " + orders.size());
-				System.out.println("LIST: " + list.size());
-				
 				orders.add(order);
 			}
-			
-			
-//			if (orders.size() == 0) {
-//				orders.add(order);
-//			}
 		}
 		return orders;
 	}
 
 	private boolean isDataExist(List<Order> list, int id) {
-		System.out.println("isDataExist.");
 		if (list.size() != 0) {
 			for (int i = 0; i < list.size(); i++) {
 				if (list.get(i).getId() == id) {

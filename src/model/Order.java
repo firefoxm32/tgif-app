@@ -10,7 +10,14 @@ public class Order {
 	private int sideDishId;
 	private String status;
 	private FoodItem foodItem;
+	private String orderType;
 	
+	public String getOrderType() {
+		return orderType;
+	}
+	public void setOrderType(String orderType) {
+		this.orderType = orderType;
+	}
 	public int getId() {
 		return id;
 	}

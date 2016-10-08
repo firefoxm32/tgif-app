@@ -16,36 +16,39 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.DrawerLayout;
+import android.support.v4.app.FragmentTabHost;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import model.Session;
 
-public class MainActivity extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-
+//public class MainActivity extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+public class MainActivity extends AppCompatActivity {
 	public static Toolbar mToolbar;
+	private ViewPager viewPager;
+//	private TabLayout tabLayout;
+	private ImageView toolbarImage;
 	private ProgressDialog pDialog;
 	protected Session session;
-	private NavigationDrawerFragment mNavigationDrawerFragment;
+//	private NavigationDrawerFragment mNavigationDrawerFragment;
 
-	private CharSequence mTitle;
+	private String mTitle;
 	private static Context appContext;
 
-	public static String[] menus = new String[] { "Home", "Food Menu", "My Order", "Feedback", "Check Out", "Setup" };
+	public static String[] menus = new String[] { "Home", "Food Menu", "My Order", "Feedback", "Check Out" };
 
 	// public static List<DrawerItem> list;
 	private EditText cash;
@@ -53,7 +56,10 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 	private EditText memberId;
 	private EditText creditCardNumber;
 	private EditText creditCardName;
-
+	public static FragmentTabHost mTabHost;
+	public static Bundle orderDetailsBundle;
+	public static Bundle subFoodMenuBundle;
+	
 	public static Context getContext() {
 		return appContext;
 	}
@@ -66,85 +72,137 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+		
 		setContext(this);
 		session = new Session(getContext());
-		String tag = "default";
+		orderDetailsBundle = new Bundle();
+		orderDetailsBundle.putBoolean("isNull", true);
+		subFoodMenuBundle = new Bundle();
+		subFoodMenuBundle.putBoolean("isNull", true);
+//		String tag = "default";
 
-		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
-				.findFragmentById(R.id.navigation_drawer);
+//		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
+//				.findFragmentById(R.id.navigation_drawer);
 		// mTitle = MainActivity.menus[0];// getString(MainActivity.menus[0]);
-
 		mToolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(mToolbar);
-		if (getIntent().getExtras() != null) {
-			tag = getIntent().getStringExtra("tag");
-			if (tag.equalsIgnoreCase("my-order")) {
-				getSupportActionBar().setTitle("My Orders");
-				onSectionAttached(2);
-			}
-		}
-		if (session.getTablestatus().equalsIgnoreCase("C")) {
-			Intent verifying = new Intent(MainActivity.this, VerifyingActivity.class);
-			overridePendingTransition(0, 0);
-			startActivity(verifying);
-			finish();
-		}
+		System.out.println("TABLE NUMBER: "+session.getTableNumber());
+		mTitle = mToolbar.getTitle().toString() + session.getTableNumber().toString();
+		System.out.println("MTITLE: "+mTitle);
+		getSupportActionBar().setTitle(mTitle);
+		toolbarImage = (ImageView) findViewById(R.id.toolbar_image);
+//		TextView tableNumber = (TextView) findViewById(R.id.table_number);
+//		tableNumber.setText("Table #: " + session.getTableNumber());
+		
+		
+		mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
+		mTabHost.setup(this, getSupportFragmentManager(), R.id.main_realtabcontent);
+		
+        mTabHost.addTab(mTabHost.newTabSpec("home").setIndicator("Home"),
+                Home.class, null);
+        mTabHost.addTab(mTabHost.newTabSpec("menu").setIndicator("Menu"),
+                FoodMenuFragment.class, null);
+        mTabHost.addTab(mTabHost.newTabSpec("food_menu").setIndicator("Food Menu"),
+        		SubFoodMenuFragment.class, null);
+        mTabHost.addTab(mTabHost.newTabSpec("order_details").setIndicator("Order Details"),
+        		OrderDetails.class, null);
+        mTabHost.addTab(mTabHost.newTabSpec("my_order").setIndicator("My Orders"),
+                MyOrderFragment.class, null);
+		
+//		tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+//        tabLayout.addTab(tabLayout.newTab().setText("Tab 1"));
+//        tabLayout.addTab(tabLayout.newTab().setText("Tab 2"));
+//        tabLayout.addTab(tabLayout.newTab().setText("Tab 3"));
+//        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+		
+//        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+//        
+//		viewPager.setAdapter(adapter);
+//        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+//        tabLayout.addOnTabSelectedListener(new OnTabSelectedListener() {
+//			@Override
+//			public void onTabUnselected(Tab tab) {
+//				// TODO Auto-generated method stub
+//				viewPager.setCurrentItem(tab.getPosition());
+//			}
+//			
+//			@Override
+//			public void onTabSelected(Tab tab) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//			
+//			@Override
+//			public void onTabReselected(Tab tab) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//		});
+		
+//		if (session.getTablestatus().equalsIgnoreCase("C")) {
+//			Intent verifying = new Intent(MainActivity.this, VerifyingActivity.class);
+//			overridePendingTransition(0, 0);
+//			startActivity(verifying);
+//			finish();
+//		}
+		confirmation();
 		// Set up the drawer.
-		mNavigationDrawerFragment.setUp(mToolbar, R.id.navigation_drawer,
-				(DrawerLayout) findViewById(R.id.drawer_layout));
+//		mNavigationDrawerFragment.setUp(mToolbar, R.id.navigation_drawer,
+//				(DrawerLayout) findViewById(R.id.drawer_layout));
 	}
+	
+//	private void setupViewPager(ViewPager viewPager) {
+//	      ViewPager adapter = new ViewPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+//	      viewPager.setAdapter(adapter);
+//	  }
+	
+//	@Override
+//	public void onNavigationDrawerItemSelected(int position) {
+//		// update the main content by replacing fragments
+//		onSectionAttached(position);
+//	}
 
-	@Override
-	public void onNavigationDrawerItemSelected(int position) {
-		// update the main content by replacing fragments
-		onSectionAttached(position);
-	}
-
-	public void onSectionAttached(int number) {
-		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-		Home home = new Home();
-		switch (number) {
-		case 0:
-			mTitle = MainActivity.menus[0];// getString(R.string.Home);
-			ft.replace(R.id.container, home);
-			ft.addToBackStack(null);
-			ft.commit();
-			break;
-		case 1:
-			mTitle = MainActivity.menus[1] + "s";// getString(R.string.Food_Menu);
-			FoodMenuFragment foodMenuFragment = new FoodMenuFragment();
-			ft.replace(R.id.container, foodMenuFragment);
-			ft.addToBackStack(null);
-			ft.commit();
-			break;
-		case 2:
-			mTitle = MainActivity.menus[2] + "s";// getString(R.string.My_Order);
-			Fragment myOrderFragment = new MyOrderFragment();
-			mToolbar.setTitle(mTitle);
-			ft.replace(R.id.container, myOrderFragment);
-			ft.addToBackStack(null);
-			ft.commit();
-			break;
-		case 3:
-			mTitle = MainActivity.menus[3];// getString(R.string.Check_Out);
-			feedback();
-			break;
-		case 4:
-			getTotalPrice();
-			break;
-		case 5:
-			mTitle = MainActivity.menus[4];
-			confirmAdmin("admin12345");
-			break;
-		default:
-			mTitle = MainActivity.menus[0];// getString(R.string.Home);
-			ft.replace(R.id.container, home);
-			ft.addToBackStack(null);
-			ft.commit();
-			break;
-		}
-	}
+//	public void onSectionAttached(int number) {
+//		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//		Home home = new Home();
+//		switch (number) {
+//		case 0:
+//			mTitle = MainActivity.menus[0];// getString(R.string.Home);
+//			ft.replace(R.id.container, home);
+//			ft.addToBackStack(null);
+//			ft.commit();
+//			break;
+//		case 1:
+//			mTitle = MainActivity.menus[1] + "s";// getString(R.string.Food_Menu);
+//			FoodMenuFragment foodMenuFragment = new FoodMenuFragment();
+//			ft.replace(R.id.container, foodMenuFragment);
+//			ft.addToBackStack(null);
+//			ft.commit();
+//			break;
+//		case 2:
+//			mTitle = MainActivity.menus[2] + "s";// getString(R.string.My_Order);
+//			Fragment myOrderFragment = new MyOrderFragment();
+//			mToolbar.setTitle(mTitle);
+//			ft.replace(R.id.container, myOrderFragment);
+//			ft.addToBackStack(null);
+//			ft.commit();
+//			break;
+//		case 3:
+//			mTitle = MainActivity.menus[3];// getString(R.string.Check_Out);
+//			feedback();
+//			break;
+//		case 4:
+//			checkAllCookingOrder();
+//			getTotalPrice();
+//			break;
+//		default:
+//			mTitle = MainActivity.menus[0];// getString(R.string.Home);
+//			ft.replace(R.id.container, home);
+//			ft.addToBackStack(null);
+//			ft.commit();
+//			break;
+//		}
+//	}
 
 	private void feedback() {
 		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
@@ -214,6 +272,33 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 					}
 				});
 	}
+	private int row;
+	private void checkAllCookingOrder() {
+		row = 0;
+		Ion.with(getContext()).load(EndPoints.HTTP + session.getIpAddress() + EndPoints.GET_ALL_COOKING)
+				.setBodyParameter("param", session.getTransactionId()).asString()
+				.setCallback(new FutureCallback<String>() {
+					@Override
+					public void onCompleted(Exception arg0, String response) {
+						// TODO Auto-generated method stub
+						System.out.println("RESPONSE: " + response);
+						if (response == null) {
+							toastMessage("Network error");
+							return;
+						}
+						JsonObject json = new JsonParser().parse(response).getAsJsonObject();
+//						System.out.println(json.get("rows").toString());
+						if (!json.get("rows").toString().replace("\"", "").equalsIgnoreCase("null")) {
+							int rows = json.get("rows").getAsInt();
+//							if (rows > 0) {
+//								toastMessage("Please check out after all your orders served.");
+//								return;
+//							}rows;	
+							row = rows;
+						}
+					}
+				});
+	}
 
 	private void getTotalPrice() {
 		Ion.with(getContext()).load(EndPoints.HTTP + session.getIpAddress() + EndPoints.TOTAL_PRICE)
@@ -227,7 +312,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 							return;
 						}
 						JsonObject json = new JsonParser().parse(response).getAsJsonObject();
-						System.out.println("TOTAL PRICE:");
 						checkOut(json.get("total_price").getAsDouble());
 					}
 				});
@@ -236,7 +320,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 	private String method;
 
 	private void checkOut(double _totalBill) {
-		System.out.println("CheckOut");
 		final DecimalFormat formatter = new DecimalFormat("#,##0.00");
 		AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
 		LayoutInflater layoutInflater = getLayoutInflater();
@@ -251,9 +334,10 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 		memberId = (EditText) dialogView.findViewById(R.id.member_id);
 		creditCardName = (EditText) dialogView.findViewById(R.id.credit_card_name);
 		creditCardNumber = (EditText) dialogView.findViewById(R.id.credit_card_number);
-		
+
 		creditCardName.setVisibility(View.GONE);
 		creditCardNumber.setVisibility(View.GONE);
+		method = "cash_method";
 		cashMethod.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -281,9 +365,8 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 				creditCardName.requestFocus();
 			}
 		});
-
-		// double totalBill = _totalBill;
 		totalBill = _totalBill;
+		totalBill = totalBill + (totalBill * .03);
 		total.setText("Total: " + formatter.format(totalBill));
 		cash.requestFocus();
 		alert.setPositiveButton("Yes", new OnClickListener() {
@@ -294,8 +377,22 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 					toastMessage("Not yet order");
 					return;
 				}
+				
+				System.out.println("ROW: "+row);
+				if ((row != 0 && !cash.getText().toString().isEmpty()) || 
+						(row != 0 && !creditCardName.getText().toString().isEmpty() && 
+						!creditCardNumber.getText().toString().isEmpty())) {
+					toastMessage("Please check out after all your orders served.");
+					return;
+				}
+				
 				if (method.equalsIgnoreCase("cash_method")) {
-					if (cash.getText().toString().isEmpty()) {
+					if (cash.getText().toString().trim().isEmpty()) {
+						toastMessage("Invalid input cash");
+						return;
+					}
+
+					if (cash.getText().toString().length() > 9) {
 						toastMessage("Invalid input cash");
 						return;
 					}
@@ -304,24 +401,28 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 						toastMessage("Insufficient amount");
 						return;
 					}
-					insertCashHeader(session.getTransactionId(), session.getTableNumber(),
-							Double.valueOf(cash.getText().toString()), totalBill, 
-							creditCardName.getText().toString(), 
-							creditCardNumber.getText().toString(), memberId.getText().toString());
+					insertCashHeader(session.getTransactionId(), Double.valueOf(cash.getText().toString().trim()), 
+							totalBill, "", "",
+							memberId.getText().toString().toString().trim());
 				} else {
-					if (creditCardName.getText().toString() == "") {
+					if (creditCardName.getText().toString().trim().isEmpty()) {
 						toastMessage("Please enter credit card holder name");
 						return;
 					}
 
-					if (creditCardNumber.getText().toString() == "") {
+					if (creditCardNumber.getText().toString().trim().isEmpty()) {
 						toastMessage("Please enter credit card number");
 						return;
 					}
-					insertCashHeader(session.getTransactionId(), session.getTableNumber(),
-							Double.valueOf(cash.getText().toString()), totalBill, 
-							creditCardName.getText().toString(), 
-							creditCardNumber.getText().toString(), memberId.getText().toString());
+
+					if (creditCardNumber.getText().toString().length() > 16) {
+						toastMessage("Invalid Input");
+						return;
+					}
+
+					insertCashHeader(session.getTransactionId(), 0.00, totalBill,
+							creditCardName.getText().toString().trim(), creditCardNumber.getText().toString().trim(),
+							memberId.getText().toString().toString().trim());
 				}
 			}
 		});
@@ -341,19 +442,19 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 		hideSoftKeyboard();
 	}
 
-	private void insertCashHeader(String transactionId, int tableNumber, 
-			double cashAmount, double total, String cardName,String cardNumber,String id) {
+	private void insertCashHeader(String transactionId, double cashAmount, double total,
+			String cardName, String cardNumber, String id) {
+		System.out.println("TID: " + transactionId);
 		Ion.with(getContext()).load(EndPoints.HTTP + session.getIpAddress() + EndPoints.INSERT_CASH_HEADER)
 				.setBodyParameter("transaction_id", transactionId)
-				.setBodyParameter("cash_amount", String.valueOf(cashAmount))
-				.setBodyParameter("member_id", id)
-				.setBodyParameter("total_price", String.valueOf(total))
-				.setBodyParameter("credit_card_name", cardName)
+				.setBodyParameter("cash_amount", String.valueOf(cashAmount)).setBodyParameter("member_id", id)
+				.setBodyParameter("total_price", String.valueOf(total)).setBodyParameter("credit_card_name", cardName)
 				.setBodyParameter("credit_card_number", cardNumber).asString()
 				.setCallback(new FutureCallback<String>() {
 					@Override
-					public void onCompleted(Exception arg0, String response) {
+					public void onCompleted(Exception e, String response) {
 						// TODO Auto-generated method stub
+						System.out.println("RESPONSE: "+response);
 						if (response == null) {
 							toastMessage("Network error");
 							return;
@@ -380,6 +481,56 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 						finish();
 					}
 				});
+	}
+
+	// private int i = 10;
+	// private int x = 3;
+
+	private void confirmation() {
+		toolbarImage.setOnLongClickListener(new OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				// TODO Auto-generated method stub
+				confirmAdmin("admin12345");
+				return true;
+			}
+		});
+	}
+
+	private void confirmAdmin(final String adminPass) {
+		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
+		LayoutInflater layoutInflater = getLayoutInflater();
+		View dialogView = layoutInflater.inflate(R.layout.confirm_alert_dialog, null);
+		alertBuilder.setView(dialogView);
+		alertBuilder.setCancelable(false);
+		final EditText password = (EditText) dialogView.findViewById(R.id.confirm_password);
+		alertBuilder.setPositiveButton("Ok", new android.content.DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				String pass = password.getText().toString();
+				if (!adminPass.equalsIgnoreCase(pass)) {
+					toastMessage("You're not a ADMIN");
+					return;
+				}
+				setup();
+			}
+		});
+		alertBuilder.setNegativeButton("Cancel", new android.content.DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				dialog.cancel();
+				toastMessage("Confirmation cancelled");
+			}
+		});
+		AlertDialog alertDialog = alertBuilder.create();
+		View view = getLayoutInflater().inflate(R.layout.custom_alert_dialog_title, null);
+		TextView title = (TextView) view.findViewById(R.id.custom_title);
+		title.setText("CONFIRMATION");
+		alertDialog.setCustomTitle(view);
+		alertDialog.show();
+		hideSoftKeyboard();
 	}
 
 	private void setup() {
@@ -435,7 +586,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 	}
 
 	private void saveSetup(String uname, String pass, String ip) {
-		showProgressDialog("Autenticating");
+		showProgressDialog("Autenticating...");
 		final String username = uname;
 		final String password = pass;
 		session.setIpAddress(ip);
@@ -445,9 +596,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 					@Override
 					public void onCompleted(Exception e, String response) {
 						// TODO Auto-generated method stub
-						System.out.println("UNAME: " + username);
-						System.out.println("PASS: " + password);
-						System.out.println("response: " + response);
 						if (response == null) {
 							toastMessage("Error setup");
 							hideProgressDialog();
@@ -464,8 +612,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 						String status = object.get("status").getAsString();
 						String message = object.get("message").getAsString();
 						if (status.equalsIgnoreCase("error")) {
-							// Toast.makeText(getContext(), message,
-							// Toast.LENGTH_SHORT).show();
 							toastMessage(message);
 							hideProgressDialog();
 							return;
@@ -518,15 +664,15 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 		// }
 	}
 
-	@Override
-	public void onBackPressed() {
-		// TODO Auto-generated method stub
-		if (getSupportFragmentManager().getBackStackEntryCount() == 1) {
-			finish();
-		} else {
-			super.onBackPressed();
-		}
-	}
+//	@Override
+//	public void onBackPressed() {
+//		// TODO Auto-generated method stub
+//		if (getSupportFragmentManager().getBackStackEntryCount() == 1) {
+//			finish();
+//		} else {
+//			super.onBackPressed();
+//		}
+//	}
 
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -534,18 +680,18 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 		super.onRestoreInstanceState(savedInstanceState);
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		if (!mNavigationDrawerFragment.isDrawerOpen()) {
-			// Only show items in the action bar relevant to this screen
-			// if the drawer is not showing. Otherwise, let the drawer
-			// decide what to show in the action bar.
-			getMenuInflater().inflate(R.menu.main, menu);
-			restoreActionBar();
-			return true;
-		}
-		return super.onCreateOptionsMenu(menu);
-	}
+	// @Override
+	// public boolean onCreateOptionsMenu(Menu menu) {
+	// if (!mNavigationDrawerFragment.isDrawerOpen()) {
+	// // Only show items in the action bar relevant to this screen
+	// // if the drawer is not showing. Otherwise, let the drawer
+	// // decide what to show in the action bar.
+	// getMenuInflater().inflate(R.menu.main, menu);
+	// restoreActionBar();
+	// return true;
+	// }
+	// return super.onCreateOptionsMenu(menu);
+	// }
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -553,6 +699,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
+
 		return id == R.id.action_settings || super.onOptionsItemSelected(item);
 	}
 
@@ -595,42 +742,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
 
 	private void hideSoftKeyboard() {
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-	}
-
-	private void confirmAdmin(final String adminPass) {
-		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
-		LayoutInflater layoutInflater = getLayoutInflater();
-		View dialogView = layoutInflater.inflate(R.layout.confirm_alert_dialog, null);
-		alertBuilder.setView(dialogView);
-		alertBuilder.setCancelable(false);
-		final EditText password = (EditText) dialogView.findViewById(R.id.confirm_password);
-		alertBuilder.setPositiveButton("Ok", new android.content.DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				// TODO Auto-generated method stub
-				String pass = password.getText().toString();
-				if (!adminPass.equalsIgnoreCase(pass)) {
-					toastMessage("You're not a ADMIN");
-					return;
-				}
-				setup();
-			}
-		});
-		alertBuilder.setNegativeButton("Cancel", new android.content.DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				// TODO Auto-generated method stub
-				dialog.cancel();
-				toastMessage("Confirmation cancelled");
-			}
-		});
-		AlertDialog alertDialog = alertBuilder.create();
-		View view = getLayoutInflater().inflate(R.layout.custom_alert_dialog_title, null);
-		TextView title = (TextView) view.findViewById(R.id.custom_title);
-		title.setText("CONFIRMATION");
-		alertDialog.setCustomTitle(view);
-		alertDialog.show();
-		hideSoftKeyboard();
 	}
 
 	private void YesNo() {

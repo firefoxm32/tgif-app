@@ -9,8 +9,10 @@ import com.koushikdutta.ion.Ion;
 import com.tgif.dao.FoodMenuDAO;
 import com.tgif.http.EndPoints;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -35,6 +37,7 @@ public class SubFoodMenuFragment extends Fragment {
 	private List<FoodItem> foodMenuItems;
 	private ProgressDialog pDialog;
 	protected Session session;
+	private ViewGroup rootView;
 
 	public static Fragment newInstance(Context context) {
 		SubFoodMenuFragment subFoodMenuFragment = new SubFoodMenuFragment();
@@ -42,11 +45,18 @@ public class SubFoodMenuFragment extends Fragment {
 	}
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState) {
-		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.sub_food_menu_fragment, null);
+		
+		if(MainActivity.subFoodMenuBundle.getBoolean("isNull")) {
+			YesNo();
+		} else { 
+		rootView = (ViewGroup) inflater.inflate(R.layout.sub_food_menu_fragment, null);
+		
 		subFoodMenuList = (ListView) rootView.findViewById(R.id.ListSubFoodMenu);
 		session = new Session(getContext());
-		MainActivity.mToolbar.setTitle(getArguments().getString("choice"));
-		getFoodItems(getArguments().getInt("menuId"));
+//		MainActivity.mToolbar.setTitle(getArguments().getString("choice"));
+//		getFoodItems(getArguments().getInt("menuId"));
+		System.out.println("MENU ID: "+MainActivity.subFoodMenuBundle.getInt("menu_id"));
+		getFoodItems(MainActivity.subFoodMenuBundle.getInt("menu_id"));
 
 		subFoodMenuList.setOnItemClickListener(new OnItemClickListener() {
 			
@@ -55,17 +65,38 @@ public class SubFoodMenuFragment extends Fragment {
 			}
 
 		});
+		}
 		return rootView;
 	}
-	
+
+	private void YesNo() {
+		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
+		alertBuilder.setMessage("Please select category in MENU tab.");
+		alertBuilder.setPositiveButton("Yes", new android.content.DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				MainActivity.mTabHost.setCurrentTab(1);
+			}
+		});
+		AlertDialog alertDialog = alertBuilder.create();
+		View view = getActivity().getLayoutInflater().inflate(R.layout.custom_alert_dialog_title, null);
+		TextView title = (TextView) view.findViewById(R.id.custom_title);
+		title.setText("Warning");
+		alertDialog.setCustomTitle(view);
+		alertDialog.show();
+//		hideSoftKeyboard();
+	}
+
 	private void getFoodItems(int menuId) {
 		showProgressDialog("Loading...");
-		Ion.with(MainActivity.getContext()).load(EndPoints.HTTP+session.getIpAddress()+EndPoints.FOOD_MENU_ITEMS + "?params=" + menuId).asJsonObject()
-				.setCallback(new FutureCallback<JsonObject>() {
+		Ion.with(MainActivity.getContext())
+				.load(EndPoints.HTTP + session.getIpAddress() + EndPoints.FOOD_MENU_ITEMS + "?params=" + menuId)
+				.asJsonObject().setCallback(new FutureCallback<JsonObject>() {
 					@Override
 					public void onCompleted(Exception arg0, JsonObject json) {
 						// TODO Auto-generated method stub
-						if(json == null) {
+						if (json == null) {
 							toastMessage("Network error");
 							hideProgressDialog();
 							return;
@@ -91,11 +122,11 @@ public class SubFoodMenuFragment extends Fragment {
 		orderDetails.setArguments(odBundle);
 
 		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-		fragmentTransaction.replace(R.id.container, orderDetails);
+		// fragmentTransaction.replace(R.id.container, orderDetails);
 		fragmentTransaction.addToBackStack(null);
 		fragmentTransaction.commit();
 	}
-	
+
 	private void showProgressDialog(String message) {
 		if (pDialog == null) {
 			pDialog = new ProgressDialog(getContext());
@@ -121,6 +152,7 @@ public class SubFoodMenuFragment extends Fragment {
 		// TODO Auto-generated method stub
 		super.onViewStateRestored(savedInstanceState);
 	}
+
 	private void toastMessage(String message) {
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		View layout = inflater.inflate(R.layout.custom_toast_layout, null);

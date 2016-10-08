@@ -2,7 +2,10 @@ package com.app.tgif_app.adapter;
 
 import java.util.List;
 
+import com.app.tgif_app.MainActivity;
 import com.app.tgif_app.R;
+import com.squareup.picasso.Picasso;
+import com.tgif.http.EndPoints;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -50,12 +53,16 @@ public class FoodMenuAdapter extends BaseAdapter {
 		ImageView menuImage = (ImageView) convertView.findViewById(R.id.foodMenuImage);
 		TextView menuName = (TextView) convertView.findViewById(R.id.menu_name);
 		TextView qty = (TextView) convertView.findViewById(R.id.qty);
-		
-		menuImage.setImageResource(R.drawable.traditional_wings);
 
 		FoodMenu fm = foodMenus.get(position);
+		System.out.println("PIC: "+EndPoints.HTTP + session.getIpAddress() + EndPoints.PICASSO
+				+ fm.getMenuName().replace(" ", "%20").toLowerCase() + "/" + fm.getMenuImage());
 		menuName.setText(fm.getMenuName());
 		qty.setText(fm.getQty() + " Choices");
+		Picasso.with(parent.getContext())
+		.load(EndPoints.HTTP + session.getIpAddress() + EndPoints.PICASSO
+				+ fm.getMenuName().replace(" ", "%20").toLowerCase() + "/" + fm.getMenuImage())
+		.error(R.drawable.not_found).fit().centerCrop().into(menuImage);
 		return convertView;
 	}
 }

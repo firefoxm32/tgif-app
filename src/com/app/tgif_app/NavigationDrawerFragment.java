@@ -20,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import model.DrawerItem;
@@ -106,8 +107,7 @@ public class NavigationDrawerFragment extends Fragment {
 				R.drawable.ic_restaurant_menu_black_18dp,
 				R.drawable.ic_content_paste_black_18dp,
 				R.drawable.ic_feedback_black_18dp,
-				R.drawable.ic_payment_black_18dp,
-				R.drawable.not_found
+				R.drawable.ic_payment_black_18dp
 		};
 		for (int j = 0; j < MainActivity.menus.length; j++) {
 
@@ -133,6 +133,7 @@ public class NavigationDrawerFragment extends Fragment {
 	}
 
 	public boolean isDrawerOpen() {
+		hideSoftKeyboard();
 		return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mFragmentContainerView);
 	}
 
@@ -279,10 +280,10 @@ public class NavigationDrawerFragment extends Fragment {
 		// showGlobalContextActionBar, which controls the top-left area of the
 		// action bar.
 		if (mDrawerLayout != null && isDrawerOpen()) {
-			inflater.inflate(R.menu.global, menu);
+//			inflater.inflate(R.menu.global, menu);
 			showGlobalContextActionBar();
 		}
-		super.onCreateOptionsMenu(menu, inflater);
+		super.onCreateOptionsMenu(null, inflater);
 	}
 
 	@Override
@@ -329,5 +330,11 @@ public class NavigationDrawerFragment extends Fragment {
 		 * Called when an item in the navigation drawer is selected.
 		 */
 		void onNavigationDrawerItemSelected(int position);
+	}
+	
+	private void hideSoftKeyboard() {
+		InputMethodManager inputMethodManager = (InputMethodManager) getActivity()
+				.getSystemService(Activity.INPUT_METHOD_SERVICE);
+		inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
 	}
 }

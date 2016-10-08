@@ -12,8 +12,10 @@ import com.tgif.dao.FoodMenuDAO;
 import com.tgif.http.EndPoints;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -24,9 +26,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -64,22 +69,37 @@ public class OrderDetails extends Fragment {
 	private List<Integer> servingId;
 	private List<Integer> sauceId;
 	private List<Integer> sideDishId;
-	
+
 	private TextView description;
 	private Button btnAdd;
 	private int itemId;
 	private ProgressDialog pDialog;
 	private ImageView image;
+	private CheckBox orderType;
+	private String strOrderType;
 
 	public static Fragment newInstance(Context context) {
 		OrderDetails orderDetails = new OrderDetails();
 		return orderDetails;
 	}
-	
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+	}
+	private ViewGroup rootView;
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState) {
 		// ViewGroup rootView = (ViewGroup)
 		// inflater.inflate(R.layout.fragment_order_details, null);
-		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_order_details, null);
+		System.out.println("ORDER DETAILS: "+MainActivity.orderDetailsBundle.getBoolean("isNull"));
+		if(MainActivity.orderDetailsBundle.getBoolean("isNull")) {
+//			MainActivity.mTabHost.setCurrentTab(0);
+			YesNo();
+		} else {
+		
+		rootView = (ViewGroup) inflater.inflate(R.layout.fragment_order_details, null);
+		
 		session = new Session(getContext());
 		description = (TextView) rootView.findViewById(R.id.order_details_description);
 		btnAdd = (Button) rootView.findViewById(R.id.btn_add);
@@ -93,24 +113,38 @@ public class OrderDetails extends Fragment {
 		textViewServing = (TextView) rootView.findViewById(R.id.servings);
 		textViewSauce = (TextView) rootView.findViewById(R.id.sauce);
 		textViewSideDish = (TextView) rootView.findViewById(R.id.side_dish);
+		orderType = (CheckBox) rootView.findViewById(R.id.takeout);
 
 		textViewServing.setVisibility(View.GONE);
 		textViewSauce.setVisibility(View.GONE);
 		textViewSideDish.setVisibility(View.GONE);
 
-		String itemName = getArguments().getString("item_name");
+		getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+		Bundle bundle = MainActivity.orderDetailsBundle.getBundle("order_details");
+		
+/*		String itemName = getArguments().getString("item_name");
 		String itemImage = getArguments().getString("image");
-		itemId = getArguments().getInt("item_id");
+		itemId = getArguments().getInt("item_id");*/
+		String itemName = bundle.getString("item_name");
+		String itemImage = bundle.getString("image");
+		itemId = bundle.getInt("item_id");
+		strOrderType = "DI";
+		orderType();
 		MainActivity.mToolbar.setTitle(itemName);
-		System.out.println("IMAGE: "+EndPoints.HTTP+session.getIpAddress()+EndPoints.PICASSO + itemName.replace(" ", "%20").toLowerCase() + "/" + itemImage);
 		Picasso.with(MainActivity.getContext())
-				.load(EndPoints.HTTP+session.getIpAddress()+EndPoints.PICASSO + itemName.replace(" ", "%20").toLowerCase() + "/" + itemImage)
-				.error(R.drawable.not_found)
-				.fit()
-				.centerInside()
-				.into(image);
+				.load(EndPoints.HTTP + session.getIpAddress() + EndPoints.PICASSO
+						+ itemName.replace(" ", "%20").toLowerCase() + "/" + itemImage)
+				.error(R.drawable.not_found).fit().centerInside().into(image);
 		orderDetails(itemId);
 		qty.requestFocus();
+
+		addOrder();
+		}
+		return rootView;
+	}
+
+	private void addOrder() {
 		btnAdd.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -120,12 +154,26 @@ public class OrderDetails extends Fragment {
 			}
 
 		});
-		return rootView;
 	}
+
+	private void orderType() {
+		orderType.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				// TODO Auto-generated method stub
+				if (orderType.isChecked()) {
+					strOrderType = "TO";
+				} else {
+					strOrderType = "DI";
+				}
+			}
+		});
+	}
+
 	private void orderDetails(int param) {
-		System.out.println("param:: "+param);
 		showProgressDialog("Loading...");
-		Ion.with(MainActivity.getContext()).load(EndPoints.HTTP+session.getIpAddress()+EndPoints.ORDER_DETAILS + "?param=" + param)
+		Ion.with(MainActivity.getContext())
+				.load(EndPoints.HTTP + session.getIpAddress() + EndPoints.ORDER_DETAILS + "?param=" + param)
 				.asJsonObject().setCallback(new FutureCallback<JsonObject>() {
 					@Override
 					public void onCompleted(Exception e, JsonObject json) {
@@ -138,7 +186,7 @@ public class OrderDetails extends Fragment {
 						FoodMenuDAO fmd = new FoodMenuDAO();
 						FoodItem foodItem = fmd.getOrderDetails(json);
 						description.setText(foodItem.getDescription());
-						
+
 						servings = foodItem.getServings();
 
 						if (servings.size() > 0) {
@@ -189,6 +237,25 @@ public class OrderDetails extends Fragment {
 				});
 	}
 
+	private void YesNo() {
+		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
+		alertBuilder.setMessage("Please select item in HOME or MENU.");
+		alertBuilder.setPositiveButton("Yes", new android.content.DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				MainActivity.mTabHost.setCurrentTab(0);
+			}
+		});
+		AlertDialog alertDialog = alertBuilder.create();
+		View view = getActivity().getLayoutInflater().inflate(R.layout.custom_alert_dialog_title, null);
+		TextView title = (TextView) view.findViewById(R.id.custom_title);
+		title.setText("Warning");
+		alertDialog.setCustomTitle(view);
+		alertDialog.show();
+		hideSoftKeyboard();
+	}
+	
 	private void validation() {
 		Order order = new Order();
 		int servingCtr = 0;
@@ -234,27 +301,30 @@ public class OrderDetails extends Fragment {
 		} else if (qty.getText().toString().isEmpty()) {
 			toastMessage("Input quantity");
 			qty.setFocusable(true);
-		} else if (!(Integer.valueOf(qty.getText().toString()) > 0)) {
-			toastMessage("Invalid input");
+		} else if (((Integer.valueOf(qty.getText().toString()) == 0)
+				|| (Integer.valueOf(qty.getText().toString()) > 10))) {
+			toastMessage("Enter only 1 - 10 quantity.");
 			qty.setFocusable(true);
 		} else {
 			order.setQty(Integer.valueOf(qty.getText().toString()));
 			order.setItemId(itemId);
+			order.setOrderType(strOrderType);
+			System.out.println("TYPE: " + order.getOrderType());
 			addOrder(order);
 		}
 	}
 
 	private void addOrder(Order order) {
 		showProgressDialog("Loading...");
-
-		Ion.with(getContext()).load(EndPoints.HTTP+session.getIpAddress()+EndPoints.ADD_ORDER)
+		Ion.with(getContext()).load(EndPoints.HTTP + session.getIpAddress() + EndPoints.ADD_ORDER)
 				.setBodyParameter("table_number", String.valueOf(order.getTableNumber()))
 				.setBodyParameter("transaction_id", session.getTransactionId())
 				.setBodyParameter("item_id", String.valueOf(order.getItemId()))
 				.setBodyParameter("serving_id", String.valueOf(order.getServingId()))
 				.setBodyParameter("sauces", order.getSauce())
 				.setBodyParameter("side_dish_id", String.valueOf(order.getSideDishId()))
-				.setBodyParameter("qty", String.valueOf(order.getQty())).asString()
+				.setBodyParameter("qty", String.valueOf(order.getQty()))
+				.setBodyParameter("order_type", order.getOrderType()).asString()
 				.setCallback(new FutureCallback<String>() {
 					@Override
 					public void onCompleted(Exception e, String response) {
@@ -282,8 +352,8 @@ public class OrderDetails extends Fragment {
 						hideSoftKeyboard();
 
 						FragmentTransaction ft = getFragmentManager().beginTransaction();
-						Home home = new Home();
-						ft.replace(R.id.container, home);
+						FoodMenuFragment menuFragment = new FoodMenuFragment();
+//						ft.replace(R.id.container, menuFragment);
 						ft.addToBackStack(null);
 						ft.commit();
 					}
@@ -332,6 +402,7 @@ public class OrderDetails extends Fragment {
 			pDialog.dismiss();
 		}
 	}
+
 	private void toastMessage(String message) {
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		View layout = inflater.inflate(R.layout.custom_toast_layout, null);
@@ -342,12 +413,13 @@ public class OrderDetails extends Fragment {
 		toast.setView(layout);
 		toast.show();
 	}
-	
+
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		// TODO Auto-generated method stub
 		super.onSaveInstanceState(outState);
 	}
+
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
