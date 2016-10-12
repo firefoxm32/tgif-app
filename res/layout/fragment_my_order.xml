@@ -15,18 +15,18 @@
         android:divider="@null"
         android:scrollbars="none" />
 
-    <ImageButton
-        android:id="@+id/img_btn_send_orders"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+    <Button
+        android:id="@+id/btn_send_orders"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_margin="30dp"
         android:background="@drawable/button_round_shape"
-        android:src="@drawable/ic_send_white_24dp"
-        android:text="SEND"
+        android:padding="15dp"
+        android:text="SEND ORDERS"
         android:textColor="#FFF"
         android:textSize="20sp"
-        android:textStyle="bold"
-         />
+        android:textStyle="bold" />
+
 </RelativeLayout>

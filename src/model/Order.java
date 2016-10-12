@@ -11,7 +11,14 @@ public class Order {
 	private String status;
 	private FoodItem foodItem;
 	private String orderType;
+	private float rating;
 	
+	public float getRating() {
+		return rating;
+	}
+	public void setRating(float rating) {
+		this.rating = rating;
+	}
 	public String getOrderType() {
 		return orderType;
 	}

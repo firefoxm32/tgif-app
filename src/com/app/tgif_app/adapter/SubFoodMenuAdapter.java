@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import model.FoodItem;
 import model.Session;
@@ -59,6 +60,7 @@ public class SubFoodMenuAdapter extends BaseAdapter {
 		TextView itemName = (TextView) convertView.findViewById(R.id.itemName);
 		TextView description = (TextView) convertView.findViewById(R.id.description);
 		TextView category = (TextView) convertView.findViewById(R.id.menuLabel);
+		RatingBar ratingBar = (RatingBar) convertView.findViewById(R.id.rating_bar);
 		category.setVisibility(View.GONE);
 		FoodItem fmi = foodMenuItems.get(position);
 		Picasso.with(MainActivity.getContext())
@@ -67,6 +69,7 @@ public class SubFoodMenuAdapter extends BaseAdapter {
 				.error(R.drawable.not_found).fit().centerCrop().into(itemImage);
 		// .into(itemImage);
 		itemName.setText(fmi.getItemName());
+		ratingBar.setRating(fmi.getRating());
 		category.setText("Category: " + fmi.getFoodMenu().getMenuName());
 		description.setText("Description: " + fmi.getDescription().replace("\"", ""));
 		return convertView;

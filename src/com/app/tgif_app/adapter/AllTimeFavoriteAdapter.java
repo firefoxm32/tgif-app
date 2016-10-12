@@ -48,13 +48,12 @@ public class AllTimeFavoriteAdapter extends RecyclerView.Adapter<AllTimeFavorite
 			String imageUrl = EndPoints.HTTP + session.getIpAddress() + EndPoints.PICASSO
 					+ list.get(position).getItemName().replace(" ", "%20").toLowerCase() + "/"
 					+ list.get(position).getImage();
-			System.out.println("IMAGE: "+imageUrl);
 			Picasso.with(appContext).load(imageUrl).placeholder(R.drawable.placeholder_pic).error(R.drawable.not_found)
 					.fit().centerCrop().into(holder.allTimeFavoriteImage);
 			holder.itemName.setText(list.get(position).getItemName());
 			holder.category.setText(list.get(position).getFoodMenu().getMenuName());
 			holder.description.setText(list.get(position).getDescription().replace("\"", ""));
-//			holder.ratingBar.setRating(2f);
+			holder.ratingBar.setRating(list.get(position).getRating());
 		}
 	}
 

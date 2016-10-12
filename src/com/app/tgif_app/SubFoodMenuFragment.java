@@ -32,7 +32,7 @@ import model.Session;
 
 public class SubFoodMenuFragment extends Fragment {
 
-	private ListView subFoodMenuList;
+	public static ListView subFoodMenuList;
 	private SubFoodMenuAdapter subFoodMenuAdapter;
 	private List<FoodItem> foodMenuItems;
 	private ProgressDialog pDialog;
@@ -45,47 +45,52 @@ public class SubFoodMenuFragment extends Fragment {
 	}
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState) {
-		
-		if(MainActivity.subFoodMenuBundle.getBoolean("isNull")) {
-			YesNo();
-		} else { 
-		rootView = (ViewGroup) inflater.inflate(R.layout.sub_food_menu_fragment, null);
-		
-		subFoodMenuList = (ListView) rootView.findViewById(R.id.ListSubFoodMenu);
-		session = new Session(getContext());
-//		MainActivity.mToolbar.setTitle(getArguments().getString("choice"));
-//		getFoodItems(getArguments().getInt("menuId"));
-		System.out.println("MENU ID: "+MainActivity.subFoodMenuBundle.getInt("menu_id"));
-		getFoodItems(MainActivity.subFoodMenuBundle.getInt("menu_id"));
 
-		subFoodMenuList.setOnItemClickListener(new OnItemClickListener() {
-			
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				orderDetails(position);
-			}
+		if (MainActivity.subFoodMenuBundle.getBoolean("isNull")) {
+			msg();
+		} else {
+			rootView = (ViewGroup) inflater.inflate(R.layout.sub_food_menu_fragment, null);
 
-		});
+			subFoodMenuList = (ListView) rootView.findViewById(R.id.ListSubFoodMenu);
+			session = new Session(getContext());
+			// MainActivity.mToolbar.setTitle(getArguments().getString("choice"));
+			// getFoodItems(getArguments().getInt("menuId"));
+			System.out.println("MENU ID: " + MainActivity.subFoodMenuBundle.getInt("menu_id"));
+			getFoodItems(MainActivity.subFoodMenuBundle.getInt("menu_id"));
+
+			subFoodMenuList.setOnItemClickListener(new OnItemClickListener() {
+
+				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+					orderDetails(position);
+				}
+
+			});
 		}
 		return rootView;
 	}
 
-	private void YesNo() {
+	private void msg() {
 		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
-		alertBuilder.setMessage("Please select category in MENU tab.");
-		alertBuilder.setPositiveButton("Yes", new android.content.DialogInterface.OnClickListener() {
+		LayoutInflater layoutInflater = getActivity().getLayoutInflater();
+		View dialogView = layoutInflater.inflate(R.layout.custom_alert_dialog_instruction, null);
+		alertBuilder.setView(dialogView);
+		alertBuilder.setCancelable(false);
+		TextView message = (TextView) dialogView.findViewById(R.id.msg);
+		message.setText("Please select category in MENU tab.");
+		alertBuilder.setPositiveButton("Ok", new android.content.DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				// TODO Auto-generated method stub
+				dialog.cancel();
 				MainActivity.mTabHost.setCurrentTab(1);
 			}
 		});
 		AlertDialog alertDialog = alertBuilder.create();
 		View view = getActivity().getLayoutInflater().inflate(R.layout.custom_alert_dialog_title, null);
 		TextView title = (TextView) view.findViewById(R.id.custom_title);
-		title.setText("Warning");
+		title.setText("TGIF APP");
 		alertDialog.setCustomTitle(view);
 		alertDialog.show();
-//		hideSoftKeyboard();
 	}
 
 	private void getFoodItems(int menuId) {
@@ -118,13 +123,9 @@ public class SubFoodMenuFragment extends Fragment {
 		odBundle.putString("image", foodMenuItems.get(position).getImage());
 		odBundle.putInt("item_id", foodMenuItems.get(position).getItemId());
 
-		Fragment orderDetails = new OrderDetails();
-		orderDetails.setArguments(odBundle);
-
-		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-		// fragmentTransaction.replace(R.id.container, orderDetails);
-		fragmentTransaction.addToBackStack(null);
-		fragmentTransaction.commit();
+		MainActivity.orderDetailsBundle.putBoolean("isNull", false);
+		MainActivity.orderDetailsBundle.putBundle("order_details", odBundle);
+		MainActivity.mTabHost.setCurrentTab(3);
 	}
 
 	private void showProgressDialog(String message) {

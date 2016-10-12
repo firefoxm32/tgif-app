@@ -27,6 +27,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -36,7 +37,7 @@ import model.Session;
 
 public class PendingOrder extends Fragment {
 	private ListView myOrderListView;
-	private ImageButton imgbtnSend;
+	private Button btnSend;
 	private MyOrderAdapter myOrderAdapter;
 	private List<Order> orders;
 	private ProgressDialog pDialog;
@@ -53,9 +54,12 @@ public class PendingOrder extends Fragment {
 		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_my_order, null);
 		session = new Session(getContext());
 		myOrderListView = (ListView) rootView.findViewById(R.id.myOrderListView);
-		imgbtnSend = (ImageButton) rootView.findViewById(R.id.img_btn_send_orders);
+		btnSend = (Button) rootView.findViewById(R.id.btn_send_orders);
 //		btnSend.setVisibility(View.GONE);
-
+//		Button feedback = (Button) rootView.findViewById(R.id.feedback);
+//		Button checkOut = (Button) rootView.findViewById(R.id.checkout);
+//		feedback.setVisibility(View.GONE);
+//		checkOut.setVisibility(View.GONE);
 		
 		myOrder(session.getTransactionId());
 
@@ -66,7 +70,7 @@ public class PendingOrder extends Fragment {
 				editOrder(position);
 			}
 		});
-		imgbtnSend.setOnClickListener(new OnClickListener() {
+		btnSend.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
@@ -103,14 +107,15 @@ public class PendingOrder extends Fragment {
 						myOrderAdapter = new MyOrderAdapter(getActivity(), "pending", orders);
 						myOrderListView.setAdapter(myOrderAdapter);
 						hideProgressDialog();
-						imgbtnSend.setVisibility(View.VISIBLE);
+						btnSend.setVisibility(View.VISIBLE);
 					}
 				});
 	}
 
 	private void sendOrders(String param) {
 		showProgressDialog("Loading...");
-		Ion.with(getContext()).load(EndPoints.HTTP+session.getIpAddress()+EndPoints.SEND_ORDERS).setBodyParameter("transaction_id", param).asString()
+		Ion.with(getContext()).load(EndPoints.HTTP+session.getIpAddress()+EndPoints.SEND_ORDERS)
+		.setBodyParameter("transaction_id", param).asString()
 				.setCallback(new FutureCallback<String>() {
 					@Override
 					public void onCompleted(Exception arg0, String response) {

@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentTabHost;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TabHost.OnTabChangeListener;
 
 public class MyOrderFragment extends Fragment {
 	
@@ -27,7 +28,17 @@ public class MyOrderFragment extends Fragment {
                 CookingOrder.class, null);
         mTabHost.addTab(mTabHost.newTabSpec("served").setIndicator("Served"),
                 ServedOrder.class, null);
-        
+//        System.out.println("ID: "+mTabHost.getCurrentTabTag());
+        mTabHost.setOnTabChangedListener(new OnTabChangeListener() {
+			@Override
+			public void onTabChanged(String tabId) {
+				// TODO Auto-generated method stub
+				if (tabId.equalsIgnoreCase("pending")) {
+					CookingOrder.stopCooking();
+					ServedOrder.stopServe();
+				}
+			}
+		});
         
 		return rootView;
 	}

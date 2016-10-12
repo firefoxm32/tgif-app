@@ -8,18 +8,25 @@
     android:minHeight="?attr/actionBarSize"
     android:theme="@style/Toolbar_Theme"
     app:titleTextColor="#FFF" >
-	
-    <!-- <TextView
-        android:id="@+id/table_number"
-        android:layout_width="wrap_content"
-        android:layout_height="55dp"
-        android:layout_gravity="start" /> -->
-    
+
     <ImageView
         android:id="@+id/toolbar_image"
         android:layout_width="100dp"
         android:layout_height="55dp"
-        android:src="@drawable/logo"
-        android:layout_gravity="end" />
+        android:layout_gravity="end"
+        android:src="@drawable/logo" />
+
+    <TextView
+        android:id="@+id/help"
+        android:layout_width="wrap_content"
+        android:layout_height="55dp"
+        android:layout_gravity="end"
+        android:padding="13dp"
+        android:layout_marginRight="5dp"
+        android:text="HELP?"
+        android:textColor="#FFF"
+        android:textSize="22sp"
+        android:fontFamily="sans-serif-condense"
+        android:textStyle="bold" />
 
 </android.support.v7.widget.Toolbar>

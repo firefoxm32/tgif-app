@@ -6,8 +6,10 @@ import com.koushikdutta.ion.Ion;
 import com.tgif.http.EndPoints;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.SpannableString;
@@ -82,10 +84,7 @@ public class VerifyingActivity extends Activity {
 							session.removeTransactionId();
 							session.setTableStatus("W");
 							hideProgressDialog();
-							Intent welcomeActivity = new Intent(VerifyingActivity.this, WelcomeActivity.class);
-							overridePendingTransition(0, 0);
-							startActivity(welcomeActivity);
-							finish();
+							msg();
 						} else if (status.equalsIgnoreCase("O")) {
 							isDone = true;
 							session.setTableStatus("O");
@@ -136,6 +135,33 @@ public class VerifyingActivity extends Activity {
 		toast.show();
 	}
 
+	private void msg() {
+		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
+		LayoutInflater layoutInflater = this.getLayoutInflater();
+		View dialogView = layoutInflater.inflate(R.layout.custom_alert_dialog_instruction, null);
+		alertBuilder.setView(dialogView);
+		alertBuilder.setCancelable(false);
+		TextView message = (TextView) dialogView.findViewById(R.id.msg);
+		message.setText("Please wait for your receipt or change.");
+		alertBuilder.setPositiveButton("Ok", new android.content.DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				dialog.cancel();
+				Intent welcomeActivity = new Intent(VerifyingActivity.this, WelcomeActivity.class);
+				overridePendingTransition(0, 0);
+				startActivity(welcomeActivity);
+				finish();
+			}
+		});
+		AlertDialog alertDialog = alertBuilder.create();
+		View view = getLayoutInflater().inflate(R.layout.custom_alert_dialog_title, null);
+		TextView title = (TextView) view.findViewById(R.id.custom_title);
+		title.setText("App Message");
+		alertDialog.setCustomTitle(view);
+		alertDialog.show();
+	}
+	
 	private void showProgressDialog(String message) {
 		if (pDialog == null) {
 			pDialog = new ProgressDialog(getContext());

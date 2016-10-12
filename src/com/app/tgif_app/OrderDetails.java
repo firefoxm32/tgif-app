@@ -18,7 +18,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
@@ -70,6 +69,7 @@ public class OrderDetails extends Fragment {
 	private List<Integer> sauceId;
 	private List<Integer> sideDishId;
 
+	private TextView tvItemName;
 	private TextView description;
 	private Button btnAdd;
 	private int itemId;
@@ -92,15 +92,14 @@ public class OrderDetails extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState) {
 		// ViewGroup rootView = (ViewGroup)
 		// inflater.inflate(R.layout.fragment_order_details, null);
-		System.out.println("ORDER DETAILS: "+MainActivity.orderDetailsBundle.getBoolean("isNull"));
 		if(MainActivity.orderDetailsBundle.getBoolean("isNull")) {
-//			MainActivity.mTabHost.setCurrentTab(0);
-			YesNo();
+			msg();
 		} else {
 		
 		rootView = (ViewGroup) inflater.inflate(R.layout.fragment_order_details, null);
 		
 		session = new Session(getContext());
+		tvItemName = (TextView) rootView.findViewById(R.id.order_detail_item_name);
 		description = (TextView) rootView.findViewById(R.id.order_details_description);
 		btnAdd = (Button) rootView.findViewById(R.id.btn_add);
 		image = (ImageView) rootView.findViewById(R.id.order_details_image);
@@ -131,7 +130,7 @@ public class OrderDetails extends Fragment {
 		itemId = bundle.getInt("item_id");
 		strOrderType = "DI";
 		orderType();
-		MainActivity.mToolbar.setTitle(itemName);
+		tvItemName.setText(itemName);
 		Picasso.with(MainActivity.getContext())
 				.load(EndPoints.HTTP + session.getIpAddress() + EndPoints.PICASSO
 						+ itemName.replace(" ", "%20").toLowerCase() + "/" + itemImage)
@@ -199,6 +198,7 @@ public class OrderDetails extends Fragment {
 								rg.addView(rdb[i]);
 								rdb[i].setText(
 										serving.getServingName() + " Php " + serving.getServingPrice().getPrice());
+								rdb[i].setTextSize(23f);
 								servingId.add(serving.getServingId());
 							}
 							rdb[0].setChecked(true);
@@ -213,6 +213,7 @@ public class OrderDetails extends Fragment {
 								Sauce sauce = sauces.get(i);
 								cb[i] = new CheckBox(getActivity());
 								cb[i].setText(sauce.getSauceName());
+								cb[i].setTextSize(23f);
 								sauceId.add(sauce.getSauceId());
 								lSauce.addView(cb[i]);
 							}
@@ -228,6 +229,7 @@ public class OrderDetails extends Fragment {
 								sideDish.displayData();
 								rdbSD[i] = new RadioButton(getActivity());
 								rdbSD[i].setText(sideDish.getSideDishName());
+								rdbSD[i].setTextSize(23f);
 								sideDishId.add(sideDish.getSideDishId());
 								rgSD.addView(rdbSD[i]);
 							}
@@ -236,24 +238,29 @@ public class OrderDetails extends Fragment {
 					}
 				});
 	}
-
-	private void YesNo() {
+	
+	private void msg() {
 		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
-		alertBuilder.setMessage("Please select item in HOME or MENU.");
-		alertBuilder.setPositiveButton("Yes", new android.content.DialogInterface.OnClickListener() {
+		LayoutInflater layoutInflater = getActivity().getLayoutInflater();
+		View dialogView = layoutInflater.inflate(R.layout.custom_alert_dialog_instruction, null);
+		alertBuilder.setView(dialogView);
+		alertBuilder.setCancelable(false);
+		TextView message = (TextView) dialogView.findViewById(R.id.msg);
+		message.setText("Please select item in HOME or MENU.");
+		alertBuilder.setPositiveButton("Ok", new android.content.DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				// TODO Auto-generated method stub
+				dialog.cancel();
 				MainActivity.mTabHost.setCurrentTab(0);
 			}
 		});
 		AlertDialog alertDialog = alertBuilder.create();
 		View view = getActivity().getLayoutInflater().inflate(R.layout.custom_alert_dialog_title, null);
 		TextView title = (TextView) view.findViewById(R.id.custom_title);
-		title.setText("Warning");
+		title.setText("TGIF APP");
 		alertDialog.setCustomTitle(view);
 		alertDialog.show();
-		hideSoftKeyboard();
 	}
 	
 	private void validation() {
@@ -351,11 +358,14 @@ public class OrderDetails extends Fragment {
 						hideProgressDialog();
 						hideSoftKeyboard();
 
-						FragmentTransaction ft = getFragmentManager().beginTransaction();
-						FoodMenuFragment menuFragment = new FoodMenuFragment();
-//						ft.replace(R.id.container, menuFragment);
-						ft.addToBackStack(null);
-						ft.commit();
+						MainActivity.subFoodMenuBundle.putBoolean("isNull", true);
+						MainActivity.orderDetailsBundle.putBoolean("isNull", true);
+						MainActivity.mTabHost.setCurrentTab(1);
+						System.out.println("ADAPTER: "+SubFoodMenuFragment.subFoodMenuList);
+						if (SubFoodMenuFragment.subFoodMenuList != null) {
+							SubFoodMenuFragment.subFoodMenuList.setAdapter(null);
+						}
+						rootView = null;
 					}
 				});
 	}

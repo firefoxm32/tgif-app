@@ -247,6 +247,7 @@ public class EditOrderActivity extends AppCompatActivity {
 		Intent mainActivity = new Intent(EditOrderActivity.this, MainActivity.class);
 		mainActivity.putExtra("tag", "my-order");
 		startActivity(mainActivity);
+		MainActivity.mTabHost.setCurrentTab(4);
 		finish();
 	}
 	@Override

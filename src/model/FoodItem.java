@@ -9,7 +9,7 @@ public class FoodItem {
 	private String description;
 	private Double promoPrice;
 	private String promoStatus;
-	private int orderCtr;
+	private float rating;
 	private List<Serving> servings;
 	private List<Sauce> sauces;
 	private List<SideDish> sideDishes;
@@ -52,11 +52,12 @@ public class FoodItem {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public int getOrderCtr() {
-		return orderCtr;
+	
+	public float getRating() {
+		return rating;
 	}
-	public void setOrderCtr(int orderCtr) {
-		this.orderCtr = orderCtr;
+	public void setRating(float rating) {
+		this.rating = rating;
 	}
 	public List<Serving> getServings() {
 		return servings;

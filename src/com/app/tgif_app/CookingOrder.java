@@ -19,6 +19,7 @@ import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -29,7 +30,7 @@ import model.Session;
 public class CookingOrder extends Fragment {
 
 	private ListView myOrderListView;
-	private ImageButton imgbtnSend;
+	private Button btnSend;
 	private MyOrderAdapter myOrderAdapter;
 	private List<Order> orders;
 	private ProgressDialog pDialog;
@@ -46,42 +47,58 @@ public class CookingOrder extends Fragment {
 		ViewGroup rootview = (ViewGroup) inflater.inflate(R.layout.fragment_my_order, null);
 		session = new Session(getContext());
 		myOrderListView = (ListView) rootview.findViewById(R.id.myOrderListView);
-		imgbtnSend = (ImageButton) rootview.findViewById(R.id.img_btn_send_orders);
-		imgbtnSend.setVisibility(View.GONE);
+		btnSend = (Button) rootview.findViewById(R.id.btn_send_orders);
+		btnSend.setVisibility(View.GONE);
+//		Button feedback = (Button) rootview.findViewById(R.id.feedback);
+//		Button checkOut = (Button) rootview.findViewById(R.id.checkout);
+//		feedback.setVisibility(View.GONE);
+//		checkOut.setVisibility(View.GONE);
 
-		threading();
-
+		startCooking();
 		return rootview;
 	}
-
-	private void threading() {
-		new Thread(new Runnable() {
-			public void run() {
-				while (true) {
-
-					try {
-						myOrder(session.getTransactionId());
-						Thread.sleep(5000);
-					} catch (Exception e) {
-						// TODO: handle exception
-						e.printStackTrace();
-					}
+	private Thread thread;
+	private void startCooking() {
+		isRunning = true;
+		thread = new Thread(new CookingThread());
+		thread.start();
+	}
+	public static void stopCooking() {
+		isRunning = false;
+		System.out.println("Stop THREAD: "+isRunning);
+	}
+	private static boolean isRunning = true;
+	protected class CookingThread implements Runnable {
+		
+		@Override
+		public void run() {
+			if(!isRunning) {
+				thread = null;
+			}
+			while (isRunning) {
+				System.out.println("interrut THREAD: "+isRunning);
+				try {
+					myOrder(session.getTransactionId());
+					Thread.sleep(5000);
+				} catch (Exception e) {
+					// TODO: handle exception
+//					e.printStackTrace();
 				}
 			}
-		}).start();
+		}
+		
 	}
 
 	private void myOrder(String transactionId) {
-//		showProgressDialog("Loading...");
 		Ion.with(MainActivity.getContext()).load(EndPoints.HTTP + session.getIpAddress() + EndPoints.MY_ORDERS
 				+ "?transaction_id=" + transactionId + "&status=C").asJsonObject()
 				.setCallback(new FutureCallback<JsonObject>() {
 					@Override
 					public void onCompleted(Exception arg0, JsonObject json) {
 						// TODO Auto-generated method stub
+//						System.out.println("JSON: "+json);
 						if (json == null) {
-							toastMessage("Network error");
-							hideProgressDialog();
+//							toastMessage("Network error");
 							return;
 						}
 						FoodMenuDAO fmd = new FoodMenuDAO();
@@ -91,8 +108,6 @@ public class CookingOrder extends Fragment {
 						System.out.println("INDEX: "+index);
 						myOrderListView.setAdapter(myOrderAdapter);
 						myOrderListView.smoothScrollToPosition(index);
-//						hideProgressDialog();
-						
 					}
 				});
 	}

@@ -1,7 +1,5 @@
 package com.app.tgif_app;
 
-import java.text.DecimalFormat;
-
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.koushikdutta.async.future.FutureCallback;
@@ -12,7 +10,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -28,9 +25,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 import model.Session;
@@ -39,8 +36,8 @@ import model.Session;
 public class MainActivity extends AppCompatActivity {
 	public static Toolbar mToolbar;
 	private ViewPager viewPager;
-//	private TabLayout tabLayout;
 	private ImageView toolbarImage;
+	private TextView help;
 	private ProgressDialog pDialog;
 	protected Session session;
 //	private NavigationDrawerFragment mNavigationDrawerFragment;
@@ -51,11 +48,7 @@ public class MainActivity extends AppCompatActivity {
 	public static String[] menus = new String[] { "Home", "Food Menu", "My Order", "Feedback", "Check Out" };
 
 	// public static List<DrawerItem> list;
-	private EditText cash;
-	private double totalBill;
-	private EditText memberId;
-	private EditText creditCardNumber;
-	private EditText creditCardName;
+	
 	public static FragmentTabHost mTabHost;
 	public static Bundle orderDetailsBundle;
 	public static Bundle subFoodMenuBundle;
@@ -75,25 +68,25 @@ public class MainActivity extends AppCompatActivity {
 		
 		setContext(this);
 		session = new Session(getContext());
+		
+		if (session.getTablestatus().equalsIgnoreCase("C")) {
+			Intent verifying = new Intent(MainActivity.this, VerifyingActivity.class);
+			overridePendingTransition(0, 0);
+			startActivity(verifying);
+			finish();
+		}
+		
 		orderDetailsBundle = new Bundle();
 		orderDetailsBundle.putBoolean("isNull", true);
 		subFoodMenuBundle = new Bundle();
 		subFoodMenuBundle.putBoolean("isNull", true);
-//		String tag = "default";
 
-//		mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
-//				.findFragmentById(R.id.navigation_drawer);
-		// mTitle = MainActivity.menus[0];// getString(MainActivity.menus[0]);
 		mToolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(mToolbar);
-		System.out.println("TABLE NUMBER: "+session.getTableNumber());
 		mTitle = mToolbar.getTitle().toString() + session.getTableNumber().toString();
-		System.out.println("MTITLE: "+mTitle);
 		getSupportActionBar().setTitle(mTitle);
 		toolbarImage = (ImageView) findViewById(R.id.toolbar_image);
-//		TextView tableNumber = (TextView) findViewById(R.id.table_number);
-//		tableNumber.setText("Table #: " + session.getTableNumber());
-		
+		help = (TextView) findViewById(R.id.help);
 		
 		mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
 		mTabHost.setup(this, getSupportFragmentManager(), R.id.main_realtabcontent);
@@ -109,11 +102,24 @@ public class MainActivity extends AppCompatActivity {
         mTabHost.addTab(mTabHost.newTabSpec("my_order").setIndicator("My Orders"),
                 MyOrderFragment.class, null);
 		
-//		tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-//        tabLayout.addTab(tabLayout.newTab().setText("Tab 1"));
-//        tabLayout.addTab(tabLayout.newTab().setText("Tab 2"));
-//        tabLayout.addTab(tabLayout.newTab().setText("Tab 3"));
-//        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        mTabHost.setOnTabChangedListener(new OnTabChangeListener() {	
+			@Override
+			public void onTabChanged(String tabId) {
+				// TODO Auto-generated method stub
+				if (!tabId.equalsIgnoreCase("my orders")) {
+					CookingOrder.stopCooking();
+					ServedOrder.stopServe();
+				}
+			}
+		});
+        
+        help.setOnClickListener(new View.OnClickListener() {	
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				msg();
+			}
+		});
 		
 //        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
 //        
@@ -139,16 +145,8 @@ public class MainActivity extends AppCompatActivity {
 //			}
 //		});
 		
-//		if (session.getTablestatus().equalsIgnoreCase("C")) {
-//			Intent verifying = new Intent(MainActivity.this, VerifyingActivity.class);
-//			overridePendingTransition(0, 0);
-//			startActivity(verifying);
-//			finish();
-//		}
+		
 		confirmation();
-		// Set up the drawer.
-//		mNavigationDrawerFragment.setUp(mToolbar, R.id.navigation_drawer,
-//				(DrawerLayout) findViewById(R.id.drawer_layout));
 	}
 	
 //	private void setupViewPager(ViewPager viewPager) {
@@ -156,335 +154,45 @@ public class MainActivity extends AppCompatActivity {
 //	      viewPager.setAdapter(adapter);
 //	  }
 	
-//	@Override
-//	public void onNavigationDrawerItemSelected(int position) {
-//		// update the main content by replacing fragments
-//		onSectionAttached(position);
-//	}
-
-//	public void onSectionAttached(int number) {
-//		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-//		Home home = new Home();
-//		switch (number) {
-//		case 0:
-//			mTitle = MainActivity.menus[0];// getString(R.string.Home);
-//			ft.replace(R.id.container, home);
-//			ft.addToBackStack(null);
-//			ft.commit();
-//			break;
-//		case 1:
-//			mTitle = MainActivity.menus[1] + "s";// getString(R.string.Food_Menu);
-//			FoodMenuFragment foodMenuFragment = new FoodMenuFragment();
-//			ft.replace(R.id.container, foodMenuFragment);
-//			ft.addToBackStack(null);
-//			ft.commit();
-//			break;
-//		case 2:
-//			mTitle = MainActivity.menus[2] + "s";// getString(R.string.My_Order);
-//			Fragment myOrderFragment = new MyOrderFragment();
-//			mToolbar.setTitle(mTitle);
-//			ft.replace(R.id.container, myOrderFragment);
-//			ft.addToBackStack(null);
-//			ft.commit();
-//			break;
-//		case 3:
-//			mTitle = MainActivity.menus[3];// getString(R.string.Check_Out);
-//			feedback();
-//			break;
-//		case 4:
-//			checkAllCookingOrder();
-//			getTotalPrice();
-//			break;
-//		default:
-//			mTitle = MainActivity.menus[0];// getString(R.string.Home);
-//			ft.replace(R.id.container, home);
-//			ft.addToBackStack(null);
-//			ft.commit();
-//			break;
-//		}
-//	}
-
-	private void feedback() {
+	private void msg() {
 		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
 		LayoutInflater layoutInflater = getLayoutInflater();
-		View dialogView = layoutInflater.inflate(R.layout.fragment_feedback, null);
+		View dialogView = layoutInflater.inflate(R.layout.custom_alert_dialog_instruction, null);
 		alertBuilder.setView(dialogView);
 		alertBuilder.setCancelable(false);
-		final EditText customerName = (EditText) dialogView.findViewById(R.id.feedback_user);
-		final EditText msg = (EditText) dialogView.findViewById(R.id.feedback_messageg);
-		alertBuilder.setPositiveButton("Send", new OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				// TODO Auto-generated method stub
-				String customer = customerName.getText().toString();
-				String message = msg.getText().toString();
-				if (message.isEmpty()) {
-					toastMessage("Cannot send feedback with empty message");
-					msg.requestFocus();
-				} else {
-					toastMessage("Sent!");
-					if (customer.isEmpty()) {
-						customer = "Customer";
-					}
-					sendFeedBack(customer, message);
-				}
-			}
-		});
-		alertBuilder.setNegativeButton("Cancel", new OnClickListener() {
+		TextView message = (TextView) dialogView.findViewById(R.id.msg);
+		
+		String instructions = "1. START ORDER \n" +
+						"2. CHOOSE ORDER in ALL TIME FAVORITES OR PROMOS OR MENU TAB\n"+
+						"3. CHOOSE CATEGORY TO VIEW EACH ITEMS\n"+
+						"4. IN ORDER DETAILS YOU ADD ORDER\n"+
+						"5. IF FINISH ADDING ORDER YOU CAN VIEW YOUR ORDERS IN MY ORDERS PENDING TAB\n"+
+						"6. IF YOU WANT TO EDIT OR DELETE SPECIFIC ORDER YOU CAN SELECT ITEM\n"+
+						"7. AFTER VERIFYING YOUR ORDERS YOU CAN SEND THEM TO THE KITCHEN BY CLICKING SEND ORDERS BUTTON\n"+
+						"8. AFTER SENDING YOU CAN\'T CANCEL YOUR ORDERS\n"+
+						"9. TO VIEW YOUR COOKING ORDER TAP MY ORDERS COOKING TAB\n"+
+						"10. TO VIEW YOUR SERVED ORDER TAP MY ORDERS SERVED TAB\n"+
+						"11. IF ALL YOUR ORDERS SERVED YOU CAN RATE SPECIFIC FOOD OR SEND FEEDBACK TO THE ADMIN\n"+
+						"12. CHECK OUT TO PAY YOUR BILL\n"+
+						"13. CHOOSE IF CASH METHOD OR VIA CREDIT CARD\n"+
+						"14. WAIT FOR THE WAITER TO GET YOUR RECEIPT AND CHANGE\n"+
+						"15. ";
+		
+		message.setText(instructions);
+		alertBuilder.setPositiveButton("Ok", new android.content.DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				// TODO Auto-generated method stub
 				dialog.cancel();
-				toastMessage("Sending feedback cancelled");
 			}
 		});
 		AlertDialog alertDialog = alertBuilder.create();
 		View view = getLayoutInflater().inflate(R.layout.custom_alert_dialog_title, null);
 		TextView title = (TextView) view.findViewById(R.id.custom_title);
-		title.setText("FEEDBACK");
+		title.setText("App Message");
 		alertDialog.setCustomTitle(view);
 		alertDialog.show();
-		hideSoftKeyboard();
 	}
-
-	private void sendFeedBack(String customerName, String message) {
-		Ion.with(getContext()).load(EndPoints.HTTP + session.getIpAddress() + EndPoints.SEND_FEEDBACK)
-				.setBodyParameter("transaction_id", session.getTransactionId())
-				.setBodyParameter("customer_name", customerName).setBodyParameter("message", message).asString()
-				.setCallback(new FutureCallback<String>() {
-
-					@Override
-					public void onCompleted(Exception e, String response) {
-						// TODO Auto-generated method stub
-						if (response == null) {
-							toastMessage("Network error");
-							return;
-						}
-						JsonObject object = new JsonParser().parse(response).getAsJsonObject();
-						if (object == null) {
-							return;
-						}
-						if (object.get("status").getAsString().toLowerCase().equals("error")) {
-							toastMessage(object.get("message").getAsString());
-							return;
-						}
-						toastMessage(object.get("message").getAsString());
-					}
-				});
-	}
-	private int row;
-	private void checkAllCookingOrder() {
-		row = 0;
-		Ion.with(getContext()).load(EndPoints.HTTP + session.getIpAddress() + EndPoints.GET_ALL_COOKING)
-				.setBodyParameter("param", session.getTransactionId()).asString()
-				.setCallback(new FutureCallback<String>() {
-					@Override
-					public void onCompleted(Exception arg0, String response) {
-						// TODO Auto-generated method stub
-						System.out.println("RESPONSE: " + response);
-						if (response == null) {
-							toastMessage("Network error");
-							return;
-						}
-						JsonObject json = new JsonParser().parse(response).getAsJsonObject();
-//						System.out.println(json.get("rows").toString());
-						if (!json.get("rows").toString().replace("\"", "").equalsIgnoreCase("null")) {
-							int rows = json.get("rows").getAsInt();
-//							if (rows > 0) {
-//								toastMessage("Please check out after all your orders served.");
-//								return;
-//							}rows;	
-							row = rows;
-						}
-					}
-				});
-	}
-
-	private void getTotalPrice() {
-		Ion.with(getContext()).load(EndPoints.HTTP + session.getIpAddress() + EndPoints.TOTAL_PRICE)
-				.setBodyParameter("transaction_id", session.getTransactionId()).asString()
-				.setCallback(new FutureCallback<String>() {
-					@Override
-					public void onCompleted(Exception arg0, String response) {
-						// TODO Auto-generated method stub
-						if (response == null) {
-							toastMessage("Network error");
-							return;
-						}
-						JsonObject json = new JsonParser().parse(response).getAsJsonObject();
-						checkOut(json.get("total_price").getAsDouble());
-					}
-				});
-	}
-
-	private String method;
-
-	private void checkOut(double _totalBill) {
-		final DecimalFormat formatter = new DecimalFormat("#,##0.00");
-		AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
-		LayoutInflater layoutInflater = getLayoutInflater();
-		View dialogView = layoutInflater.inflate(R.layout.check_out, null);
-		alert.setCancelable(false);
-		alert.setView(dialogView);
-
-		Button cashMethod = (Button) dialogView.findViewById(R.id.cash_method);
-		Button creditCardMethod = (Button) dialogView.findViewById(R.id.credit_card_method);
-		TextView total = (TextView) dialogView.findViewById(R.id.bill);
-		cash = (EditText) dialogView.findViewById(R.id.cash);
-		memberId = (EditText) dialogView.findViewById(R.id.member_id);
-		creditCardName = (EditText) dialogView.findViewById(R.id.credit_card_name);
-		creditCardNumber = (EditText) dialogView.findViewById(R.id.credit_card_number);
-
-		creditCardName.setVisibility(View.GONE);
-		creditCardNumber.setVisibility(View.GONE);
-		method = "cash_method";
-		cashMethod.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				method = "cash_method";
-				creditCardName.setVisibility(View.GONE);
-				creditCardNumber.setVisibility(View.GONE);
-				cash.setVisibility(View.VISIBLE);
-				cash.setText("");
-				memberId.setText("");
-				cash.requestFocus();
-			}
-		});
-		creditCardMethod.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				method = "credit_card_method";
-				creditCardName.setVisibility(View.VISIBLE);
-				creditCardNumber.setVisibility(View.VISIBLE);
-				cash.setVisibility(View.GONE);
-				creditCardName.setText("");
-				creditCardNumber.setText("");
-				memberId.setText("");
-				creditCardName.requestFocus();
-			}
-		});
-		totalBill = _totalBill;
-		totalBill = totalBill + (totalBill * .03);
-		total.setText("Total: " + formatter.format(totalBill));
-		cash.requestFocus();
-		alert.setPositiveButton("Yes", new OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				// TODO Auto-generated method stub
-				if (totalBill == 0.00) {
-					toastMessage("Not yet order");
-					return;
-				}
-				
-				System.out.println("ROW: "+row);
-				if ((row != 0 && !cash.getText().toString().isEmpty()) || 
-						(row != 0 && !creditCardName.getText().toString().isEmpty() && 
-						!creditCardNumber.getText().toString().isEmpty())) {
-					toastMessage("Please check out after all your orders served.");
-					return;
-				}
-				
-				if (method.equalsIgnoreCase("cash_method")) {
-					if (cash.getText().toString().trim().isEmpty()) {
-						toastMessage("Invalid input cash");
-						return;
-					}
-
-					if (cash.getText().toString().length() > 9) {
-						toastMessage("Invalid input cash");
-						return;
-					}
-
-					if (totalBill > Double.valueOf(cash.getText().toString())) {
-						toastMessage("Insufficient amount");
-						return;
-					}
-					insertCashHeader(session.getTransactionId(), Double.valueOf(cash.getText().toString().trim()), 
-							totalBill, "", "",
-							memberId.getText().toString().toString().trim());
-				} else {
-					if (creditCardName.getText().toString().trim().isEmpty()) {
-						toastMessage("Please enter credit card holder name");
-						return;
-					}
-
-					if (creditCardNumber.getText().toString().trim().isEmpty()) {
-						toastMessage("Please enter credit card number");
-						return;
-					}
-
-					if (creditCardNumber.getText().toString().length() > 16) {
-						toastMessage("Invalid Input");
-						return;
-					}
-
-					insertCashHeader(session.getTransactionId(), 0.00, totalBill,
-							creditCardName.getText().toString().trim(), creditCardNumber.getText().toString().trim(),
-							memberId.getText().toString().toString().trim());
-				}
-			}
-		});
-		alert.setNegativeButton("No", new OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				// TODO Auto-generated method stub
-				toastMessage("CANCELLED!");
-			}
-		});
-		AlertDialog alertDialog = alert.create();
-		View view = getLayoutInflater().inflate(R.layout.custom_alert_dialog_title, null);
-		TextView title = (TextView) view.findViewById(R.id.custom_title);
-		title.setText("CHECK OUT");
-		alertDialog.setCustomTitle(view);
-		alertDialog.show();
-		hideSoftKeyboard();
-	}
-
-	private void insertCashHeader(String transactionId, double cashAmount, double total,
-			String cardName, String cardNumber, String id) {
-		System.out.println("TID: " + transactionId);
-		Ion.with(getContext()).load(EndPoints.HTTP + session.getIpAddress() + EndPoints.INSERT_CASH_HEADER)
-				.setBodyParameter("transaction_id", transactionId)
-				.setBodyParameter("cash_amount", String.valueOf(cashAmount)).setBodyParameter("member_id", id)
-				.setBodyParameter("total_price", String.valueOf(total)).setBodyParameter("credit_card_name", cardName)
-				.setBodyParameter("credit_card_number", cardNumber).asString()
-				.setCallback(new FutureCallback<String>() {
-					@Override
-					public void onCompleted(Exception e, String response) {
-						// TODO Auto-generated method stub
-						System.out.println("RESPONSE: "+response);
-						if (response == null) {
-							toastMessage("Network error");
-							return;
-						}
-						JsonObject object = new JsonParser().parse(response).getAsJsonObject();
-						if (object == null) {
-							return;
-						}
-						System.out.println("STATUS: " + object.get("status").getAsString());
-						if (object.get("status").getAsString().equalsIgnoreCase("error")) {
-							toastMessage(object.get("message").getAsString());
-							return;
-						}
-
-						if (object.get("status").getAsString().toLowerCase().equals("error")) {
-							toastMessage(object.get("message").getAsString());
-							return;
-						}
-						toastMessage(object.get("message").getAsString());
-						session.setTableStatus("C");
-						Intent verifying = new Intent(MainActivity.this, VerifyingActivity.class);
-						overridePendingTransition(0, 0);
-						startActivity(verifying);
-						finish();
-					}
-				});
-	}
-
-	// private int i = 10;
-	// private int x = 3;
 
 	private void confirmation() {
 		toolbarImage.setOnLongClickListener(new OnLongClickListener() {

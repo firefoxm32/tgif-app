@@ -72,6 +72,7 @@ public class WelcomeActivity extends Activity {
 			finish();
 			return;
 		}
+		msg();
 		Button order = (Button) findViewById(R.id.startOrder);
 		order.setOnClickListener(new OnClickListener() {
 			@Override
@@ -379,7 +380,31 @@ public class WelcomeActivity extends Activity {
 		toast.setView(layout);
 		toast.show();
 	}
-
+	
+	private void msg() {
+		AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
+		LayoutInflater layoutInflater = this.getLayoutInflater();
+		View dialogView = layoutInflater.inflate(R.layout.custom_alert_dialog_instruction, null);
+		alertBuilder.setView(dialogView);
+		alertBuilder.setCancelable(false);
+		TextView message = (TextView) dialogView.findViewById(R.id.msg);
+		message.setText("To order please tap button START ORDER.");
+		alertBuilder.setPositiveButton("Ok", new android.content.DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				dialog.cancel();
+			}
+		});
+		AlertDialog alertDialog = alertBuilder.create();
+		View view = getLayoutInflater().inflate(R.layout.custom_alert_dialog_title, null);
+		TextView title = (TextView) view.findViewById(R.id.custom_title);
+		title.setText("App Message");
+		alertDialog.setCustomTitle(view);
+		alertDialog.show();
+		hideSoftKeyboard();
+	}
+	
 	private void hideSoftKeyboard() {
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 	}
