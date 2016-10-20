@@ -84,6 +84,7 @@ public class VerifyingActivity extends Activity {
 							session.removeTransactionId();
 							session.setTableStatus("W");
 							hideProgressDialog();
+							toastMessage("Please wait for the waiter for your receipt or change");
 							msg();
 						} else if (status.equalsIgnoreCase("O")) {
 							isDone = true;
@@ -130,7 +131,7 @@ public class VerifyingActivity extends Activity {
 		TextView msg = (TextView) layout.findViewById(R.id.toast_message);
 		msg.setText(message);
 		Toast toast = new Toast(getContext());
-		toast.setDuration(Toast.LENGTH_SHORT);
+		toast.setDuration(Toast.LENGTH_LONG);
 		toast.setView(layout);
 		toast.show();
 	}

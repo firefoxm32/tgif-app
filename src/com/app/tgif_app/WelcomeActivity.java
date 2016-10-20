@@ -72,7 +72,7 @@ public class WelcomeActivity extends Activity {
 			finish();
 			return;
 		}
-		msg();
+//		msg();
 		Button order = (Button) findViewById(R.id.startOrder);
 		order.setOnClickListener(new OnClickListener() {
 			@Override

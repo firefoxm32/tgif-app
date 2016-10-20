@@ -175,8 +175,7 @@ public class MainActivity extends AppCompatActivity {
 						"11. IF ALL YOUR ORDERS SERVED YOU CAN RATE SPECIFIC FOOD OR SEND FEEDBACK TO THE ADMIN\n"+
 						"12. CHECK OUT TO PAY YOUR BILL\n"+
 						"13. CHOOSE IF CASH METHOD OR VIA CREDIT CARD\n"+
-						"14. WAIT FOR THE WAITER TO GET YOUR RECEIPT AND CHANGE\n"+
-						"15. ";
+						"14. WAIT FOR YOUR RECEIPT AND CHANGE\n";
 		
 		message.setText(instructions);
 		alertBuilder.setPositiveButton("Ok", new android.content.DialogInterface.OnClickListener() {
@@ -371,17 +370,20 @@ public class MainActivity extends AppCompatActivity {
 		// mToolbar.setTag(mTitle);
 		// }
 	}
-
-//	@Override
-//	public void onBackPressed() {
-//		// TODO Auto-generated method stub
-//		if (getSupportFragmentManager().getBackStackEntryCount() == 1) {
-//			finish();
-//		} else {
-//			super.onBackPressed();
-//		}
-//	}
-
+	
+	@Override
+	public void onBackPressed() {
+		// TODO Auto-generated method stub
+		super.onBackPressed();
+		return;
+	}
+	
+	@Override
+	public void onAttachedToWindow() {
+		// TODO Auto-generated method stub
+		super.onAttachedToWindow();	
+	}
+	
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
